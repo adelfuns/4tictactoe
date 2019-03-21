@@ -1,6 +1,8 @@
+# TIC TAC TOE IN A MULTYAGENT SYSTEM WITH JASON
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+**Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
 - [TIC TAC TOE IN A MULTYAGENT SYSTEM WITH JASON](#tic-tac-toe-in-a-multyagent-system-with-jason)
   - [Definition](#definition)
@@ -11,9 +13,6 @@
   - [Disclaimer](#disclaimer)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-# TIC TAC TOE IN A MULTYAGENT SYSTEM WITH JASON
-
 ## Definition
 
 This program will play a TIC TAC TOE with 4 in a row/column/diagonal as winning condition. The agents have two strategies: **play to win** and **play to lose**. The board is 8x8 rows and columns respectively.
