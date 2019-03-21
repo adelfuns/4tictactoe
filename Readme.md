@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [TIC TAC TOE IN A MULTYAGENT SYSTEM WITH JASON](#tic-tac-toe-in-a-multyagent-system-with-jason)
+  - [Definition](#definition)
+    - [Play to win](#play-to-win)
+    - [Play to lose](#play-to-lose)
+  - [Strategy](#strategy)
+  - [Implementation](#implementation)
+  - [Disclaimer](#disclaimer)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # TIC TAC TOE IN A MULTYAGENT SYSTEM WITH JASON
 
 ## Definition
