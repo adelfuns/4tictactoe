@@ -1,0 +1,26 @@
+/*
+    cuatroenraya
+    ---------------------------
+
+    Jason Project File
+
+    This file defines the initial state of the MAS
+
+    Jason 
+    marzo 21, 2019 - 20:44:58
+*/
+
+MAS cuatroenraya {
+
+    infrastructure: Centralised
+	
+	environment: Blackboard
+
+    agents:
+	
+        player1;
+
+        player2;
+
+}
+
