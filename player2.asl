@@ -1,45 +1,93 @@
 // Agent player2 in project cuatroenraya.mas2j
 
-
-                                                           
 /* Initial beliefs and rules */
-movimiento(1).
+movement(1).
 
 
-/* Initial goals */
+// Forms a list of all pairs of chips in the board
+pairs(PL) :-
+	verticalPair([], VL) &
+	horizontalPair([], HL) &
+	diagonalPair([], DL) &
+	.concat(VL, HL, TmpL) &
+	.concat(TmpL, DL, PL).	
 
-
-
-//!start.
-
-// Agent player1 in project cuatroenraya.mas2j
-
-
-
-/* Initial beliefs and rules */
-movement(0).
-
-pares(LPares) :-
-	paresVertical(LV) &
-//	paresHorizontal(LH) &
-//	paresDiagonal(LD) &
-//	.concat(LV,LH,LT) &
-//	.concat(LT,LD,LPares).
-	.concat(LV,[],LPares).
-
-paresVertical(LV):-
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,P) &
+	
+// Rules for vertical pairs	
+verticalPair([],LV) :-
+	tablero(X1,Y1,2) &
+	tablero(X1,Y2,2) &
 	( 	(Y2 = Y1 + 1)  |
 		(Y2 = Y1 - 1)	) &
-	not .member(parPos(pos(X1,Y1), pos(X1,Y2)),
-		LV) &
-	not .member(parPos(pos(X1,Y2), pos(X1,Y1)),
-		LV) &
-	paresVertical([parPos(pos(X1,Y1), pos(X1,Y2)) | LV]).
-	
+	.concat([pairPos(pos(X1,Y1), pos(X1,Y2))],[],TmpL) &
+	verticalPair(TmpL,LV).
+
+verticalPair(TmpL,LV) :-
+	tablero(X1,Y1,2) &
+	tablero(X1,Y2,2) &
+	( 	(Y2 = Y1 + 1)  |
+		(Y2 = Y1 - 1)	) &
+	not .member(pairPos(pos(X1,Y1), pos(X1,Y2)), TmpL) &
+	not .member(pairPos(pos(X1,Y2), pos(X1,Y1)), TmpL) &
+	.concat([pairPos(pos(X1,Y1), pos(X1,Y2))],TmpL,TmpL2) &
+	verticalPair(TmpL2,LV).
+
+verticalPair(TmpL,LV) :- LV = TmpL.
+
+
+// Rules for horizontal pairs
+horizontalPair([],HL) :-
+	tablero(X1,Y1,2) &
+	tablero(X2,Y1,2) &
+	( 	(X2 = X1 + 1) |
+		(X2 = X1 - 1)	) &
+	.concat([pairPos(pos(X1,Y1), pos(X2,Y1))],[],TmpL) &
+	horizontalPair(TmpL,HL).
+
+horizontalPair(TmpL,HL) :-
+	tablero(X1,Y1,2) &
+	tablero(X2,Y1,2) &
+	( (X2 = X1 + 1) |
+	  (X2 = X1 - 1) ) &
+	not .member(pairPos(pos(X1,Y1), pos(X2,Y1)), TmpL) &
+	not .member(pairPos(pos(X2,Y1), pos(X1,Y1)), TmpL) &
+	.concat([pairPos(pos(X1,Y1), pos(X2,Y1))], TmpL, TmpL2) &
+	horizontalPair(TmpL2,HL).
+
+horizontalPair(TmpL,HL) :- HL = TmpL.
+
+
+// Rules for diagonal pairs
+diagonalPair([],DL) :-
+	tablero(X1,Y1,2) &
+	tablero(X2,Y2,2) &
+	( ((X2 = X1 + 1) & (Y2 = Y1 + 1)) |
+	  ((X2 = X1 + 1) & (Y2 = Y1 - 1)) |
+	  ((X2 = X1 - 1) & (Y2 = Y1 + 1)) |
+	  ((X2 = X1 - 1) & (Y2 = Y1 - 1)) ) &
+	.concat([pairPos(pos(X1,Y1), pos(X2,Y2))],[],TmpL) &
+	diagonalPair(TmpL,DL).
+
+diagonalPair(TmpL,DL) :-
+	tablero(X1,Y1,2) &
+	tablero(X2,Y2,2) &
+	( ((X2 = X1 + 1) & (Y2 = Y1 + 1)) |
+	  ((X2 = X1 + 1) & (Y2 = Y1 - 1)) |
+	  ((X2 = X1 - 1) & (Y2 = Y1 + 1)) |
+	  ((X2 = X1 - 1) & (Y2 = Y1 - 1)) ) &
+	not .member(pairPos(pos(X1,Y1), pos(X2,Y2)), TmpL) &
+	not .member(pairPos(pos(X2,Y2), pos(X1,Y1)), TmpL) &
+	.concat([pairPos(pos(X1,Y1), pos(X2,Y2))],TmpL,TmpL2) &
+	diagonalPair(TmpL2,DL).
+
+diagonalPair(TmpL,DL) :- DL = TmpL.
+
+
+// To know your own name
 myself(X) :- 
 	.my_name(X).
+
+
 /* Initial goals */
 
 
@@ -50,50 +98,85 @@ myself(X) :-
 
 /* Plans */
 
+// PLAY TO WIN
 +!play:
 	estrategia(jugarAGanar) <-
 		.print("A ganar");
+		!playToTest;
 		!playToWin.
 
+// PLAY TO LOSE
 +!play:
 	estrategia(jugarAPerder) <-
 		.print("A perder");
 		!playToLose.	
 		
 ////////////////////////////////////////////////////////////////
-//////////////////////winning plan//////////////////////////
+//////////////////////TESTING AREA//////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-+!playToWin: turno(player2) & movimiento(N) & N = 1<- 
-	put(2,1);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin: turno(player2) & movimiento(N) & N = 3<- 
-	put(2,2);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin: turno(player2) & movimiento(N) & N = 5<- 
-	put(2,4);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin: turno(player2) & movimiento(N) & N = 7<- 
-	put(2,7);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin: turno(player2) & movimiento(N) & N = 9<- 
-	put(3,4);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin: turno(player2) & movimiento(N) & N = 11<- 
-	put(5,5);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin: turno(player2) & movimiento(N) & N = 13<- 
-	put(5,6);
-	-+movimiento(N+2);
-	!playToWin.
-+!playToWin <- !playToWin.
-//+!playToWin:
+// Plan to play a few rounds and generate a board's state to test
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 1 <- 
+		put(2,1);
+		-+movement(N+2);
+		!playToTest.
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 3 <- 
+		put(2,2);
+		-+movement(N+2);
+		!playToTest.
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 5 <- 
+		put(2,4);
+		-+movement(N+2);
+		!playToTest.
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 7 <- 
+		put(2,7);
+		-+movement(N+2);
+		!playToTest.
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 9 <- 
+		put(3,4);
+		-+movement(N+2);
+		!playToTest.
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 11<- 
+		put(5,5);
+		-+movement(N+2);
+		!playToTest.
++!playToTest:
+	turno(player2) &
+	movement(N) &
+	N = 13<- 
+		put(5,6);
+		-+movement(N+2);
+		!playToTest.	
++!playToTest:
+	movement(N) &
+	N = 15 <-
+		?pairs(L);
+		.print("Pair list: ",L).
+		
++!playToTest <- !playToTest.
+////////////////////////////////////////////////////////////////
+//////////////////////WINNING PLAN//////////////////////////////
+////////////////////////////////////////////////////////////////
+
+//+!playToWin:      
 //	turno(N) &
 //	myself(N) &
 //	movement(M) &
@@ -115,21 +198,22 @@ myself(X) :-
 //		put(X2,Y2).
 
 
+////////////////////////////////////////////////////////////////
+//////////////////////LOSING PLAN//////////////////////////////
+////////////////////////////////////////////////////////////////
+
+
 
 
 ////////////////////////////////////////////////////////////////
-///////////////////////////errors//////////////////////////////
+///////////////////////////ERRORS//////////////////////////////
 ////////////////////////////////////////////////////////////////
-+!play <- .print("Error").
-+!playToWin <- .print("Error").
-+!playToLose <- .print("Error").
++!play <- .print("Error in !play").
++!playToWin <- .print("Error in !playToWin").
++!playToLose <- .print("Error in !playToLose").
++!playToTest <- .print("Error or finish !playToTest").
 
 
 
-/* Plans */
-
-
-
-//+!start : true <- .print("hello world.").
 
 
