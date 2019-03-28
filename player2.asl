@@ -7,7 +7,7 @@ testPut(1,2).
 testPut(0,6).
 testPut(2,1).
 testPut(3,6).
-testPut(3,3).
+testPut(3,4).
 testPut(3,5).
 testPut(4,1).
 testPut(5,5).
@@ -44,8 +44,14 @@ winnerTotal(L,P):-
 	winnerVertical(L1,P) &
 	winnerHorizontal(L2,P) & 
 	winnerDiagonal(L3,P) &
-	.concat(L1,L2,LT1) &
-	.concat(LT1,L3,L).
+	winnerVerticalThreeInFour(L4,P) &
+	winnerHorizontalThreeInFour(L5,P) &
+	winnerDiagonalThreeInFour(L6,P) &
+	.union(L1,L2,LT1) &
+	.union(L3,L4,LT2) &
+	.union(L5,L6, LT3) &
+	.union(LT1, LT2, LTemp) &
+	.union(LTemp, LT3, L).
 
 
 // Forms a list of all winning vertical positions in the board	
@@ -55,8 +61,7 @@ winnerVertical(L,P):-
 	.concat(L1,L2,L).
 
 // Top
-winnerVerticalPairTop(X1,Y1,[],P) :-
-	X1 = 8.
+winnerVerticalPairTop(8,Y1,[],P).
 
 winnerVerticalPairTop(X1,Y1,[pos(X1,Y0)|WVL],P) :-
 	Y1 < 7 &
@@ -67,18 +72,16 @@ winnerVerticalPairTop(X1,Y1,[pos(X1,Y0)|WVL],P) :-
 	(Y0 = Y1 - 1) &
 	winnerVerticalPairTop(X1,Y1+1,WVL,P).
 
-	winnerVerticalPairTop(X1,Y1,WVL,P) :-
+winnerVerticalPairTop(X1,Y1,WVL,P) :-
 	Y1 < 7 &
 	X1 < 8 &
 	winnerVerticalPairTop(X1,Y1+1,WVL,P).
 
-winnerVerticalPairTop(X1,Y1,WVL,P) :-
-	Y1 = 7 &
+winnerVerticalPairTop(X1,7,WVL,P) :-
 	winnerVerticalPairTop(X1+1,0,WVL,P).
 
 // Bottom
-winnerVerticalPairBottom(X1,Y1,[],P) :-
-	X1 = 8.
+winnerVerticalPairBottom(8,Y1,[],P).
 
 winnerVerticalPairBottom(X1,Y1,[pos(X1,Y4)|WVL],P) :-
 	Y1 < 7 &
@@ -94,8 +97,7 @@ winnerVerticalPairBottom(X1,Y1,WVL,P) :-
 	X1 < 8 &
 	winnerVerticalPairBottom(X1,Y1+1,WVL,P).
 
-winnerVerticalPairBottom(X1,Y1,WVL,P) :-
-	Y1 = 7 &
+winnerVerticalPairBottom(X1,7,WVL,P) :-
 	winnerVerticalPairBottom(X1+1,0,WVL,P).
 
 
@@ -106,8 +108,7 @@ winnerHorizontal(L,P):-
 	.concat(L1,L2,L).
 
 // Left
-winnerHorizontalPairLeft(X1,Y1,[],P) :-
-	Y1 = 8.
+winnerHorizontalPairLeft(X1,8,[],P).
 
 winnerHorizontalPairLeft(X1,Y1,[pos(X0,Y1)|WHL],P) :-
 	X1 < 7 &
@@ -118,18 +119,16 @@ winnerHorizontalPairLeft(X1,Y1,[pos(X0,Y1)|WHL],P) :-
 	(X0 = X1 - 1) &
 	winnerHorizontalPairLeft(X1+1,Y1,WHL,P).
 
-	winnerHorizontalPairLeft(X1,Y1,WHL,P) :-
+winnerHorizontalPairLeft(X1,Y1,WHL,P) :-
 	X1 < 7 &
 	Y1 < 8 &
 	winnerHorizontalPairLeft(X1+1,Y1,WHL,P).
 
-winnerHorizontalPairLeft(X1,Y1,WHL,P) :-
-	X1 = 7 &
+winnerHorizontalPairLeft(7,Y1,WHL,P) :-
 	winnerHorizontalPairLeft(0,Y1+1,WHL,P).
 
 // Right
-winnerHorizontalPairRight(X1,Y1,[],P) :-
-	Y1 = 8.
+winnerHorizontalPairRight(X1,8,[],P).
 
 winnerHorizontalPairRight(X1,Y1,[pos(X4,Y1)|WHL],P) :-
 	X1 < 7 &
@@ -140,13 +139,12 @@ winnerHorizontalPairRight(X1,Y1,[pos(X4,Y1)|WHL],P) :-
 	(X4 = X3 + 1) &
 	winnerHorizontalPairRight(X1+1,Y1,WHL,P).
 
-	winnerHorizontalPairRight(X1,Y1,WHL,P) :-
+winnerHorizontalPairRight(X1,Y1,WHL,P) :-
 	X1 < 7 &
 	Y1 < 8 &
 	winnerHorizontalPairRight(X1+1,Y1,WHL,P).
 
-winnerHorizontalPairRight(X1,Y1,WHL,P) :-
-	X1 = 7 &
+winnerHorizontalPairRight(7,Y1,WHL,P) :-
 	winnerHorizontalPairRight(0,Y1+1,WHL,P).
 
 
@@ -161,8 +159,7 @@ winnerDiagonal(L,P) :-
 	.concat(LT1,LT2,L).
 
 // Top Left
-winnerDiagonalPairTopLeft(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalPairTopLeft(8,Y1,[],P).
 
 winnerDiagonalPairTopLeft(X1,Y1,[pos(X0,Y0)|DHL],P) :-
 	Y1 < 7 &
@@ -181,13 +178,11 @@ winnerDiagonalPairTopLeft(X1,Y1,DHL,P) :-
 	X1 < 8 &
 	winnerDiagonalPairTopLeft(X1+1,Y1,DHL,P).
 
-winnerDiagonalPairTopLeft(X1,Y1,DHL,P) :-
-	Y1 = 7 &
+winnerDiagonalPairTopLeft(X1,7,DHL,P) :-
 	winnerDiagonalPairTopLeft(X1+1,0,DHL,P).
 
 // Bottom Right
-winnerDiagonalPairBottomRight(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalPairBottomRight(8,Y1,[],P).
 
 winnerDiagonalPairBottomRight(X1,Y1,[pos(X4,Y4)|DHL],P) :-
 	Y1 < 7 &
@@ -206,13 +201,11 @@ winnerDiagonalPairBottomRight(X1,Y1,DHL,P) :-
 	X1 < 8 &
 	winnerDiagonalPairBottomRight(X1+1,Y1,DHL,P).
 
-winnerDiagonalPairBottomRight(X1,Y1,DHL,P) :-
-	Y1 = 7 &
+winnerDiagonalPairBottomRight(X1,7,DHL,P) :-
 	winnerDiagonalPairBottomRight(X1+1,0,DHL,P).
 
 // Top Right
-winnerDiagonalPairTopRight(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalPairTopRight(8,Y1,[],P).
 
 winnerDiagonalPairTopRight(X1,Y1,[pos(X0,Y0)|DHL],P) :-
 	Y1 < 7 &
@@ -231,13 +224,11 @@ winnerDiagonalPairTopRight(X1,Y1,DHL,P) :-
 	X1 < 8 &
 	winnerDiagonalPairTopRight(X1+1,Y1,DHL,P).
 
-winnerDiagonalPairTopRight(X1,Y1,DHL,P) :-
-	Y1 = 7 &
+winnerDiagonalPairTopRight(X1,7,DHL,P) :-
 	winnerDiagonalPairTopRight(X1+1,0,DHL,P).
 
 // Bottom Left
-winnerDiagonalPairBottomLeft(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalPairBottomLeft(8,Y1,[],P).
 
 winnerDiagonalPairBottomLeft(X1,Y1,[pos(X4,Y4)|DHL],P) :-
 	Y1 < 7 &
@@ -256,8 +247,7 @@ winnerDiagonalPairBottomLeft(X1,Y1,DHL,P) :-
 	X1 < 8 &
 	winnerDiagonalPairBottomLeft(X1+1,Y1,DHL,P).
 
-winnerDiagonalPairBottomLeft(X1,Y1,DHL,P) :-
-	Y1 = 7 &
+winnerDiagonalPairBottomLeft(X1,7,DHL,P) :-
 	winnerDiagonalPairBottomLeft(X1+1,0,DHL,P).
 
 
@@ -268,8 +258,7 @@ winnerVerticalThreeInFour(L,P):-
 	.concat(L1,L2,L).
 
 //Top
-winnerVerticalThreeInFourTop(X1,Y1,[],P) :-
-	X1 = 8.
+winnerVerticalThreeInFourTop(8,Y1,[],P).
 
 winnerVerticalThreeInFourTop(X1,Y1,[pos(X1,Y2)|WTVL],P) :-
 	Y1 < 7 &
@@ -284,13 +273,11 @@ winnerVerticalThreeInFourTop(X1,Y1,WTVL,P) :-
 	X1 < 8 &
 	winnerVerticalThreeInFourTop(X1,Y1+1,WTVL,P).
 
-winnerVerticalThreeInFourTop(X1,Y1,WTVL,P) :-
-	Y1 = 7 &
+winnerVerticalThreeInFourTop(X1,7,WTVL,P) :-
 	winnerVerticalThreeInFourTop(X1+1,0,WTVL,P).
 
 //Bottom
-winnerVerticalThreeInFourBottom(X1,Y1,[],P) :-
-	X1 = 8.
+winnerVerticalThreeInFourBottom(8,Y1,[],P).
 
 winnerVerticalThreeInFourBottom(X1,Y1,[pos(X1,Y3)|WTVL],P) :-
 	Y1 < 7 &
@@ -305,8 +292,7 @@ winnerVerticalThreeInFourBottom(X1,Y1,WTVL,P) :-
 	X1 < 8 &
 	winnerVerticalThreeInFourBottom(X1,Y1+1,WTVL,P).
 
-winnerVerticalThreeInFourBottom(X1,Y1,WTVL,P) :-
-	Y1 = 7 &
+winnerVerticalThreeInFourBottom(X1,7,WTVL,P) :-
 	winnerVerticalThreeInFourBottom(X1+1,0,WTVL,P).
 
 
@@ -317,8 +303,7 @@ winnerHorizontalThreeInFour(L,P):-
 	.concat(L1,L2,L).
 
 //Left
-winnerHorizontalThreeInFourLeft(X1,Y1,[],P) :-
-	Y1 = 8.
+winnerHorizontalThreeInFourLeft(X1,8,[],P).
 
 winnerHorizontalThreeInFourLeft(X1,Y1,[pos(X2,Y1)|WTHL],P) :-
 	X1 < 7 &
@@ -333,13 +318,11 @@ winnerHorizontalThreeInFourLeft(X1,Y1,WTHL,P) :-
 	Y1 < 8 &
 	winnerHorizontalThreeInFourLeft(X1+1,Y1,WTHL,P).
 
-winnerHorizontalThreeInFourLeft(X1,Y1,WTHL,P) :-
-	X1 = 7 &
+winnerHorizontalThreeInFourLeft(7,Y1,WTHL,P) :-
 	winnerHorizontalThreeInFourLeft(0,Y1+1,WTHL,P).
 
 //Right
-winnerHorizontalThreeInFourRight(X1,Y1,[],P) :-
-	Y1 = 8.
+winnerHorizontalThreeInFourRight(X1,8,[],P).
 
 winnerHorizontalThreeInFourRight(X1,Y1,[pos(X3,Y1)|WTHL],P) :-
 	X1 < 7 &
@@ -354,24 +337,22 @@ winnerHorizontalThreeInFourRight(X1,Y1,WTHL,P) :-
 	Y1 < 8 &
 	winnerHorizontalThreeInFourRight(X1+1,Y1,WTHL,P).
 
-winnerHorizontalThreeInFourRight(X1,Y1,WTHL,P) :-
-	X1 = 7 &
+winnerHorizontalThreeInFourRight(7,Y1,WTHL,P) :-
 	winnerHorizontalThreeInFourRight(0,Y1+1,WTHL,P).
 
-//FALTA CAMBIAR A BUCLE
+
 // Forms a list of all winning diagonal positions in the board, having the empty space between chips
 winnerDiagonalThreeInFour(L,P):-
-	winnerDiagonalThreeInFourTopLeft(0,0,L1,P) &       // NO FUNCIONA     
-	winnerDiagonalThreeInFourBottomRight(0,0,L2,P) &   // NO FUNCIONA         
-	winnerDiagonalThreeInFourTopRight(0,0,L3,P) &      // NO FUNCIONA
-	winnerDiagonalThreeInFourBottomLeft(0,0,L4,P) &    // FUNCIONA
+	winnerDiagonalThreeInFourTopLeft(0,0,L1,P) &     
+	winnerDiagonalThreeInFourBottomRight(0,0,L2,P) &         
+	winnerDiagonalThreeInFourTopRight(0,0,L3,P) &
+	winnerDiagonalThreeInFourBottomLeft(0,0,L4,P) &
 	.concat(L1,L2,LT1) &
 	.concat(L3,L4,LT2) &
 	.concat(LT1,LT2,L).
 
 // Top Left
-winnerDiagonalThreeInFourTopLeft(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalThreeInFourTopLeft(8,Y1,[],P).
 
 winnerDiagonalThreeInFourTopLeft(X1,Y1,[pos(X2,Y2)|WTDL],P) :-
 	Y1 < 7 &
@@ -387,23 +368,21 @@ winnerDiagonalThreeInFourTopLeft(X1,Y1,[pos(X2,Y2)|WTDL],P) :-
 winnerDiagonalThreeInFourTopLeft(X1,Y1,WTDL,P) :-
 	Y1 < 7 &
 	X1 < 8 &
-	winnerDiagonalThreeInFourTopLeft(X1+1,Y1,WTDL,P).
+	winnerDiagonalThreeInFourTopLeft(X1,Y1+1,WTDL,P).
 
-winnerDiagonalThreeInFourTopLeft(X1,Y1,WTDL,P) :-
-	Y1 = 7 &
+winnerDiagonalThreeInFourTopLeft(X1,7,WTDL,P) :-
 	winnerDiagonalThreeInFourTopLeft(X1+1,0,WTDL,P).
 
 // Bottom Right
-winnerDiagonalThreeInFourBottomRight(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalThreeInFourBottomRight(8,Y1,[],P).
 
 winnerDiagonalThreeInFourBottomRight(X1,Y1,[pos(X3,Y3)|WTDL],P) :-
 	Y1 < 7 &
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonalTwoInThree(X2,Y2,X4,Y4,P) &
-	(X4 = X2 + 2) & 
-	(Y4 = Y2 + 2) &
+	(X4 = X1 + 3) & 
+	(Y4 = Y1 + 3) &
 	(X3 = X2 + 1) &
 	(Y3 = Y2 + 1) &
 	winnerDiagonalThreeInFourBottomRight(X1,Y1+1,WTDL,P).
@@ -411,15 +390,13 @@ winnerDiagonalThreeInFourBottomRight(X1,Y1,[pos(X3,Y3)|WTDL],P) :-
 winnerDiagonalThreeInFourBottomRight(X1,Y1,WTDL,P) :-
 	Y1 < 7 &
 	X1 < 8 &
-	winnerDiagonalThreeInFourBottomRight(X1+1,Y1,WTDL,P).
+	winnerDiagonalThreeInFourBottomRight(X1,Y1+1,WTDL,P).
 
-winnerDiagonalThreeInFourBottomRight(X1,Y1,WTDL,P) :-
-	Y1 = 7 &
+winnerDiagonalThreeInFourBottomRight(X1,7,WTDL,P) :-
 	winnerDiagonalThreeInFourBottomRight(X1+1,0,WTDL,P).
 
 // Top Right
-winnerDiagonalThreeInFourTopRight(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalThreeInFourTopRight(8,Y1,[],P).
 
 winnerDiagonalThreeInFourTopRight(X1,Y1,[pos(X2,Y2)|WTDL],P) :-
 	Y1 < 7 &
@@ -435,23 +412,21 @@ winnerDiagonalThreeInFourTopRight(X1,Y1,[pos(X2,Y2)|WTDL],P) :-
 winnerDiagonalThreeInFourTopRight(X1,Y1,WTDL,P) :-
 	Y1 < 7 &
 	X1 < 8 &
-	winnerDiagonalThreeInFourTopRight(X1+1,Y1,WTDL,P).
+	winnerDiagonalThreeInFourTopRight(X1,Y1+1,WTDL,P).
 
-winnerDiagonalThreeInFourTopRight(X1,Y1,WTDL,P) :-
-	Y1 = 7 &
+winnerDiagonalThreeInFourTopRight(X1,7,WTDL,P) :-
 	winnerDiagonalThreeInFourTopRight(X1+1,0,WTDL,P).
 
 // Bottom Left
-winnerDiagonalThreeInFourBottomLeft(X1,Y1,[],P) :-
-	X1 = 8.
+winnerDiagonalThreeInFourBottomLeft(8,Y1,[],P).
 
 winnerDiagonalThreeInFourBottomLeft(X1,Y1,[pos(X3,Y3)|WTDL],P) :-
 	Y1 < 7 &
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonalTwoInThree(X2,Y2,X4,Y4,P) &
-	(X4 = X2 - 2) & 
-	(Y4 = Y2 + 2) &
+	(X4 = X1 - 3) & 
+	(Y4 = Y1 + 3) &
 	(X3 = X2 - 1) &
 	(Y3 = Y2 + 1) &
 	winnerDiagonalThreeInFourBottomLeft(X1,Y1+1,WTDL,P).
@@ -461,8 +436,7 @@ winnerDiagonalThreeInFourBottomLeft(X1,Y1,WTDL,P) :-
 	X1 < 8 &
 	winnerDiagonalThreeInFourBottomLeft(X1+1,Y1,WTDL,P).
 
-winnerDiagonalThreeInFourBottomLeft(X1,Y1,WTDL,P) :-
-	Y1 = 7 &
+winnerDiagonalThreeInFourBottomLeft(X1,7,WTDL,P) :-
 	winnerDiagonalThreeInFourBottomLeft(X1+1,0,WTDL,P).
 
 
@@ -496,8 +470,7 @@ twoInFourPairs(PFL, P) :-
 
 	
 // Rules for vertical pairs	
-verticalPair(X1, Y1, [],P) :-
-	X1 = 8.
+verticalPair(8, Y1, [],P).
 	
 verticalPair(X1, Y1, [pairPos(pos(X1,Y1), pos(X1,Y2))|LV],P) :-
     Y1 < 7 & 
@@ -511,13 +484,11 @@ verticalPair(X1, Y1, LV,P) :-
 	not vertical(X1,Y1,X1,Y2, P) &
 	verticalPair(X1, Y1+1, LV, P).
 
-verticalPair(X1, Y1, LV, P) :-
-    Y1 = 7 &
+verticalPair(X1, 7, LV, P) :-
 	verticalPair(X1+1, 0, LV, P).
 
 // Rules for horizontal pairs
-horizontalPair(X1, Y1, [], P) :-
-	Y1 = 8.
+horizontalPair(X1, 8, [], P).
 
 horizontalPair(X1, Y1, [pairPos(pos(X1,Y1), pos(X2,Y1))|HV], P) :-
     X1 < 7 & 
@@ -531,13 +502,11 @@ horizontalPair(X1, Y1, HV, P) :-
 	not horizontal(X1,Y1,X2,Y1, P) &
 	horizontalPair(X1+1, Y1, HV, P).
 
-horizontalPair(X1, Y1, HV, P) :-
-    X1 = 7 &
+horizontalPair(7, Y1, HV, P) :-
 	horizontalPair(0, Y1+1, HV, P).
 
 // Rules for diagonal pairs
-diagonalPair(X1, Y1, [], P) :-
-	X1 = 8.
+diagonalPair(8, Y1, [], P).
 	
 diagonalPair(X1, Y1, [pairPos(pos(X1,Y1), pos(X2,Y2))|DV], P) :-
     Y1 < 7 & 
@@ -551,15 +520,13 @@ diagonalPair(X1, Y1, DV, P) :-
 	not diagonal(X1,Y1,X2,Y2, P) &
 	diagonalPair(X1, Y1+1, DV, P).
 
-diagonalPair(X1, Y1, DV, P) :-
-    Y1 = 7 &
+diagonalPair(X1, 7, DV, P) :-
 	diagonalPair(X1+1, 0, DV, P).
 
 
 
 // Rules for two chips in vertical of the form X[]X with no chip in between
-verticalTwoInThreePair(X1, Y1, [], P):-
-    X1 = 8.
+verticalTwoInThreePair(8, Y1, [], P).
 
 verticalTwoInThreePair(X1, Y1, [pairPos(pos(X1,Y1), pos(X1,Y3))|VTL], P) :-
     Y1 < 7 & 
@@ -573,13 +540,11 @@ verticalTwoInThreePair(X1, Y1, VTL, P) :-
 	not verticalTwoInThree(X1,Y1,X1,Y3, P) &
 	verticalTwoInThreePair(X1, Y1+1, VTL, P).
 	
-verticalTwoInThreePair(X1, Y1, VTL, P) :-
-    Y1 = 7 &
+verticalTwoInThreePair(X1, 7, VTL, P) :-
 	verticalTwoInThreePair(X1+1, 0, VTL, P).
 
 // Rules for two chips in horizontal of the form X[]X with no chip in between 
-horizontalTwoInThreePair(X1, Y1, [], P):-
-    Y1 = 8.
+horizontalTwoInThreePair(X1, 8, [], P).
 
 horizontalTwoInThreePair(X1, Y1, [pairPos(pos(X1,Y1), pos(X3,Y1))|HTL], P) :-
     X1 < 7 & 
@@ -593,13 +558,11 @@ horizontalTwoInThreePair(X1, Y1, HTL, P) :-
 	not horizontalTwoInThree(X1,Y1,X3,Y1, P) &
 	horizontalTwoInThreePair(X1+1, Y1, HTL, P).
 	
-horizontalTwoInThreePair(X1, Y1, HTL, P) :-
-    X1 = 7 &
+horizontalTwoInThreePair(7, Y1, HTL, P) :-
 	horizontalTwoInThreePair(0, Y1+1, HTL, P).
 
 // Rules for two chips in diagonal of the form X[]X with no chip in between 
-diagonalTwoInThreePair(X1, Y1, [], P):-
-    X1 = 8.
+diagonalTwoInThreePair(8, Y1, [], P).
 
 diagonalTwoInThreePair(X1, Y1, [pairPos(pos(X1,Y1), pos(X3,Y3))|DTL], P) :-
     Y1 < 7 & 
@@ -613,14 +576,12 @@ diagonalTwoInThreePair(X1, Y1, DTL, P) :-
 	not diagonalTwoInThree(X1,Y1,X3,Y3, P) &
 	diagonalTwoInThreePair(X1, Y1+1, DTL, P).
 	
-diagonalTwoInThreePair(X1, Y1, DTL, P) :-
-    Y1 = 7 &
+diagonalTwoInThreePair(X1, 7, DTL, P) :-
 	diagonalTwoInThreePair(X1+1, 0, DTL, P).
 
 
 // Rules for two chips in vertical of the form X[][]X with no chips in between
-verticalTwoInFourPair(X1, Y1, [], P):-
-    X1 = 8.
+verticalTwoInFourPair(8, Y1, [], P).
 
 verticalTwoInFourPair(X1, Y1, [pairPos(pos(X1,Y1), pos(X1,Y4))|VFL], P) :-
     Y1 < 7 & 
@@ -634,13 +595,11 @@ verticalTwoInFourPair(X1, Y1, VFL, P) :-
 	not verticalTwoInFour(X1,Y1,X1,Y4, P) &
 	verticalTwoInFourPair(X1, Y1+1, VFL, P).
 	
-verticalTwoInFourPair(X1, Y1, VFL, P) :-
-    Y1 = 7 &
+verticalTwoInFourPair(X1, 7, VFL, P) :-
 	verticalTwoInFourPair(X1+1, 0, VFL, P).
 
 // Rules for two chips in horizontal of the form X[][]X with no chips in between 
-horizontalTwoInFourPair(X1, Y1, [], P):-
-    Y1 = 8.
+horizontalTwoInFourPair(X1, 8, [], P).
 
 horizontalTwoInFourPair(X1, Y1, [pairPos(pos(X1,Y1), pos(X4,Y1))|HFL], P) :-
     X1 < 7 & 
@@ -654,13 +613,11 @@ horizontalTwoInFourPair(X1, Y1, HFL, P) :-
 	not horizontalTwoInFour(X1,Y1,X4,Y1, P) &
 	horizontalTwoInFourPair(X1+1, Y1, HFL, P).
 	
-horizontalTwoInFourPair(X1, Y1, HFL, P) :-
-    X1 = 7 &
+horizontalTwoInFourPair(7, Y1, HFL, P) :-
 	horizontalTwoInFourPair(0, Y1+1, HFL, P).
 
 // Rules for two chips in diagonal of the form X[][]X with no chips in between 
-diagonalTwoInFourPair(X1, Y1, [], P):-
-    X1 = 8.
+diagonalTwoInFourPair(8, Y1, [], P).
 
 diagonalTwoInFourPair(X1, Y1, [pairPos(pos(X1,Y1), pos(X4,Y4))|VFL], P) :-
     Y1 < 7 & 
@@ -674,8 +631,7 @@ diagonalTwoInFourPair(X1, Y1, VFL, P) :-
 	not diagonalTwoInFour(X1,Y1,X4,Y4, P) &
 	diagonalTwoInFourPair(X1, Y1+1, VFL, P).
 	
-diagonalTwoInFourPair(X1, Y1, VFL, P) :-
-    Y1 = 7 &
+diagonalTwoInFourPair(X1, 7, VFL, P) :-
 	diagonalTwoInFourPair(X1+1, 0, VFL, P).
 
 
@@ -809,7 +765,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 //MOVEMENT PLAN
 +!checkBoard(L,E):
 	player(P) <-
-		?winnerDiagonalThreeInFour(L,P);
+		?winnerTotal(L,P);
 		.print(L).
 		
 	//!checkWinningPosition(E,WL);

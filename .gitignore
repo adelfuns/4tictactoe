@@ -1,2 +1,6 @@
 # Compiled code
 /bin
+
+# Tmp files
+*.asl~
+.mas2j~
