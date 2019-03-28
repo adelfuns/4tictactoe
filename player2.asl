@@ -20,7 +20,7 @@ testPut(7,0).
 testPut(7,2).
 testPut(7,3).
 testPut(7,4).
-testPut(7,6).
+testPut(5,1).
 
 
 movement(1).
@@ -29,7 +29,7 @@ movement(1).
 // Gets the player number and adds to the beliefs player(playerNumber).
 playerNumber :- 
 	.my_name(N) &
-	.term2string(N,S)&
+	.term2string(N,S) &
 	.length(S,M) &
 	.substring(S,X,(M-1)) &
 	.term2string(Y,X) &
@@ -39,25 +39,139 @@ playerNumber :-
 checkEmpty(X,Y):-
 	tablero(X,Y,0).
 
-              
+	
 winnerTotal(L,P):-
 	winnerVertical(L1,P) &
 	winnerHorizontal(L2,P) & 
 	winnerDiagonal(L3,P) &
 	.concat(L1,L2,LT1) &
 	.concat(LT1,L3,L).
-	
-winnerVertical(L,P):-
-	winnerVerticalPairTop(L1,P) &            
-	winnerVerticalPairBottom(L2,P) &
-	.concat(L1,L2,L).
 
-winnerVerticalPairTop([pos(X1,Y0)],P) :-
+
+winnerVertical(L,P):-
+	winnerVerticalPairTop([],L1,P) &
+	winnerVerticalPairBottom([],L2,P) &
+	.union(L1,L2,L).
+
+
+winnerVerticalPairTop([],L,P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y0) &
-	(Y0 = Y1 - 1).
+	(Y0 = Y1 - 1) &
+	.concat([pos(X1,Y0)],[],TmpL) &
+	winnerVerticalPairTop(TmpL,L,P).
 
+winnerVerticalPairTop(TmpL,L,P) :-
+	vertical(X1,Y1,X1,Y2,P) &
+	vertical(X1,Y2,X1,Y3,P) &
+	checkEmpty(X1,Y0) &
+	(Y0 = Y1 - 1) &
+	not .member(pos(X1,Y0),TmpL) &
+	.concat([pos(X1,Y0)],TmpL,TmpL2) &
+	winnerVerticalPairTop(TmpL2,L,P).
+
+winnerVerticalPairTop([],[],P).
+winnerVerticalPairTop(TmpL,L,P) :- L = TmpL.
+
+
+winnerVerticalPairBottom([],L,P) :-
+	vertical(X1,Y1,X1,Y2,P) &
+	vertical(X1,Y2,X1,Y3,P) &
+	checkEmpty(X1,Y4) &
+	(Y4 = Y3 + 1) &
+	.concat([pos(X1,Y4)],[],TmpL) &
+	winnerVerticalPairBottom(TmpL,L,P).
+
+winnerVerticalPairBottom(TmpL,L,P) :-
+	vertical(X1,Y1,X1,Y2,P) &
+	vertical(X1,Y2,X1,Y3,P) &
+	checkEmpty(X1,Y4) &
+	(Y4 = Y3 + 1) &
+	not .member(pos(X1,Y4),TmpL) &
+	.concat([pos(X1,Y4)],TmpL,TmpL2) &
+	winnerVerticalPairBottom(TmpL2,L,P).
+
+winnerVerticalPairBottom([],[],P).
+winnerVerticalPairBottom(TmpL,L,P) :- L = TmpL.
+
+
+winnerHorizontal(L,P):-
+	winnerHorizontalPairLeft([],L1,P) &
+	winnerHorizontalPairRight([],L2,P) &
+	.union(L1,L2,L).
+
+
+winnerHorizontalPairLeft([],L,P) :-
+	horizontal(X1,Y1,X2,Y1,P) &
+	horizontal(X2,Y1,X3,Y1,P) &
+	checkEmpty(X0,Y1) &
+	(X0 = X1 - 1) &
+	.concat([pos(X0,Y1)],[],TmpL) &
+	winnerHorizontalPairLeft(TmpL,L,P).
+
+winnerHorizontalPairLeft(TmpL,L,P) :-
+	horizontal(X1,Y1,X2,Y1,P) &
+	horizontal(X2,Y1,X3,Y1,P) &
+	checkEmpty(X0,Y1) &
+	(X0 = X1 - 1) &
+	not .member(pos(X0,Y1),TmpL) &
+	.concat([pos(X0,Y1)],TmpL,TmpL2) &
+	winnerHorizontalPairLeft(TmpL2,L,P).
+
+winnerHorizontalPairLeft([],[],P).
+winnerHorizontalPairLeft(TmpL,L,P) :- L = TmpL.
+
+
+winnerHorizontalPairRight([],L,P) :-
+	horizontal(X1,Y1,X2,Y1,P) &
+	horizontal(X2,Y1,X3,Y1,P) &
+	checkEmpty(X4,Y1) &
+	(X4 = X3 + 1) &
+	.concat([pos(X4,Y1)],[],TmpL) &
+	winnerHorizontalPairRight(TmpL,L,P).
+
+winnerHorizontalPairRight(TmpL,L,P) :-
+	horizontal(X1,Y1,X2,Y1,P) &
+	horizontal(X2,Y1,X3,Y1,P) &
+	checkEmpty(X4,Y1) &
+	(X4 = X3 + 1) &
+	not .member(pos(X4,Y1),TmpL) &
+	.concat([pos(X4,Y1)],TmpL,TmpL2) &
+	winnerHorizontalPairRight(TmpL2,L,P).
+
+winnerHorizontalPairRight([],[],P).
+winnerHorizontalPairRight(TmpL,L,P) :- L = TmpL.
+
+
+winnerDiagonal(L,P) :-
+	winnerDiagonalPairTopLeft(L1,P) &            
+	winnerDiagonalPairBottomRight(L2,P) &
+	winnerDiagonalPairTopRight(L3,P) &            
+	winnerDiagonalPairBottomLeft(L4,P) &
+	.concat(L1,L2,LT1) &
+	.concat(L3,L4,LT2) &
+	.concat(LT1,LT2,L).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
 winnerVerticalPairBottom([pos(X1,Y4)],P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
@@ -65,8 +179,6 @@ winnerVerticalPairBottom([pos(X1,Y4)],P) :-
 	(Y4 = Y3 + 1).
 
 winnerVertical([],_).
-winnerVerticalPairTop([],_).
-winnerVerticalPairBottom([],_).
 
 
 winnerHorizontal(L,P):-
@@ -99,6 +211,7 @@ winnerDiagonal(L,P) :-
 	.concat(L1,L2,LT1) &
 	.concat(L3,L4,LT2) &
 	.concat(LT1,LT2,L).
+
 
 winnerDiagonalPairTopLeft([pos(X0,Y0)],P) :-
 	diagonal(X1,Y1,X2,Y2,P) &                           
@@ -141,7 +254,7 @@ winnerDiagonalPairTopLeft([],_).
 winnerDiagonalPairBottomRight([],_).
 winnerDiagonalPairTopRight([],_).
 winnerDiagonalPairBottomLeft([],_).
-
+*/
 
 
 //verticalWinningPair(WPL,E) :- 
@@ -457,8 +570,11 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 //MOVEMENT PLAN
 +!checkBoard(L,E):
 	player(M) <-
-		?winnerTotal(L,P);
-		.print(L).
+		?winnerVertical(L,P);
+		.print(L);
+		?winnerHorizontal
+		(L2,P);
+		.print(L2).
 		
 	//!checkWinningPosition(E,WL);
 	//!checkLosingPosition(E,LL);

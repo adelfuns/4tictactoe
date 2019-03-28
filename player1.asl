@@ -362,10 +362,11 @@ diagonalTwoInFourPair(TmpL,DTL) :- DTL = TmpL.
 
 +!playToTest:
 	not testPut(X,Y) <-
-		?twoInThreePairs(L);
-		.print("Pair list of two in three: ", L);
-		?twoInFourPairs(L2);
-		.print("Pair list of two in four: ", L2).
+		.print("Acabe.").
+		//?twoInThreePairs(L);
+		//print("Pair list of two in three: ", L);
+		//?twoInFourPairs(L2);
+		//.print("Pair list of two in four: ", L2).
 
 +!playToTest <- !playToTest.		
 ////////////////////////////////////////////////////////////////
