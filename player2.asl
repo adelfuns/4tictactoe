@@ -26,250 +26,265 @@ testPut(5,1).
 movement(1).
 
 
-// Gets the player number and adds to the beliefs player(playerNumber).
-playerNumber :- 
+// Gets the players number and adds to the beliefs player(playerNumber)
+// and opponent(playerNumber2).
+playerNumbers :- 
 	.my_name(N) &
 	.term2string(N,S) &
 	.length(S,M) &
 	.substring(S,X,(M-1)) &
 	.term2string(Y,X) &
-	.asserta(player(Y)).
+	.asserta(player(Y)) &
+	enemyNumber(Y,Z) &
+	.asserta(opponent(Z)).
+
+// Gets the opponent player number
+enemyNumber(X,2):-
+	X = 1.
+
+enemyNumber(X,1):-
+	X = 2.
 
 
+// Checks if the board in X-Y position is free
 checkEmpty(X,Y):-
 	tablero(X,Y,0).
 
-	
-winnerTotal(L,P):-
-	winnerVertical(L1,P) &
-	winnerHorizontal(L2,P) & 
-	winnerDiagonal(L3,P) &
-	.concat(L1,L2,LT1) &
-	.concat(LT1,L3,L).
+
+// Gets all of the winning positions	
+listWinPositions(L):-
+	player(P) &
+	listVerticalWinPositions(L1,P) &
+	listHorizontalWinPositions(L2,P) & 
+	listDiagonalWinPositions(L3,P) &
+	.union(L1,L2,LT1) &
+	.union(LT1,L3,L).
+
+// Gets all of the losing positions
+listLosePositions(L):-
+	opponent(P) &
+	listVerticalWinPositions(L1,P) &
+	listHorizontalWinPositions(L2,P) & 
+	listDiagonalWinPositions(L3,P) &
+	.union(L1,L2,LT1) &
+	.union(LT1,L3,L).
 
 
-winnerVertical(L,P):-
-	winnerVerticalPairTop([],L1,P) &
-	winnerVerticalPairBottom([],L2,P) &
+// Gets vertical winning positions
+listVerticalWinPositions(L,P):-
+	listVerticalWinPositionsTop([],L1,P) &
+	listVerticalWinPositionsBottom([],L2,P) &
 	.union(L1,L2,L).
 
 
-winnerVerticalPairTop([],L,P) :-
+listVerticalWinPositionsTop([],L,P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y0) &
 	(Y0 = Y1 - 1) &
 	.concat([pos(X1,Y0)],[],TmpL) &
-	winnerVerticalPairTop(TmpL,L,P).
+	listVerticalWinPositionsTop(TmpL,L,P).
 
-winnerVerticalPairTop(TmpL,L,P) :-
+listVerticalWinPositionsTop(TmpL,L,P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y0) &
 	(Y0 = Y1 - 1) &
 	not .member(pos(X1,Y0),TmpL) &
 	.concat([pos(X1,Y0)],TmpL,TmpL2) &
-	winnerVerticalPairTop(TmpL2,L,P).
+	listVerticalWinPositionsTop(TmpL2,L,P).
 
-winnerVerticalPairTop([],[],P).
-winnerVerticalPairTop(TmpL,L,P) :- L = TmpL.
+listVerticalWinPositionsTop([],[],P).
+listVerticalWinPositionsTop(TmpL,L,P) :- L = TmpL.
 
 
-winnerVerticalPairBottom([],L,P) :-
+listVerticalWinPositionsBottom([],L,P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y4) &
 	(Y4 = Y3 + 1) &
 	.concat([pos(X1,Y4)],[],TmpL) &
-	winnerVerticalPairBottom(TmpL,L,P).
+	listVerticalWinPositionsBottom(TmpL,L,P).
 
-winnerVerticalPairBottom(TmpL,L,P) :-
+listVerticalWinPositionsBottom(TmpL,L,P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y4) &
 	(Y4 = Y3 + 1) &
 	not .member(pos(X1,Y4),TmpL) &
 	.concat([pos(X1,Y4)],TmpL,TmpL2) &
-	winnerVerticalPairBottom(TmpL2,L,P).
+	listVerticalWinPositionsBottom(TmpL2,L,P).
 
-winnerVerticalPairBottom([],[],P).
-winnerVerticalPairBottom(TmpL,L,P) :- L = TmpL.
+listVerticalWinPositionsBottom([],[],P).
+listVerticalWinPositionsBottom(TmpL,L,P) :- L = TmpL.
 
 
-winnerHorizontal(L,P):-
-	winnerHorizontalPairLeft([],L1,P) &
-	winnerHorizontalPairRight([],L2,P) &
+// Gets horizontal winning positions
+listHorizontalWinPositions(L,P):-
+	listHorizontalWinPositionsLeft([],L1,P) &
+	listHorizontalWinPositionsRight([],L2,P) &
 	.union(L1,L2,L).
 
 
-winnerHorizontalPairLeft([],L,P) :-
+listHorizontalWinPositionsLeft([],L,P) :-
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontal(X2,Y1,X3,Y1,P) &
 	checkEmpty(X0,Y1) &
 	(X0 = X1 - 1) &
 	.concat([pos(X0,Y1)],[],TmpL) &
-	winnerHorizontalPairLeft(TmpL,L,P).
+	listHorizontalWinPositionsLeft(TmpL,L,P).
 
-winnerHorizontalPairLeft(TmpL,L,P) :-
+listHorizontalWinPositionsLeft(TmpL,L,P) :-
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontal(X2,Y1,X3,Y1,P) &
 	checkEmpty(X0,Y1) &
 	(X0 = X1 - 1) &
 	not .member(pos(X0,Y1),TmpL) &
 	.concat([pos(X0,Y1)],TmpL,TmpL2) &
-	winnerHorizontalPairLeft(TmpL2,L,P).
+	listHorizontalWinPositionsLeft(TmpL2,L,P).
 
-winnerHorizontalPairLeft([],[],P).
-winnerHorizontalPairLeft(TmpL,L,P) :- L = TmpL.
+listHorizontalWinPositionsLeft([],[],P).
+listHorizontalWinPositionsLeft(TmpL,L,P) :- L = TmpL.
 
 
-winnerHorizontalPairRight([],L,P) :-
+listHorizontalWinPositionsRight([],L,P) :-
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontal(X2,Y1,X3,Y1,P) &
 	checkEmpty(X4,Y1) &
 	(X4 = X3 + 1) &
 	.concat([pos(X4,Y1)],[],TmpL) &
-	winnerHorizontalPairRight(TmpL,L,P).
+	listHorizontalWinPositionsRight(TmpL,L,P).
 
-winnerHorizontalPairRight(TmpL,L,P) :-
+listHorizontalWinPositionsRight(TmpL,L,P) :-
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontal(X2,Y1,X3,Y1,P) &
 	checkEmpty(X4,Y1) &
 	(X4 = X3 + 1) &
 	not .member(pos(X4,Y1),TmpL) &
 	.concat([pos(X4,Y1)],TmpL,TmpL2) &
-	winnerHorizontalPairRight(TmpL2,L,P).
+	listHorizontalWinPositionsRight(TmpL2,L,P).
 
-winnerHorizontalPairRight([],[],P).
-winnerHorizontalPairRight(TmpL,L,P) :- L = TmpL.
-
-
-winnerDiagonal(L,P) :-
-	winnerDiagonalPairTopLeft(L1,P) &            
-	winnerDiagonalPairBottomRight(L2,P) &
-	winnerDiagonalPairTopRight(L3,P) &            
-	winnerDiagonalPairBottomLeft(L4,P) &
-	.concat(L1,L2,LT1) &
-	.concat(L3,L4,LT2) &
-	.concat(LT1,LT2,L).
+listHorizontalWinPositionsRight([],[],P).
+listHorizontalWinPositionsRight(TmpL,L,P) :- L = TmpL.
 
 
+// Gets diagonal winning positions
+listDiagonalWinPositions(L,P) :-
+	listDiagonalWinPositionsTopLeft([],L1,P) &            
+	listDiagonalWinPositionsBottomRight([],L2,P) &
+	listDiagonalWinPositionsTopRight([],L3,P) &            
+	listDiagonalWinPositionsBottomLeft([],L4,P) &
+	.union(L1,L2,LT1) &
+	.union(L3,L4,LT2) &
+	.union(LT1,LT2,L).
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
-winnerVerticalPairBottom([pos(X1,Y4)],P) :-
-	vertical(X1,Y1,X1,Y2,P) &
-	vertical(X1,Y2,X1,Y3,P) &
-	checkEmpty(X1,Y4) &
-	(Y4 = Y3 + 1).
-
-winnerVertical([],_).
-
-
-winnerHorizontal(L,P):-
-	winnerHorizontalPairLeft(L1,P) &            
-	winnerHorizontalPairRight(L2,P) &
-	.concat(L1,L2,L).
-
-winnerHorizontalPairLeft([pos(X0,Y1)],P) :-
-	horizontal(X1,Y1,X2,Y1,P) &
-	horizontal(X2,Y1,X3,Y1,P) &
-	checkEmpty(X0,Y1) &
-	(X0 = X1 - 1).
-
-winnerHorizontalPairRight([pos(X4,Y1)],P) :-
-	horizontal(X1,Y1,X2,Y1,P) &
-	horizontal(X2,Y1,X3,Y1,P) &
-	checkEmpty(X4,Y1) &
-	(X4 = X3 + 1).
-
-winnerHorizontal([],_).
-winnerHorizontalPairTop([],_).
-winnerHorizontalPairBottom([],_).
-
-
-winnerDiagonal(L,P) :-
-	winnerDiagonalPairTopLeft(L1,P) &            
-	winnerDiagonalPairBottomRight(L2,P) &
-	winnerDiagonalPairTopRight(L3,P) &            
-	winnerDiagonalPairBottomLeft(L4,P) &
-	.concat(L1,L2,LT1) &
-	.concat(L3,L4,LT2) &
-	.concat(LT1,LT2,L).
-
-
-winnerDiagonalPairTopLeft([pos(X0,Y0)],P) :-
+listDiagonalWinPositionsTopLeft([],L,P) :-
 	diagonal(X1,Y1,X2,Y2,P) &                           
 	diagonal(X2,Y2,X3,Y3,P) &
 	(X3 = X2 + 1) &
 	(Y3 = Y2 + 1) &
 	checkEmpty(X0,Y0) &
 	(Y0 = Y1 - 1) &
-	(X0 = X1 - 1).
+	(X0 = X1 - 1) &
+	.concat([pos(X0,Y0)],[],TmpL) &
+	listDiagonalWinPositionsTopLeft(TmpL,L,P).
 
-winnerDiagonalPairBottomRight([pos(X4,Y4)],P) :-
-	diagonal(X1,Y1,X2,Y2,P) &
+listDiagonalWinPositionsTopLeft(TmpL,L,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &                           
 	diagonal(X2,Y2,X3,Y3,P) &
 	(X3 = X2 + 1) &
 	(Y3 = Y2 + 1) &
-	checkEmpty(X4,Y4) &
-	(Y4 = Y3 + 1) &
-	(X4 = X3 + 1).
+	checkEmpty(X0,Y0) &
+	(Y0 = Y1 - 1) &
+	(X0 = X1 - 1) &
+	not .member(pos(X0,Y0),TmpL) &
+	.concat([pos(X0,Y0)],[],TmpL) &
+	listDiagonalWinPositionsTopLeft(TmpL,L,P).
 
-winnerDiagonalPairTopRight([pos(X0,Y0)],P) :-
+listDiagonalWinPositionsTopLeft([],[],P).
+listDiagonalWinPositionsTopLeft(TmpL,L,P) :- L = TmpL.
+
+
+listDiagonalWinPositionsTopRight([],L,P) :-
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonal(X2,Y2,X3,Y3,P) &
 	(X3 = X2 - 1) &
 	(Y3 = Y2 + 1) &
 	checkEmpty(X0,Y0) &
 	(Y0 = Y1 - 1) &
-	(X0 = X1 + 1).
+	(X0 = X1 + 1) &
+	.concat([pos(X0,Y0)],[],TmpL) &
+	listDiagonalWinPositionsTopRight(TmpL,L,P).
 
-winnerDiagonalPairBottomLeft([pos(X4,Y4)],P) :-
+listDiagonalWinPositionsTopRight(TmpL,L,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &
+	diagonal(X2,Y2,X3,Y3,P) &
+	(X3 = X2 - 1) &
+	(Y3 = Y2 + 1) &
+	checkEmpty(X0,Y0) &
+	(Y0 = Y1 - 1) &
+	(X0 = X1 + 1) &
+	not .member(pos(X0,Y0),TmpL) &
+	.concat([pos(X0,Y0)],[],TmpL) &
+	listDiagonalWinPositionsTopRight(TmpL,L,P).
+
+listDiagonalWinPositionsTopRight([],[],P).
+listDiagonalWinPositionsTopRight(TmpL,L,P) :- L = TmpL.
+
+
+listDiagonalWinPositionsBottomLeft([],L,P) :-
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonal(X2,Y2,X3,Y3,P) &
 	(X3 = X2 - 1) &
 	(Y3 = Y2 + 1) &
 	checkEmpty(X4,Y4) &
 	(Y4 = Y3 + 1) &
-	(X4 = X3 - 1).
+	(X4 = X3 - 1) &
+	.concat([pos(X4,Y4)],[],TmpL) &
+	listDiagonalWinPositionsBottomLeft(TmpL,L,P).
 
-winnerDiagonal([],_).
-winnerDiagonalPairTopLeft([],_).
-winnerDiagonalPairBottomRight([],_).
-winnerDiagonalPairTopRight([],_).
-winnerDiagonalPairBottomLeft([],_).
-*/
+listDiagonalWinPositionsBottomLeft(TmpL,L,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &
+	diagonal(X2,Y2,X3,Y3,P) &
+	(X3 = X2 - 1) &
+	(Y3 = Y2 + 1) &
+	checkEmpty(X4,Y4) &
+	(Y4 = Y3 + 1) &
+	(X4 = X3 - 1) &
+	not .member(pos(X4,Y4),TmpL) &
+	.concat([pos(X4,Y4)],[],TmpL) &
+	listDiagonalWinPositionsBottomLeft(TmpL,L,P).
+
+listDiagonalWinPositionsBottomLeft([],[],P).
+listDiagonalWinPositionsBottomLeft(TmpL,L,P) :- L = TmpL.
 
 
-//verticalWinningPair(WPL,E) :- 
-//	winnerVerticalPair(X,Y) &
+listDiagonalWinPositionsBottomRight([],L,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &
+	diagonal(X2,Y2,X3,Y3,P) &
+	(X3 = X2 + 1) &
+	(Y3 = Y2 + 1) &
+	checkEmpty(X4,Y4) &
+	(Y4 = Y3 + 1) &
+	(X4 = X3 + 1) &
+	.concat([pos(X4,Y4)],[],TmpL) &
+	listDiagonalWinPositionsBottomRight(TmpL,L,P).
 
-//horizontalWinningPair() :-
-//diagonalWinningPair() :-
+listDiagonalWinPositionsBottomRight(TmpL,L,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &
+	diagonal(X2,Y2,X3,Y3,P) &
+	(X3 = X2 + 1) &
+	(Y3 = Y2 + 1) &
+	checkEmpty(X4,Y4) &
+	(Y4 = Y3 + 1) &
+	(X4 = X3 + 1) &
+	not .member(pos(X4,Y4),TmpL) &
+	.concat([pos(X4,Y4)],[],TmpL) &
+	listDiagonalWinPositionsBottomRight(TmpL,L,P).
 
-threeInARow(TL):-
-	pairs(PL) &
-	verticalFour(PL, VL) &
-	horizontalFour([], HL) &
-	diagonalFour([], DL) &
-	.concat(VL, HL, TmpL) &
-	.concat(TmpL, DL, PL).
+listDiagonalWinPositionsBottomRight([],[],P).
+listDiagonalWinPositionsBottomRight(TmpL,L,P) :- L = TmpL.
 
 
 // Forms a list of all pairs of chips in the board
@@ -530,7 +545,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 /* Plans */
 
 // PLAY TO WIN
-+!play: playerNumber &
++!play: playerNumbers &
 	estrategia(jugarAGanar) <-
 		.print("A ganar");
 		!playToTest.
@@ -570,11 +585,10 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 //MOVEMENT PLAN
 +!checkBoard(L,E):
 	player(M) <-
-		?winnerVertical(L,P);
-		.print(L);
-		?winnerHorizontal
-		(L2,P);
-		.print(L2).
+		?listWinPositions(L1);
+		?listLosePositions(L2);
+		.print("Winning positions: ",L1);
+		.print("Losing positions: ",L2).
 		
 	//!checkWinningPosition(E,WL);
 	//!checkLosingPosition(E,LL);
