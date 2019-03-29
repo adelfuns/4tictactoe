@@ -2,38 +2,67 @@
 
 /* Initial beliefs and rules */
 // TEST POSITIONS
-testPut(1,3).
-testPut(1,2).
-testPut(0,6).
-testPut(2,1).
-testPut(3,6).
-testPut(3,4).
-testPut(3,5).
-testPut(4,1).
-testPut(5,5).
-testPut(4,5).
-testPut(2,2).
-testPut(4,6).
-testPut(4,7).
-testPut(6,1).
-testPut(7,0).
-testPut(7,1).
-testPut(7,2).
-testPut(7,7).
 testPut(4,3).
+testPut(3,6).
 
 
 movement(1).
 
 
 // Gets the player number and adds to the beliefs player(playerNumber).
+// Gets the players number and adds to the beliefs player(playerNumber)
+// and opponent(playerNumber2).
 playerNumber :- 
 	.my_name(N) &
-	.term2string(N,S)&
+	.term2string(N,S) &
 	.length(S,M) &
 	.substring(S,X,(M-1)) &
-	.term2string(Y,X) &
-	.asserta(player(Y)).
+	.term2string(P,X) &
+	.asserta(player(P)) &
+	enemyNumber(P,R) &
+	.asserta(rival(R)).
+
+// Gets the opponent player number
+enemyNumber(X,2):-
+	X = 1.
+
+enemyNumber(X,1):-
+	X = 2.
+
+
+masCercaCentro(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR <= 3 & YR <= 3 &
+	X = XR+1 & Y = YR+1.
+
+masCercaCentro(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR <= 3 & YR >= 3 &
+	X = XR+1 & Y = YR-1.
+
+masCercaCentro(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR >= 3 & YR <= 3 &
+	X = XR-1 & Y = YR+1.
+
+masCercaCentro(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR >= 3 & YR >= 3 &
+	X = XR-1 & Y = YR-1.
+
+
+
+// Para siguiente movimiento,revisar
+siguienteMov(X, Y):-
+	player(P) &
+	rival(R) &
+	winnerTotal([pos(X,Y)|_], P).
+	
+siguienteMov(X, Y):-
+	player(P) &
+	rival(R) &
+	winnerTotal([pos(X,Y)],R).
+
 
 
 checkEmpty(X,Y):-
@@ -714,6 +743,39 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 	    (Y4 = Y1 + 3) & (Y3 = Y1 + 2) & (Y2 = Y1 + 1) ) ).
 
 
+
+
+//Rules solita (cambiar nombres y añadir comentarios)
+solita(X, Y) :-
+	tablero(X1,Y1,R) & // R = rival
+	( X1 = 7 | Y1 = 7 | X1 = 0 | Y1 = 0 ) &
+	masCercaCentro(X1, Y1, X, Y).
+
+solita(X, Y) :-
+	tablero(X1, Y1, R) &
+	(X1 = 1 & Y1 = 1) &
+	(X = 2 & Y = 2).
+
+solita(X, Y) :-
+	tablero(X1, Y1, R) &
+	(X1 = 1 & Y1 = 6) &
+	(X = 2 & Y = 5).
+
+solita(X, Y) :-
+	tablero(X1, Y1, R) &
+	(X1 = 6 & Y1 = 1) &
+	(X = 5 & Y = 2).
+
+solita(X, Y) :-
+	tablero(X1, Y1, R) &
+	(X1 = 6 & Y1 = 6) &
+	(X = 5 & Y = 5).
+
+solita(X, Y) :-
+	tablero(X1, Y1, R) &
+	masCercaCentro(X1, Y1, X, Y).
+
+
 /* Initial goals */
 
 
@@ -728,7 +790,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 +!play: playerNumber &
 	estrategia(jugarAGanar) <-
 		.print("A ganar");
-		!playToTest.
+		!playToWin.
 
 // PLAY TO LOSE
 +!play:
@@ -738,7 +800,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 		
 //TEST AREA		
 // Plan to play a few rounds and generate a board's state to test
-+!playToTest:
+/*+!playToTest:
 	testPut(X,Y) &
 	turno(player2) <- 
 		put(X,Y);
@@ -750,12 +812,57 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 	not testPut(X,Y) <-
 		!playToWin.
 
-+!playToTest <- !playToTest.
++!playToTest <- !playToTest.*/
 
 
 //WINNING PLAN
-+!playToWin <-
-	!checkBoard(L,E).
+/*+!playToWin <-
+	!checkBoard(L,E).*/
+
+
++!playToWin: 
+	movement(N) &
+	N = 0 &
+	.my_name(Player) &
+	turno (Player) <-
+	put(3,3);
+	-+movement(N+2);
+	+ventaja(0);
+	!playToWin.
+
++!playToWin:
+	movement(N) &
+	N = 1 &
+	.my_name(Player) &
+	turno(Player) &
+	rival(R) &
+	tablero(X,Y,R) <-
+	+ventaja(1);
+	+historialRival([pos(X,Y)]);
+	+jugadaActual(pos(X,Y));
+	?masCercaCentro(X1,Y1);
+	put(X1,Y1);
+	-+movement(N+2);
+	-jugadaActual(pos(x,y));
+	!playToWin.
+
++!playToWin:
+	movement(N) &
+	my_name(Player) &
+	turno(Player) &
+	rival(R) &
+	tablero(X,Y,R) &
+	historialRival(L) &
+	not .member(pos(X,Y), L) <-
+	+jugadaActual(pos(X,Y));
+	-+historialRival([pos(X,Y)|L]);
+	!decidirMovimiento(X1,Y1);
+	put(X1,Y1);
+	-+movement(N+2);
+	-jugadaActual(pos(X,Y));
+	!playToWin.
+
++!playToWin <- !playToWin.
 
 
 //LOSING PLAN
@@ -763,11 +870,17 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 
 
 //MOVEMENT PLAN
-+!checkBoard(L,E):
-	player(P) <-
-		?winnerTotal(L,P);
-		.print(L).
-		
+/*+!checkBoard(L,E):
+	siguienteMov(X, Y) <-
+		.print(X, "--", Y);
+		put(X,Y).*/
+
+
+
+
+
+
+
 	//!checkWinningPosition(E,WL);
 	//!checkLosingPosition(E,LL);
 	//!decide(WL,LL,X,Y)
