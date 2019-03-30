@@ -1,12 +1,7 @@
 // Agent player2 in project cuatroenraya.mas2j
 
 /* Initial beliefs and rules */
-// TEST POSITIONS
-testPut(4,3).
-testPut(3,6).
 
-
-movement(0).
 
 
 // Gets the player number and adds to the beliefs player(playerNumber).
@@ -24,10 +19,12 @@ playerNumber :-
 
 // Gets the opponent player number
 enemyNumber(X,2):-
-	X = 1.
+	X = 1 &
+	.asserta(movement(0)).
 
 enemyNumber(X,1):-
-	X = 2.
+	X = 2 &
+	.asserta(movement(1)).
 
 //falta comentar
 masCercaCentro(X,Y):-
@@ -52,19 +49,171 @@ masCercaCentro(X,Y):-
 
 
 
-// Para siguiente movimiento,revisar
+// Rules to decide next move in winning game
+
+// winning move
 siguienteMov(X, Y):-
+	estrategia(jugarAGanar) &
 	player(P) &
-	rival(R) &
 	winnerTotal([pos(X,Y)|_], P).
 	
+// player in check, has to block
 siguienteMov(X, Y):-
-	player(P) &
+	estrategia(jugarAGanar) &
 	rival(R) &
 	winnerTotal([pos(X,Y)],R).
 
+// lose is inevitable
+siguienteMov(X, Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	rival(R) &
+	winnerTotal([pos(X,Y)|_],R).
+
+// player can win in the next move
+siguienteMov(X,Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	pairs(PL, P) &
+	not .empty(PL) &
+	winningTrio(PL, X, Y). //Falta implementar
+
+siguienteMov(X,Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	twoInThreePairs(TL, P) &
+	not .empty(TL) &
+	winningTrioT(TL, X, Y). //Falta implementar
+
+// player forces rival to block them
+siguienteMov(X,Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	twoInFourPairs(FL, P) &
+	not .empty(FL) &
+	chooseTwoInFour(FL, X, Y) & //Falta implementar
+	not ventaja(0).
+
+siguienteMov(X,Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	pairs(PL, P) &
+	not .empty(PL) &
+	notWinningTrio(PL) &
+	bestMove(PL, X, Y).
+
+siguienteMov(X,Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	twoInThreePairs(TL, P) &
+	not .empty(TL) &
+	notWinningTrio(TL, X, Y).
 
 
+// no one can win in the next move
+siguienteMov(X, Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	rival(R) &
+	winnerTotal([],R) &
+	winnerTotal([],P) /*&*/.
+
+
+
+
+// rules to determinate when a pair can become a winning trio
+winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))], X, Y):-
+	triple(X1,Y1,X2,Y2,X,Y).
+
+tripleVertical(X,Y1, X,Y2, X,YD):-
+	vertical(X,Y1,X,Y2) &
+	tablero(X,YD,0) &
+	tablero(X,YD1,0) &
+	tablero(X,YD0,0) &
+	( ( YD = Y2+1  &
+		YD1 = Y2+2 &
+		YD0 = Y2-2 ) |
+	  ( YD = Y2-2  &
+		YD1 = Y2-3 &
+		YD0 = Y2+1 ) ).
+
+tripleHorizontal(X1,Y, X2,Y, XD,Y):-
+	vertical(X1,Y,X2,Y) &
+	tablero(XD,Y,0) &
+	tablero(XD1,Y,0) &
+	tablero(XD0,Y,0) &
+	( ( XD = X2+1  &
+		XD1 = X2+2 &
+		XD0 = X2-2 ) |
+	  ( XD = X2-2  &
+		XD1 = X2-3 &
+		XD0 = X2+1 ) ).
+
+tripleDiagonal(X1,Y1,X2,Y2,XD,YD):-
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	( 	( (X2 = X1+1 & Y2 = Y1+1) & 
+	( 	(XD = X2+1 & YD= Y2+1 & 
+		XD1 = X2+2 & YD1 = Y2+2 & 
+		XD0 = X2-2 & YD0 = Y2-2) 
+	|  (XD = X2-2 & YD= Y2-2 & 
+		XD1 = X2-3 & YD1 = Y2-3 & 
+		XD0 = X2+1 & YD0 = Y2+1)	) )
+	
+	|  ( (X2 = X1-1 & Y2 = Y1-1) & 
+	( 	(XD = X2-1 & YD= Y2+1 & 
+		XD1 = X2-2 & YD1 = Y2+2 & 
+		XD0 = X2+2 & YD0 = Y2-2) 
+	| 	(XD = X2+2 & YD= Y2-2 & 
+		XD1 = X2+3 & YD1 = Y2-3 & 
+		XD0 = X2-1 & YD0 = Y2+1) ) ) ).
+
+
+
+// rules to determinate best move
+bestMove(X,Y):-
+	perfectMove(M) &
+	player(P) &
+	.abolish(tablero(X,Y,0)) &
+	.asserta(tablero(X,Y,P)) &
+	allLists(L,P) &
+	.length(L,Points) &
+	.asserta(tmpMove(X,Y,Points)) &
+	.abolish(tablero(X,Y,P)) &
+	.perceive.
+
+
+// generates all lists of pairs for a player
+allLists(L,P):-
+	pairs(PL, P) &
+	twoInThreePairs(TL, P) &
+	twoInFourPairs(FL, P) &
+	.concat(PL, TL, TempL) &
+	.concat(FL, TempL, L).
+
+	
+
+
+
+
+
+
+
+
+
+// Rules to decide next move in losing game
+siguienteMov(X, Y):-
+	estrategia(jugarAPerder).
+	
+siguienteMov(X, Y):-
+	estrategia(jugarAPerder).
+
+
+
+
+// auto explanatory
 checkEmpty(X,Y):-
 	tablero(X,Y,0).
 
@@ -792,6 +941,14 @@ solita(X, Y) :-
 		.print("A ganar");
 		!playToWin.
 
+
+/*+!playToTest <-
+	 .abolish(tablero(1,2,0)[source(percepts)]);
+	.print("Quito conocimiento");
+	.wait(5000);
+	.perceive; 
+	.print("Fuerzo percepts").*/
+
 // PLAY TO LOSE
 +!play:
 	estrategia(jugarAPerder) <-
@@ -837,7 +994,6 @@ solita(X, Y) :-
 	turno(Player) &
 	rival(R) &
 	tablero(X,Y,R) <-
-	+ventaja(1);
 	+historialRival([pos(X,Y)]);
 	+jugadaActual(pos(X,Y));
 	?masCercaCentro(X1,Y1);
@@ -856,12 +1012,14 @@ solita(X, Y) :-
 	not .member(pos(X,Y), L) <-
 	+jugadaActual(pos(X,Y));
 	-+historialRival([pos(X,Y)|L]);
-	!decidirMovimiento(X1,Y1);
+	?siguienteMov(X1,Y1);
 	put(X1,Y1);
 	-+movement(N+2);
 	-jugadaActual(pos(X,Y));
 	!playToWin.
 
+
++!playToWin<- !playToWin.
 
 //LOSING PLAN
 
