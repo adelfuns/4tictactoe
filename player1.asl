@@ -745,6 +745,92 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 	    (Y4 = Y1 + 3) & (Y3 = Y1 + 2) & (Y2 = Y1 + 1) ) ).
 
 
+// Top left corner
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 = 0) &
+	(Y1 = 0) &
+	(X = X1 + 2) &
+	(Y = Y1 + 2).
+
+
+// Top right corner
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 = 7) &
+	(Y1 = 0) &
+	(X = X1 - 2) &
+	(Y = Y1 + 2).
+
+// Bottom left corner
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 = 0) &
+	(Y1 = 7) &
+	(X = X1 + 2) &
+	(Y = Y1 - 2).
+
+// Bottom right corner
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 = 7) &
+	(Y1 = 7) &
+	(X = X1 - 2) &
+	(Y = Y1 - 2).
+
+// Top left quadrant
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 <= 3) &
+	(Y1 <= 3) &
+	(X = X1 + 1) &
+	(Y = Y1 + 1). 
+
+// Top right quadrant
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 >= 4) &
+	(Y1 <= 3) &
+	(X = X1 - 1) &
+	(Y = Y1 + 1). 
+
+// Bottom left quadrant
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 <= 3) &
+	(Y1 >= 4) &
+	(X = X1 + 1) &
+	(Y = Y1 - 1). 
+
+// Bottom right quadrant
+closestCenterDiagonal(X,Y):-
+	actualMovement(X1,Y1) &
+	(X1 >= 4) &
+	(Y1 >= 4) &
+	(X = X1 - 1) &
+	(Y = Y1 - 1). 
+
+// Decide movement rules
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	listWinPositions([pos(X,Y)|_]).
+
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	listLosePositions([pos(X,Y)]).
+
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	listLosePositions(L) &
+	.length(L,N) &
+	N > 1 &
+	.
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	
+
+
+
 /* Initial goals */
 
 
@@ -765,7 +851,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 		.print("A perder");
 		!playToLose.
 		
-//TEST AREA		
+// TEST AREA		
 // Plan to play a few rounds and generate a board's state to test
 +!playToTest:
 	testPut(X,Y) &
@@ -782,16 +868,56 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 +!playToTest <- !playToTest.
 
 
-//WINNING PLAN
-+!playToWin <-
-	!checkBoard(L,E).
+// WINNING PLAN
++!playToWin:
+	movement(N) &
+	(N = 0) &
+	turno(.my_name(X)) <-
+	put(3,3);
+	-+movement(N+2);
+	+advantage(0);
+	!playToWin.
+
++!playToWin:
+	movement(N) &
+	(N = 1) &
+	turno(.my_name(X)) &
+	opponent(R) &
+	tablero(X0,Y0,R) <-
+		advantage(1);
+		+movementRecord([pos(X0,Y0)]);
+		+actualMovement(pos(X0,Y0));
+		?closestCenterDiagonal(X1,Y1);
+		put(X1,Y1);
+		-+movement(N+1);
+		-actualMovement(pos(X0,Y0));
+		!playToWin.
+
++!playToWin:
+	movement(N) &
+	turno(.my_name(X)) &
+	opponent(R) &
+	tablero(X0,Y0,R) &
+	movementRecord(L) &
+	not .member(pos(X0,X0),L) <-
+		-+movementRecord([pos(X0,Y0)|Lº]);
+		+actualMovement(pos(X0,Y0));
+		?decideMovement(X1,Y1);
+		put(X1,Y1);
+		-+movement(N+1);
+		-actualMovement(pos(X0,Y0));
+		!playToWin.
+
+!playToWin <- !playToWin. 
 
 
-//LOSING PLAN
+// LOSING PLAN
 
 
 
-//MOVEMENT PLAN
+
+
+// MOVEMENT PLAN
 +!checkBoard(L,E):
 	player(M) <-
 		?listDiagonalWinPositionsTwoInThreeTopLeft([],L1,M);
