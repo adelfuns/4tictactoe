@@ -107,7 +107,7 @@ public class Blackboard extends Environment implements Runnable {
 		turno = TURNO_PLAYER1;
 		estado = JUGANDO;
 		max_partidas = MAX_PARTIDAS;
-		modoJuego = MODO_JUGAR_A_GANAR;
+		modoJuego = MODO_JUGAR_A_PERDER;
 		view.setModoJuego(modoJuego);
 		
 		start();
