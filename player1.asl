@@ -498,166 +498,183 @@ listDiagonalWinPositionsTwoInThreeBottomRight([],[],P).
 listDiagonalWinPositionsTwoInThreeBottomRight(TmpL,L,P) :- L = TmpL.
 
 
+
+// Check all of the player's chip forms
+allMyForms(LP,TTL,TFL):-
+	player(P) &
+	pairs(PL,P) &
+	twoInThreePairs(TTL,P) &
+	twoInFourPairs(TFL,P).
+
+
+// Check all of the opponent's chip forms
+allHisForms(LP,TTL,TFL):-
+	opponent(P) &
+	pairs(PL,P) &
+	twoInThreePairs(TTL,P) &
+	twoInFourPairs(TFL,P).
+
+
 // Forms a list of all pairs of chips in the board
-pairs(PL) :-
-	verticalPair([], VL) &
-	horizontalPair([], HL) &
-	diagonalPair([], DL) &
-	.concat(VL, HL, TmpL) &
-	.concat(TmpL, DL, PL).	
+pairs(PL,P) :-
+	verticalPair([], VL, P) &
+	horizontalPair([], HL, P) &
+	diagonalPair([], DL, P) &
+	.union(VL, HL, TmpL) &
+	.union(TmpL, DL, PL).	
 
 
 // Forms a list of all pairs of chips of the form X[]X in the board
 twoInThreePairs(PL) :-
-	verticalTwoInThreePair([], VL) &
-	horizontalTwoInThreePair([], HL) &
-	diagonalTwoInThreePair([], DL) &
-	.concat(VL, HL, TmpL) &
-	.concat(TmpL, DL, PL).
+	verticalTwoInThreePair([], VL, P) &
+	horizontalTwoInThreePair([], HL, P) &
+	diagonalTwoInThreePair([], DL, P) &
+	.union(VL, HL, TmpL) &
+	.union(TmpL, DL, PL).
 
 
 // Forms a list of all pairs of chips of the form X[][]X in the board
 twoInFourPairs(PL) :-
-	verticalTwoInFourPair([], VL) &
-	horizontalTwoInFourPair([], HL) &
-	diagonalTwoInFourPair([], DL) &
-	.concat(VL, HL, TmpL) &
-	.concat(TmpL, DL, PL).	
+	verticalTwoInFourPair([], VL, P) &
+	horizontalTwoInFourPair([], HL, P) &
+	diagonalTwoInFourPair([], DL, P) &
+	.union(VL, HL, TmpL) &
+	.union(TmpL, DL, PL).	
 
 	
 // Rules for vertical pairs	
-verticalPair([],LV) :-
-	vertical(X1,Y1,X1,Y2) &
+verticalPair([],LV,P) :-
+	vertical(X1,Y1,X1,Y2,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X1,Y2))],[],TmpL) &
-	verticalPair(TmpL,LV).
+	verticalPair(TmpL,LV,P).
 
-verticalPair(TmpL,LV) :-
-	vertical(X1,Y1,X1,Y2) &
+verticalPair(TmpL,LV,P) :-
+	vertical(X1,Y1,X1,Y2,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X1,Y2)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X1,Y2))],TmpL,TmpL2) &
-	verticalPair(TmpL2,LV).
+	verticalPair(TmpL2,LV,P).
 
-verticalPair(TmpL,LV) :- LV = TmpL.
+verticalPair(TmpL,LV,_) :- LV = TmpL.
 
 
 // Rules for horizontal pairs
-horizontalPair([],HL) :-
-	horizontal(X1,Y1,X2,Y1) &
+horizontalPair([],HL,P) :-
+	horizontal(X1,Y1,X2,Y1,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X2,Y1))],[],TmpL) &
-	horizontalPair(TmpL,HL).
+	horizontalPair(TmpL,HL,P).
 
-horizontalPair(TmpL,HL) :-
-	horizontal(X1,Y1,X2,Y1) &
+horizontalPair(TmpL,HL,P) :-
+	horizontal(X1,Y1,X2,Y1,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X2,Y1)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X2,Y1))], TmpL, TmpL2) &
-	horizontalPair(TmpL2,HL).
+	horizontalPair(TmpL2,HL,P).
 
-horizontalPair(TmpL,HL) :- HL = TmpL.
+horizontalPair(TmpL,HL,_) :- HL = TmpL.
 
 
 // Rules for diagonal pairs
-diagonalPair([],DL) :-
-	diagonal(X1,Y1,X2,Y2) &
+diagonalPair([],DL,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X2,Y2))],[],TmpL) &
-	diagonalPair(TmpL,DL).
+	diagonalPair(TmpL,DL,P).
 
-diagonalPair(TmpL,DL) :-
-	diagonal(X1,Y1,X2,Y2) &
+diagonalPair(TmpL,DL,P) :-
+	diagonal(X1,Y1,X2,Y2,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X2,Y2)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X2,Y2))],TmpL,TmpL2) &
-	diagonalPair(TmpL2,DL).
+	diagonalPair(TmpL2,DL,P).
 
-diagonalPair(TmpL,DL) :- DL = TmpL.
+diagonalPair(TmpL,DL,_) :- DL = TmpL.
 
 
 // Rules for two chips in vertical of the form X[]X with no chip in between
-verticalTwoInThreePair([],VTL) :-
-	verticalTwoInThree(X1,Y1,X1,Y3) &
+verticalTwoInThreePair([],VTL,P) :-
+	verticalTwoInThree(X1,Y1,X1,Y3,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X1,Y3))],[],TmpL) &
-	verticalTwoInThreePair(TmpL,VTL).
+	verticalTwoInThreePair(TmpL,VTL,P).
 	
-verticalTwoInThreePair(TmpL,VTL) :-
-	verticalTwoInThree(X1,Y1,X1,Y3) &
+verticalTwoInThreePair(TmpL,VTL,P) :-
+	verticalTwoInThree(X1,Y1,X1,Y3,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X1,Y3)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X1,Y3))], TmpL, TmpL2) &
-	verticalTwoInThreePair(TmpL2,VTL).
+	verticalTwoInThreePair(TmpL2,VTL,P).
 	
-verticalTwoInThreePair(TmpL,VTL) :- VTL = TmpL.
+verticalTwoInThreePair(TmpL,VTL,P) :- VTL = TmpL.
 
 
 // Rules for two chips in horizontal of the form X[]X with no chip in between 
-horizontalTwoInThreePair([],HTL) :-
-	horizontalTwoInThree(X1,Y1,X3,Y1) &
+horizontalTwoInThreePair([],HTL,P) :-
+	horizontalTwoInThree(X1,Y1,X3,Y1,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X3,Y1))],[],TmpL) &
-	horizontalTwoInThreePair(TmpL,HTL).
+	horizontalTwoInThreePair(TmpL,HTL,P).
 	
-horizontalTwoInThreePair(TmpL,HTL) :-
-	horizontalTwoInThree(X1,Y1,X3,Y1) &
+horizontalTwoInThreePair(TmpL,HTL,P) :-
+	horizontalTwoInThree(X1,Y1,X3,Y1,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X3,Y1)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X3,Y1))], TmpL, TmpL2) &
-	horizontalTwoInThreePair(TmpL2,HTL).
+	horizontalTwoInThreePair(TmpL2,HTL,P).
 	
-horizontalTwoInThreePair(TmpL,HTL) :- HTL = TmpL.
+horizontalTwoInThreePair(TmpL,HTL,P) :- HTL = TmpL.
 
 
 // Rules for two chips in diagonal of the form X[]X with no chip in between 
-diagonalTwoInThreePair([],DTL) :-
-	diagonalTwoInThree(X1,Y1,X1,Y3) &
+diagonalTwoInThreePair([],DTL,P) :-
+	diagonalTwoInThree(X1,Y1,X1,Y3,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X3,Y3))],[],TmpL) &
-	diagonalTwoInThreePair(TmpL,DTL).
+	diagonalTwoInThreePair(TmpL,DTL,P).
 	 
-diagonalTwoInThreePair(TmpL,DTL) :-
-	diagonalTwoInThree(X1,Y1,X1,Y3) &
+diagonalTwoInThreePair(TmpL,DTL,P) :-
+	diagonalTwoInThree(X1,Y1,X1,Y3,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X3,Y3)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X3,Y3))], TmpL, TmpL2) &
-	diagonalTwoInThreePair(TmpL2,DTL).
+	diagonalTwoInThreePair(TmpL2,DTL,P).
 	
-diagonalTwoInThreePair(TmpL,DTL) :- DTL = TmpL.
+diagonalTwoInThreePair(TmpL,DTL,P) :- DTL = TmpL.
 
 
 // Rules for two chips in vertical of the form X[][]X with no chips in between
-verticalTwoInFourPair([],VTL) :-
-	verticalTwoInFour(X1,Y1,X1,Y4) &
+verticalTwoInFourPair([],VTL,P) :-
+	verticalTwoInFour(X1,Y1,X1,Y4,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X1,Y4))],[],TmpL) &
-	verticalTwoInFourPair(TmpL,VTL).
+	verticalTwoInFourPair(TmpL,VTL,P).
 	
-verticalTwoInFourPair(TmpL,VTL) :-
-	verticalTwoInFour(X1,Y1,X1,Y4) &
+verticalTwoInFourPair(TmpL,VTL,P) :-
+	verticalTwoInFour(X1,Y1,X1,Y4,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X1,Y4)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X1,Y4))], TmpL, TmpL2) &
-	verticalTwoInFourPair(TmpL2,VTL).
+	verticalTwoInFourPair(TmpL2,VTL,P).
 	
-verticalTwoInFourPair(TmpL,VTL) :- VTL = TmpL.
+verticalTwoInFourPair(TmpL,VTL,P) :- VTL = TmpL.
 
 
 // Rules for two chips in horizontal of the form X[][]X with no chips in between 
-horizontalTwoInFourPair([],HTL) :-
-	horizontalTwoInFour(X1,Y1,X4,Y1) &
+horizontalTwoInFourPair([],HTL,P) :-
+	horizontalTwoInFour(X1,Y1,X4,Y1,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X4,Y1))],[],TmpL) &
-	horizontalTwoInFourPair(TmpL,HTL).
+	horizontalTwoInFourPair(TmpL,HTL,P).
 	
-horizontalTwoInFourPair(TmpL,HTL) :-
-	horizontalTwoInFour(X1,Y1,X4,Y1) &
+horizontalTwoInFourPair(TmpL,HTL,P) :-
+	horizontalTwoInFour(X1,Y1,P,X4,Y1,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X4,Y1)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X4,Y1))], TmpL, TmpL2) &
-	horizontalTwoInFourPair(TmpL2,HTL).
+	horizontalTwoInFourPair(TmpL2,HTL,P).
 	
-horizontalTwoInFourPair(TmpL,HTL) :- HTL = TmpL.
+horizontalTwoInFourPair(TmpL,HTL,P) :- HTL = TmpL.
 
 
 // Rules for two chips in diagonal of the form X[][]X with no chips in between 
-diagonalTwoInFourPair([],DTL) :-
-	diagonalTwoInFour(X1,Y1,X4,Y4) &
+diagonalTwoInFourPair([],DTL,P) :-
+	diagonalTwoInFour(X1,Y1,X4,Y4,P) &
 	.concat([pairPos(pos(X1,Y1), pos(X4,Y4))],[],TmpL) &
-	diagonalTwoInFourPair(TmpL,DTL).
+	diagonalTwoInFourPair(TmpL,DTL,P).
 	 
-diagonalTwoInFourPair(TmpL,DTL) :-
-	diagonalTwoInFour(X1,Y1,X4,Y4) &
+diagonalTwoInFourPair(TmpL,DTL,P) :-
+	diagonalTwoInFour(X1,Y1,X4,Y4,P) &
 	not .member(pairPos(pos(X1,Y1), pos(X4,Y4)), TmpL) &
 	.concat([pairPos(pos(X1,Y1), pos(X4,Y4))], TmpL, TmpL2) &
-	diagonalTwoInFourPair(TmpL2,DTL).
+	diagonalTwoInFourPair(TmpL2,DTL,P).
 	
-diagonalTwoInFourPair(TmpL,DTL) :- DTL = TmpL.
+diagonalTwoInFourPair(TmpL,DTL,P) :- DTL = TmpL.
 
 
 // Rule to get a vertical pair XX
@@ -753,7 +770,6 @@ closestCenterDiagonal(X,Y):-
 	(X = X1 + 2) &
 	(Y = Y1 + 2).
 
-
 // Top right corner
 closestCenterDiagonal(X,Y):-
 	actualMovement(X1,Y1) &
@@ -819,16 +835,40 @@ decideMovement(X,Y):-
 	estrategia(jugarAGanar) &
 	listLosePositions([pos(X,Y)]).
 
-decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
-	listLosePositions(L) &
-	.length(L,N) &
-	N > 1 &
-	.
-decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
-	
+//decideMovement(X,Y):-
+//	estrategia(jugarAGanar) &
+//	listLosePositions(L) &
+//	.length(L,N) &
+//	N > 1 &
+//	.
 
+// If you win with a triple []xXXx[]
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	pairs(PL) &
+	not .empty(PL) &
+	winnningTriple(LP,X,Y).
+
+// If you win with a triple of the form []XxX[]
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	twoInThreePairs(PL) &
+	not .empty(PL) &
+	winnningTripleTwoInThree(PL,X,Y).
+
+// Make the opponent cover you
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	twoInFourPairs(LP) &
+	not .empty(LP) &
+	winnningTriple(LP,X,Y).
+
+
+decideMovement(X,Y):-
+	estrategia(jugarAGanar) &
+	pairs(LP) &
+	not .empty(LP) &
+	winnningTriple(LP,X,Y).
 
 
 /* Initial goals */
@@ -902,6 +942,9 @@ decideMovement(X,Y):-
 	not .member(pos(X0,X0),L) <-
 		-+movementRecord([pos(X0,Y0)|Lº]);
 		+actualMovement(pos(X0,Y0));
+		?listWinPositions(LWin);
+		?listLosePositions(LLose);
+		?pa
 		?decideMovement(X1,Y1);
 		put(X1,Y1);
 		-+movement(N+1);
