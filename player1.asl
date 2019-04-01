@@ -852,11 +852,226 @@ decideMovement(X,Y):-
 	winnningTriple(LP,X,Y).
 
 
+
+
+
+winnningTriple(L):-
+	listTripleVertical([],L1,P) &
+	listTripleHorizontal([],L2,P) &
+	listTripleDiagonal([],L3,P) &
+	.concat(L1,L2,LT) &
+	.concat(LT,L3,L).
+
+
+listTripleVerticalTop([],L,P):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,YD,0) &
+	tablero(X,YD1,0) &
+	tablero(X,YD0,0) &
+	(YD = Y2-2) &
+	(YD1 = Y2-3) &
+	(YD0 = Y2+1) &
+	.concat([pos(X,YD)],[],TL) &
+	listTripleVerticalTop(TL,L,P).
+
+listTripleVerticalTop(TL,L,P):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,YD,0) &
+	tablero(X,YD1,0) &
+	tablero(X,YD0,0) &
+	(YD = Y2-2) &
+	(YD1 = Y2-3) &
+	(YD0 = Y2+1) &
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleVerticalTop(TL2,L,P).
+
+listTripleVerticalTop([],[],_).
+listTripleVerticalTop(TL,L,_):- L = TL.
+
+
+listTripleVerticalBottom([],L,P):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,YD,0) &
+	tablero(X,YD1,0) &
+	tablero(X,YD0,0) &
+	(YD=Y2+1)  &
+	(YD1=Y2+2) &
+	(YD0=Y2-2) &
+	.concat([pos(X,YD)],[],TL) & 
+	listTripleVerticalBottom(TL,L,P).
+
+listTripleVerticalBottom(TL,L,P):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,YD,0) &
+	tablero(X,YD1,0) &
+	tablero(X,YD0,0) &
+	(YD=Y2+1)  &
+	(YD1=Y2+2) &
+	(YD0=Y2-2) &
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleVerticalBottom(TL2,L,P).
+
+listTripleVerticalBottom([],[],_).
+listTripleVerticalBottom(TL,L,_):- L = TL.
+
+
+listTripleHorizontalLeft([],L,P):-
+	
+	.concat([pos(X,YD)],[],TL) & 
+	listTripleHorizontalLeft(TL,L,P).
+
+listTripleHorizontalLeft(TL,L,P):-
+	
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleHorizontalLeft(TL2,L,P).
+
+listTripleHorizontalLeft([],[],_).
+listTripleHorizontalLeft(TL,L,_):- L = TL.
+
+
+listTripleHorizontalRight([],L,P):-
+	
+	.concat([pos(X,YD)],[],TL) &
+	listTripleHorizontalRight(TL,L,P).
+
+listTripleHorizontalRight(TL,L,P):-
+	
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleHorizontalRight(TL2,L,P).
+
+listTripleHorizontalRight([],[],_).
+listTripleHorizontalRight(TL,L,_):- L = TL.
+
+
+listTripleDiagonalTopLeft([],L,P):-
+	
+	.concat([pos(X,YD)],[],TL) & 
+	listTripleDiagonalTopLeft(TL,L,P).
+
+listTripleDiagonalTopLeft(TL,L,P):-
+	
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleDiagonalTopLeft(TL2,L,P).
+
+listTripleDiagonalTopLeft([],[],_).
+listTripleDiagonalTopLeft(TL,L,_):- L = TL.
+
+
+listTripleDiagonalBottomRight([],L,P):-
+	
+	.concat([pos(X,YD)],[],TL) &
+	listTripleDiagonalBottomRight(TL,L,P).
+
+listTripleDiagonalBottomRight(TL,L,P):-
+	
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleDiagonalBottomRight(TL2,L,P).
+
+listTripleDiagonalBottomRight([],[],_).
+listTripleDiagonalBottomRight(TL,L,_):- L = TL.
+
+
+listTripleDiagonalTopRight([],L,P):-
+	
+	.concat([pos(X,YD)],[],TL) & 
+	listTripleDiagonalTopRight(TL,L,P).
+
+listTripleDiagonalTopRight(TL,L,P):-
+	
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleDiagonalTopRight(TL2,L,P).
+
+listTripleDiagonalTopRight([],[],_).
+listTripleDiagonalTopRight(TL,L,_):- L = TL.
+
+
+listTripleDiagonalBottomLeft([],L,P):-
+	
+	.concat([pos(X,YD)],[],TL) &
+	listTripleDiagonalBottomLeft(TL,L,P).
+
+listTripleDiagonalBottomLeft(TL,L,P):-
+	
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleDiagonalBottomLeft(TL2,L,P).
+
+listTripleDiagonalBottomLeft([],[],_).
+listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
+
+/*winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y):-
+  triple(X1,Y1,X2,Y2,X,Y).
+
+winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y):-
+  not triple(X1,Y1,X2,Y2,X,Y) &
+  winningTrio(L, X, Y).
+
+
+triple(X1,Y1,X2,Y2,X,Y):-
+  tripleVertical(X1,Y1,X2,Y2,X,Y) |
+  tripleHorizontal(X1,Y1,X2,Y2,X,Y) |
+  tripleDiagonal(X1,Y1,X2,Y2,X,Y).
+
+tripleVertical(X,Y1, X,Y2, X,YD):-
+  vertical(X,Y1,X,Y2) &
+  tablero(X,YD,0) &
+  tablero(X,YD1,0) &
+  tablero(X,YD0,0) &
+  ( ( YD = Y2+1  &
+    YD1 = Y2+2 &
+    YD0 = Y2-2 ) |
+    ( YD = Y2-2  &
+    YD1 = Y2-3 &
+    YD0 = Y2+1 ) ).
+
+tripleHorizontal(X1,Y, X2,Y, XD,Y):-
+  vertical(X1,Y,X2,Y) &
+  tablero(XD,Y,0) &
+  tablero(XD1,Y,0) &
+  tablero(XD0,Y,0) &
+  ( ( XD = X2+1  &
+    XD1 = X2+2 &
+    XD0 = X2-2 ) |
+    ( XD = X2-2  &
+    XD1 = X2-3 &
+    XD0 = X2+1 ) ).
+
+tripleDiagonal(X1,Y1,X2,Y2,XD,YD):-
+  diagonal(X1,Y1,X2,Y2) &
+  tablero(XD,YD,0) &
+  tablero(XD1,YD,0) &
+  tablero(XD0,YD,0) &
+  (   ( (X2 = X1+1 & Y2 = Y1+1) & 
+  (   (XD = X2+1 & YD= Y2+1 & 
+    XD1 = X2+2 & YD1 = Y2+2 & 
+    XD0 = X2-2 & YD0 = Y2-2) 
+  |  (XD = X2-2 & YD= Y2-2 & 
+    XD1 = X2-3 & YD1 = Y2-3 & 
+    XD0 = X2+1 & YD0 = Y2+1)  ) )
+  
+  |  ( (X2 = X1-1 & Y2 = Y1-1) & 
+  (   (XD = X2-1 & YD= Y2+1 & 
+    XD1 = X2-2 & YD1 = Y2+2 & 
+    XD0 = X2+2 & YD0 = Y2-2) 
+  |   (XD = X2+2 & YD= Y2-2 & 
+    XD1 = X2+3 & YD1 = Y2-3 & 
+    XD0 = X2-1 & YD0 = Y2+1) ) ) ).
+*/
+
+
+
+
 /* Initial goals */
 
 
 !play.
-
 
 /* Plans */
 
@@ -947,128 +1162,167 @@ decideMovement(X,Y):-
 /////////////////////////////////////////
 
 +!tests <-
-	!generateTestBoard;
-	Total = 49;
 	.println("");
 	.println("");
 	.println("");
 	.println("Running all tests...");
-	!testPlayerNumbers(N0,K0);
 	.println("");
-	!testEnemyNumber(N1,K1);
+
+	//!testPackage1(S1,T1);
+	//.println("First package done: ",S1,"/",T1);
+	//!resetBoardTests;
+	//.println("");
+
+	//!testPackage2(S2,T2);
+	//.println("First package done: ",S2,"/",T2);
+	//!resetBoardTests;
+	//.println("");
+
+	!testPackage3(S3,T3);
+	.println("First package done: ",S3,"/",T3);
+	//!resetBoardTests;
 	.println("");
-	!testCheckEmpty(N2,K2);
-	.println("");
-	!testVertical(N3,K3);
-	.println("");
-	!testHorizontal(N4,K4);
-	.println("");
-	!testDiagonal(N5,K5);
-	.println("");
-	!testVerticalTwoInThree(N6,K6);
-	.println("");
-	!testHorizontalTwoInThree(N7,K7);
-	.println("");
-	!testDiagonalTwoInThree(N8,K8);
-	.println("");
-	!testVerticalTwoInFour(N9,K9);
-	.println("");
-	!testHorizontalTwoInFour(N10,K10);
-	.println("");
-	!testDiagonalTwoInFour(N11,K11);
-	.println("");
-	!testClosestCenterDiagonal(N12,K12);
-	.println("");
-	!testVerticalPair(N13,K13);
-	.println("");
-	!testHorizontalPair(N14,K14);
-	.println("");
-	!testDiagonalPair(N15,K15);
-	.println("");
-	!testVerticalTwoInThreePair(N16,K16);
-	.println("");
-	!testHorizontalTwoInThreePair(N17,K17);
-	.println("");
-	!testDiagonalTwoInThreePair(N18,K18);
-	.println("");
-	!testVerticalTwoInFourPair(N19,K19);
-	.println("");
-	!testHorizontalTwoInFourPair(N20,K20);
-	.println("");
-	!testDiagonalTwoInFourPair(N21,K21);
-	.println("");
-	!testListVerticalWinPositionsTop(N22,K22);
-	.println("");
-	!testListVerticalWinPositionsBottom(N23,K23);
-	.println("");
-	!testListVerticalWinPositionsTwoInThreeTop(N24,K24);
-	.println("");
-	!testListVerticalWinPositionsTwoInThreeBottom(N25,K25);
-	.println("");
-	.println("Board redo...");
-	put(0,0);
-	.wait(500);
-	.println("Redoing...");
-	.wait(500);
-	!generateTestBoard2;
-	.print("Now the tests continue...");
-	.wait(500);
-	!testListHorizontalWinPositionsLeft(N26,K26);
-	.println("");
-	!testListHorizontalWinPositionsRight(N27,K27);
-	.println("");
-	!testListHorizontalWinPositionsTwoInThreeLeft(N28,K28);
-	.println("");
-	!testListHorizontalWinPositionsTwoInThreeRight(N29,K29);
-	.println("");
-	!testListDiagonalWinPositionsTopLeft(N30,K30);
-	.println("");
-	!testListDiagonalWinPositionsBottomRight(N31,K31);
-	.println("");
-	!testListDiagonalWinPositionsTopRight(N32,K32);
-	.println("");
-	!testListDiagonalWinPositionsBottomLeft(N33,K33);
-	.println("");
-	!testListDiagonalWinPositionsTwoInThreeTopLeft(N34,K34);
-	.println("");
-	!testListDiagonalWinPositionsTwoInThreeBottomLeft(N35,K35);
-	.println("");
-	!testListDiagonalWinPositionsTwoInThreeTopRight(N36,K36);
-	.println("");
-	!testListDiagonalWinPositionsTwoInThreeBottomRight(N37,K37);
-	.println("");
-	!testListVerticalWinPositions(N38,K38);
-	.println("");
-	!testListHorizontalWinPositions(N39,K39);
-	.println("");
-	!testListDiagonalWinPositions(N40,K40);
-	.println("");
-	!testListWinPositions(N41,K41);
-	.println("");
-	!testListLosePositions(N42,K42);
-	.println("");
-	!testPairs(N43,K43);
-	.println("");
-	!testTwoInThreePairs(N44,K44);
-	.println("");
-	!testTwoInFourPairs(N45,K45);
-	.println("");
-	!testAllMyForms(N46,K46);
-	.println("");
-	!testAllHisForms(N47,K47);
-	//!testDecideMovement(N48,K48);
-	N = N0+N1+N2+N3+N4+N5+N6+N7+N8+N9+N10+N11+N12+N13+N14+N15+N16+N17+N18+N19+
-	N20+N21+N22+N23+N24+N25+N26+N27+N28+N29+N30+N31+N32+N33+N34+N35+N36+N37+N38
-	+N39+N40+N41+N42+N43+N44+N45+N46+N47;//+N48;
-	K = K0+K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13+K14+K15+K16+K17+K18+K19+
-	K20+K21+K22+K23+K24+K25+K26+K27+K28+K29+K30+K31+K32+K33+K34+K35+K36+K37+K38
-	+K39+K40+K41+K42+K43+K44+K45+K46+K47;//+K48;
+
 	.println("All tests done...");
-	.println("Tests: ",N,"/",K);
-	.println("Board reset");
-	put(0,0);
-	.wait(500);
-	.println("Reseted.").
+	!resetBoardTests;
+	.println("DONE.");
+	.println("");
+	.println("").
+
+// Tests package 1
++!testPackage1(Sucesfull,Total) <-
+	.println("Running testPackage1...");
+	Total = 26;
+	!generateTestBoard;
+	!testPlayerNumbers(N1); //DONE
+	.println("");
+	!testEnemyNumber(N2); //DONE
+	.println("");
+	!testCheckEmpty(N3); //DONE
+	.println("");
+	!testVertical(N4); //DONE
+	.println("");
+	!testHorizontal(N5); //DONE
+	.println("");
+	!testDiagonal(N6); //DONE
+	.println("");
+	!testVerticalTwoInThree(N7); //DONE
+	.println("");
+	!testHorizontalTwoInThree(N8); //DONE
+	.println("");
+	!testDiagonalTwoInThree(N9); //DONE
+	.println("");
+	!testVerticalTwoInFour(N10); //DONE
+	.println("");
+	!testHorizontalTwoInFour(N11); //DONE
+	.println("");
+	!testDiagonalTwoInFour(N12); //DONE
+	.println("");
+	!testClosestCenterDiagonal(N13); //DONE
+	.println("");
+	!testVerticalPair(N14); //DONE
+	.println("");
+	!testHorizontalPair(N15); //DONE
+	.println("");
+	!testDiagonalPair(N16); //DONE
+	.println("");
+	!testVerticalTwoInThreePair(N17); //DONE
+	.println("");
+	!testHorizontalTwoInThreePair(N18); //DONE
+	.println("");
+	!testDiagonalTwoInThreePair(N19); //DONE
+	.println("");
+	!testVerticalTwoInFourPair(N20); //DONE
+	.println("");
+	!testHorizontalTwoInFourPair(N21); //DONE
+	.println("");
+	!testDiagonalTwoInFourPair(N22); //DONE
+	.println("");
+	!testListVerticalWinPositionsTop(N23); //DONE
+	.println("");
+	!testListVerticalWinPositionsBottom(N24); //DONE
+	.println("");
+	!testListVerticalWinPositionsTwoInThreeTop(N25); //DONE
+	.println("");
+	!testListVerticalWinPositionsTwoInThreeBottom(N26); //DONE
+	.println("");
+	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8+N9+N10+N11+N12+N13+N14+N15+N16+N17+N18+
+	N19+N20+N21+N22+N23+N24+N25+N26.
+
+
+// Tests package 2
++!testPackage2(Sucesfull,Total) <-
+	.println("Running testPackage2...");
+	Total = 20;
+	!generateTestBoard2;
+	!testListHorizontalWinPositionsLeft(N1); //DONE
+	.println("");
+	!testListHorizontalWinPositionsRight(N2); //DONE
+	.println("");
+	!testListHorizontalWinPositionsTwoInThreeLeft(N3); //DONE
+	.println("");
+	!testListHorizontalWinPositionsTwoInThreeRight(N4); //DONE
+	.println("");
+	!testListDiagonalWinPositionsTopLeft(N5); //DONE
+	.println("");
+	!testListDiagonalWinPositionsBottomRight(N6); //DONE
+	.println("");
+	!testListDiagonalWinPositionsTopRight(N7); //DONE
+	.println("");
+	!testListDiagonalWinPositionsBottomLeft(N8); //DONE
+	.println("");
+	!testListDiagonalWinPositionsTwoInThreeTopLeft(N9); //DONE
+	.println("");
+	!testListDiagonalWinPositionsTwoInThreeBottomLeft(N10); //DONE
+	.println("");
+	!testListDiagonalWinPositionsTwoInThreeTopRight(N11); //DONE
+	.println("");
+	!testListDiagonalWinPostionsTwoInThreeBottomRight(N12); //DONE
+	.println("");
+	!testListVerticalWinPositions(N13); //DONE
+	.println("");
+	!testListHorizontalWinPositions(N14); //DONE
+	.println("");
+	!testListDiagonalWinPositions(N15); //DONE
+	.println("");
+	!testListWinPositions(N16); //DONE
+	.println("");
+	!testListLosePositions(N17); //DONE
+	.println("");
+	!testPairs(N18); //DONE
+	.println("");
+	!testTwoInThreePairs(N19); //DONE
+	.println("");
+	!testTwoInFourPairs(N20); //DONE
+	.println("");
+	!testAllMyForms(N21); //NOT WORKING
+	.println("");
+	!testAllHisForms(N22); //NOT WORKING
+	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8+N9+N10+N11+N12+N13+N14+N15+
+	N16+N17+N18+N19+N20+N21+N22.
+
+
+// Tests package 3
++!testPackage3(Sucesfull,Total) <-
+	.println("Running testPackage3...");
+	Total = 2;
+	!generateTestBoard3;
+	.println("");
+	!testListTripleVerticalTop(N1);
+	.println("");
+	!testListTripleVerticalBottom(N2);
+	.println("");
+	Sucesfull = N1+N2.
+
+
+// Resets the board
++!resetBoardTests:
+	tablero(X,Y,1) <-
+	.println("Board reseting...");
+	.wait(2000);
+	put(X,Y);
+	.wait(2000);
+	.println("Board reset completed.").
 
 
 
@@ -1112,6 +1366,19 @@ decideMovement(X,Y):-
 	.send(player2,achieve,test2);
 	!playToTest.
 
++!generateTestBoard3 <-
+  //Adds the test board beliefs
+  +testPut(6,1);
+  +testPut(6,2);
+  +testPut(4,3);
+  +testPut(5,4);
+  +testPut(4,4);
+  +testPut(6,5);
+  +testPut(6,6);
+  +testPut(5,6);
+  .send(player2,achieve,test3);
+  !playToTest.
+
 
 
 // Plan to play a few rounds and generate a board's state to test
@@ -1130,7 +1397,7 @@ decideMovement(X,Y):-
 +!playToTest <- !playToTest.
 
 
-+!testPlayerNumbers(N,K): 
++!testPlayerNumbers(N): 
 	.println("Running test [testPlayerNumbers]") &
 	playerNumbers &
 	player(X) &
@@ -1138,49 +1405,43 @@ decideMovement(X,Y):-
 	X = 1 &
 	Y = 2 <-
 		N = 1;
-		K = 1;
 		-player(1);
 		-opponent(2);
-		.print("Test [testPlayerNumbers] sucesfull").
+		.print("Test sucesfull").
 
-+!testPlayerNumbers(N,K) <-
++!testPlayerNumbers(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testEnemyNumber(N,K):
++!testEnemyNumber(N):
 	.println("Running test [testEnemyNumber]") &
 	enemyNumber(1,N0) &
 	enemyNumber(2,N1) &
 	N0 = 2 &
 	N1 = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testEnemyNumber] sucesfull").
+		.print("Test sucesfull").
 
-+!testEnemyNumber(N,K) <-
++!testEnemyNumber(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testCheckEmpty(N,K):
++!testCheckEmpty(N):
 	.println("Running test [testCheckEmpty]") &
 	checkEmpty(0,5) & 
 	not checkEmpty(0,0) &
 	not checkEmpty(1,1) <-
 		N = 1;
-		K = 1;
-		.print("Test [testCheckEmpty] sucesfull").
+		.print("Test sucesfull").
 
-+!testCheckEmpty(N,K) <-
++!testCheckEmpty(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testVertical(N,K):
++!testVertical(N):
 	.println("Running test [testVertical]") &
 	vertical(0,5,0,6,0) &
 	vertical(0,0,0,1,1) &
@@ -1189,16 +1450,14 @@ decideMovement(X,Y):-
 	not vertical(4,5,4,6,1) &
 	not vertical(0,5,0,6,2) <-
 		N = 1;
-		K = 1;
-		.print("Test [testVertical] sucesfull").
+		.print("Test sucesfull").
 
-+!testVertical(N,K) <-
++!testVertical(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testHorizontal(N,K):
++!testHorizontal(N):
 	.println("Running test [testHorizontal]") &
 	horizontal(1,0,2,0,0) &
 	horizontal(0,7,1,7,1) &
@@ -1207,16 +1466,14 @@ decideMovement(X,Y):-
 	not horizontal(1,0,2,0,1) &
 	not horizontal(0,7,1,7,2) <-
 		N = 1;
-		K = 1;
-		.print("Test [testHorizontal] sucesfull").
+		.print("Test sucesfull").
 
-+!testHorizontal(N,K) <-
++!testHorizontal(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testDiagonal(N,K):
++!testDiagonal(N):
 	.println("Running test [testDiagonal]") &
 	diagonal(1,0,2,1,0) &
 	diagonal(0,4,1,5,1) &
@@ -1225,16 +1482,14 @@ decideMovement(X,Y):-
 	not diagonal(1,0,2,1,1) &
 	not diagonal(0,4,1,5,2) <-
 		N = 1;
-		K = 1;
-		.print("Test [testDiagonal] sucesfull").
+		.print("Test sucesfull").
 
-+!testDiagonal(N,K) <-
++!testDiagonal(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testVerticalTwoInThree(N,K):
++!testVerticalTwoInThree(N):
 	.println("Running test [testVerticalTwoInThree]") &
 	verticalTwoInThree(6,4,6,6,1) &
 	verticalTwoInThree(7,0,7,2,2) &
@@ -1242,16 +1497,14 @@ decideMovement(X,Y):-
 	not verticalTwoInThree(0,2,0,4,1) &
 	not verticalTwoInThree(0,0,0,2,1) <-
 		N = 1;
-		K = 1;
-		.print("Test [testVerticalTwoInThree] sucesfull").
+		.print("Test sucesfull").
 
-+!testVerticalTwoInThree(N,K) <-
++!testVerticalTwoInThree(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testHorizontalTwoInThree(N,K):
++!testHorizontalTwoInThree(N):
 	.println("Running test [testHorizontalTwoInThree]") &
 	horizontalTwoInThree(1,7,3,7,1) &
 	horizontalTwoInThree(3,3,5,3,2) &
@@ -1259,16 +1512,14 @@ decideMovement(X,Y):-
 	not horizontalTwoInThree(5,3,7,3,2) &
 	not horizontalTwoInThree(4,1,6,1,2) <-
 		N = 1;
-		K = 1;
-		.print("Test [testHorizontalTwoInThree] sucesfull").
+		.print("Test sucesfull").
 
-+!testHorizontalTwoInThree(N,K) <-
++!testHorizontalTwoInThree(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testDiagonalTwoInThree(N,K):
++!testDiagonalTwoInThree(N):
 	.println("Running test [testDiagonalTwoInThree]") &
 	diagonalTwoInThree(1,5,3,7,1) &
 	diagonalTwoInThree(5,1,3,3,2) &
@@ -1277,16 +1528,14 @@ decideMovement(X,Y):-
 	not diagonalTwoInThree(1,1,3,3,2) &
 	not diagonalTwoInThree(5,2,7,4,2) <-
 		N = 1;
-		K = 1;
-		.print("Test [testDiagonalTwoInThree] sucesfull").
+		.print("Test sucesfull").
 
-+!testDiagonalTwoInThree(N,K) <-
++!testDiagonalTwoInThree(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testVerticalTwoInFour(N,K):
++!testVerticalTwoInFour(N):
 	.println("Running test [testVerticalTwoInFour]") &
 	verticalTwoInFour(0,4,0,7,1) &
 	verticalTwoInFour(2,2,2,5,2) &
@@ -1294,16 +1543,14 @@ decideMovement(X,Y):-
 	not verticalTwoInFour(7,0,7,3,2) &
 	not verticalTwoInFour(4,4,4,7,1) <-
 	N = 1;
-	K = 1;
-	.print("Test [testVerticalTwoInFour] sucesfull").
+	.print("Test sucesfull").
 
-+!testVerticalTwoInFour(N,K) <-
++!testVerticalTwoInFour(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testHorizontalTwoInFour(N,K):
++!testHorizontalTwoInFour(N):
 	.println("Running test [testHorizontalTwoInFour]") &
 	horizontalTwoInFour(0,0,3,0,1) &
 	horizontalTwoInFour(0,3,3,3,2) &
@@ -1311,16 +1558,14 @@ decideMovement(X,Y):-
 	not horizontalTwoInFour(0,2,3,2,1) & 
 	not horizontalTwoInFour(3,4,6,4,1) <-
 		N = 1;
-		K = 1;
-		.print("Test [testHorizontalTwoInFour] sucesfull").
+		.print("Test sucesfull").
 
-+!testHorizontalTwoInFour(N,K) <-
++!testHorizontalTwoInFour(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testDiagonalTwoInFour(N,K):
++!testDiagonalTwoInFour(N):
 	.println("Running test [testDiagonalTwoInFour]") &
 	diagonalTwoInFour(0,1,3,4,1) &
 	diagonalTwoInFour(6,4,3,7,1) &
@@ -1329,16 +1574,14 @@ decideMovement(X,Y):-
 	not diagonalTwoInFour(3,4,0,7,1) &
 	not diagonalTwoInFour(6,0,3,3,2) <-
 		N = 1;
-		K = 1;
-		.print("Test [testDiagonalTwoInFour] sucesfull").
+		.print("Test sucesfull").
 
-+!testDiagonalTwoInFour(N,K) <-
++!testDiagonalTwoInFour(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testClosestCenterDiagonal(N,K):
++!testClosestCenterDiagonal(N):
 	.println("Running test [testClosestCenterDiagonal]") &
 	.asserta(actualMovement(0,0)) &
 	closestCenterDiagonal(2,2) &
@@ -1365,16 +1608,14 @@ decideMovement(X,Y):-
 	closestCenterDiagonal(6,5) &
 	.abolish(actualMovement(7,6)) <-
 		N = 1;
-		K = 1;
-		.print("Test [testClosestCenterDiagonal] sucesfull").
+		.print("Test sucesfull").
 
-+!testClosestCenterDiagonal(N,K) <-
++!testClosestCenterDiagonal(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testVerticalPair(N,K):
++!testVerticalPair(N):
 	.println("Running test [testVerticalPair]") &
 	verticalPair([],L,1) &
 	.member(pairPos(pos(0,0), pos(0,1)),L) &
@@ -1389,16 +1630,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 8 <-
 		N = 1;
-		K = 1;
-		.print("Test [testVerticalPair] sucesfull").
+		.print("Test sucesfull").
 
-+!testVerticalPair(N,K) <-
++!testVerticalPair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testHorizontalPair(N,K):
++!testHorizontalPair(N):
 	.println("Running test [testHorizontalPair]") &
 	horizontalPair([],L,1) &
 	.member(pairPos(pos(0,7), pos(1,7)),L) &
@@ -1408,16 +1647,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 3 <-
 		N = 1;
-		K = 1;
-		.print("Test [testHorizontalPair] sucesfull").
+		.print("Test sucesfull").
 
-+!testHorizontalPair(N,K) <-
++!testHorizontalPair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testDiagonalPair(N,K):
++!testDiagonalPair(N):
 	.println("Running test [testDiagonalPair]") &
 	diagonalPair([],L,1) &
 	.member(pairPos(pos(0,4), pos(1,5)),L) &
@@ -1427,16 +1664,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 2 <-
 		N = 1;
-		K = 1;
-		.print("Test [testDiagonalPair] sucesfull").
+		.print("Test sucesfull").
 
-+!testDiagonalPair(N,K) <-
++!testDiagonalPair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testVerticalTwoInThreePair(N,K):
++!testVerticalTwoInThreePair(N):
 	.println("Running test [testVerticalTwoInThreePair]") &
 	verticalTwoInThreePair([],L,1) &
 	.member(pairPos(pos(6,4), pos(6,6)),L) &
@@ -1444,16 +1679,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testVerticalTwoInThreePair] sucesfull").
+		.print("Test sucesfull").
 
-+!testVerticalTwoInThreePair(N,K) <-
++!testVerticalTwoInThreePair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testHorizontalTwoInThreePair(N,K):
++!testHorizontalTwoInThreePair(N):
 	.println("Running test [testHorizontalTwoInThreePair]") &
 	horizontalTwoInThreePair([],L,1) &
 	.member(pairPos(pos(1,7), pos(3,7)),L) &
@@ -1463,16 +1696,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 3 <-
 		N = 1;
-		K = 1;
-		.print("Test [testHorizontalTwoInThreePair] sucesfull").
+		.print("Test sucesfull").
 
-+!testHorizontalTwoInThreePair(N,K) <-
++!testHorizontalTwoInThreePair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testDiagonalTwoInThreePair(N,K):
++!testDiagonalTwoInThreePair(N):
 	.println("Running test [testDiagonalTwoInThreePair]") &
 	diagonalTwoInThreePair([],L,1) &
 	.member(pairPos(pos(1,5), pos(3,7)),L) &
@@ -1481,16 +1712,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 2 <-
 		N = 1;
-		K = 1;
-		.print("Test [testDiagonalTwoInThreePair] sucesfull").
+		.print("Test sucesfull").
 
-+!testDiagonalTwoInThreePair(N,K) <-
++!testDiagonalTwoInThreePair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testVerticalTwoInFourPair(N,K):
++!testVerticalTwoInFourPair(N):
 	.println("Running test [testVerticalTwoInFourPair]") &
 	verticalTwoInFourPair([],L,1) &
 	.member(pairPos(pos(0,4), pos(0,7)),L) &
@@ -1498,16 +1727,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testVerticalTwoInFourPair] sucesfull").
+		.print("Test sucesfull").
 
-+!testVerticalTwoInFourPair(N,K) <-
++!testVerticalTwoInFourPair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testHorizontalTwoInFourPair(N,K):
++!testHorizontalTwoInFourPair(N):
 	.println("Running test [testHorizontalTwoInFourPair]") &
 	horizontalTwoInFourPair([],L,1) &
 	.member(pairPos(pos(0,0), pos(3,0)),L) &
@@ -1515,16 +1742,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testHorizontalTwoInFourPair] sucesfull").
+		.print("Test sucesfull").
 
-+!testHorizontalTwoInFourPair(N,K) <-
++!testHorizontalTwoInFourPair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testDiagonalTwoInFourPair(N,K):
++!testDiagonalTwoInFourPair(N):
 	.println("Running test [testDiagonalTwoInFourPair]") &
 	diagonalTwoInFourPair([],L,1) &
 	.member(pairPos(pos(6,4), pos(3,7)),L) &
@@ -1532,16 +1757,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testDiagonalTwoInFourPair] sucesfull").
+		.print("Test sucesfull").
 
-+!testDiagonalTwoInFourPair(N,K) <-
++!testDiagonalTwoInFourPair(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testListVerticalWinPositionsTop(N,K):
++!testListVerticalWinPositionsTop(N):
 	.println("Running test [testListVerticalWinPositionsTop]") &
 	listVerticalWinPositionsTop([],L,2) &
 	.member(pos(5,0),L) &
@@ -1550,16 +1773,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 2 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListVerticalWinPositionsTop] sucesfull").
+		.print("Test sucesfull").
 
-+!testListVerticalWinPositionsTop(N,K) <-
++!testListVerticalWinPositionsTop(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListVerticalWinPositionsBottom(N,K):
++!testListVerticalWinPositionsBottom(N):
 	.println("Running test [testListVerticalWinPositionsBottom]") &
 	listVerticalWinPositionsBottom([],L,2) &
 	.member(pos(7,5),L) &
@@ -1567,15 +1788,13 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 2 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListVerticalWinPositionsBottom] sucesfull").
+		.print("Test sucesfull").
 
-+!testListVerticalWinPositionsBottom(N,K) <-
++!testListVerticalWinPositionsBottom(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 	
-+!testListVerticalWinPositionsTwoInThreeTop(N,K):
++!testListVerticalWinPositionsTwoInThreeTop(N):
 	.println("Running test [testListVerticalWinPositionsTwoInThreeTop]") &
 	listVerticalWinPositionsTwoInThreeTop([],L,2) &
 	.member(pos(7,1),L) &
@@ -1583,16 +1802,14 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListVerticalWinPositionsTwoInThreeTop] sucesfull").
+		.print("Test sucesfull").
 
-+!testListVerticalWinPositionsTwoInThreeTop(N,K) <-
++!testListVerticalWinPositionsTwoInThreeTop(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListVerticalWinPositionsTwoInThreeBottom(N,K):
++!testListVerticalWinPositionsTwoInThreeBottom(N):
 	.println("Running test [testListVerticalWinPositionsTwoInThreeBottom]") &
 	listVerticalWinPositionsTwoInThreeBottom([],L,1) &
 	.member(pos(6,5),L) &
@@ -1600,253 +1817,221 @@ decideMovement(X,Y):-
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListVerticalWinPositionsTwoInThreeBottom] sucesfull").
+		.print("Test sucesfull").
 
-+!testListVerticalWinPositionsTwoInThreeBottom(N,K) <-
++!testListVerticalWinPositionsTwoInThreeBottom(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testListHorizontalWinPositionsLeft(N,K):
++!testListHorizontalWinPositionsLeft(N):
 	.println("Running test [testListHorizontalWinPositionsLeft]") &
 	listHorizontalWinPositionsLeft([],L,1) &
 	.member(pos(1,1),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListHorizontalWinPositionsLeft] sucesfull").
+		.print("Test sucesfull").
 
-+!testListHorizontalWinPositionsLeft(N,K) <-
++!testListHorizontalWinPositionsLeft(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListHorizontalWinPositionsRight(N,K):
++!testListHorizontalWinPositionsRight(N):
 	.println("Running test [testListHorizontalWinPositionsRight]") &
 	listHorizontalWinPositionsRight([],L,1) &
 	.member(pos(5,1),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListHorizontalWinPositionsRight] sucesfull").
+		.print("Test sucesfull").
 
-+!testListHorizontalWinPositionsRight(N,K) <-
++!testListHorizontalWinPositionsRight(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListHorizontalWinPositionsTwoInThreeLeft(N,K):
++!testListHorizontalWinPositionsTwoInThreeLeft(N):
 	.println("Running test [testListHorizontalWinPositionsTwoInThreeLeft]") &
 	listHorizontalWinPositionsTwoInThreeLeft([],L,1) &
 	.member(pos(1,1),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListHorizontalWinPositionsTwoInThreeLeft] sucesfull").
+		.print("Test sucesfull").
 
-+!testListHorizontalWinPositionsTwoInThreeLeft(N,K) <-
++!testListHorizontalWinPositionsTwoInThreeLeft(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListHorizontalWinPositionsTwoInThreeRight(N,K):
++!testListHorizontalWinPositionsTwoInThreeRight(N):
 	.println("Running test [testListHorizontalWinPositionsTwoInThreeRight]") &
 	listHorizontalWinPositionsTwoInThreeRight([],L,1) &
 	.member(pos(5,1),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListHorizontalWinPositionsTwoInThreeRight] sucesfull").
+		.print("Test sucesfull").
 
-+!testListHorizontalWinPositionsTwoInThreeRight(N,K) <-
++!testListHorizontalWinPositionsTwoInThreeRight(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testListDiagonalWinPositionsTopLeft(N,K):
++!testListDiagonalWinPositionsTopLeft(N):
 	.println("Running test [testListDiagonalWinPositionsTopLeft]") &
 	listDiagonalWinPositionsTopLeft([],L,2) &
 	.member(pos(1,1),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsTopLeft] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsTopLeft(N,K) <-
++!testListDiagonalWinPositionsTopLeft(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListDiagonalWinPositionsBottomRight(N,K):
++!testListDiagonalWinPositionsBottomRight(N):
 	.println("Running test [testListDiagonalWinPositionsBottomRight]") &
 	listDiagonalWinPositionsBottomRight([],L,2) &
 	.member(pos(5,5),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsBottomRight] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsBottomRight(N,K) <-
++!testListDiagonalWinPositionsBottomRight(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListDiagonalWinPositionsTopRight(N,K):
++!testListDiagonalWinPositionsTopRight(N):
 	.println("Running test [testListDiagonalWinPositionsTopRight]") &
 	listDiagonalWinPositionsTopRight([],L,2) &
 	.member(pos(6,2),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsTopRight] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsTopRight(N,K) <-
++!testListDiagonalWinPositionsTopRight(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListDiagonalWinPositionsBottomLeft(N,K):
++!testListDiagonalWinPositionsBottomLeft(N):
 	.println("Running test [testListDiagonalWinPositionsBottomLeft]") &
 	listDiagonalWinPositionsBottomLeft([],L,2) &
 	.member(pos(2,6),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsBottomLeft] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsBottomLeft(N,K) <-
++!testListDiagonalWinPositionsBottomLeft(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListDiagonalWinPositionsTwoInThreeTopLeft(N,K):
++!testListDiagonalWinPositionsTwoInThreeTopLeft(N):
 	.println("Running test [testListDiagonalWinPositionsTwoInThreeTopLeft]") &
 	listDiagonalWinPositionsTwoInThreeTopLeft([],L,2) &
 	.member(pos(1,1),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsTwoInThreeTopLeft] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsTwoInThreeTopLeft(N,K) <-
++!testListDiagonalWinPositionsTwoInThreeTopLeft(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testListDiagonalWinPositionsTwoInThreeBottomRight(N,K):
++!testListDiagonalWinPositionsTwoInThreeBottomRight(N):
 	.println("Running test [testListDiagonalWinPositionsTwoInThreeBottomRight]") &
 	listDiagonalWinPositionsTwoInThreeBottomRight([],L,2) &
 	.member(pos(5,5),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsTwoInThreeBottomRight] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsTwoInThreeBottomRight(N,K) <-
++!testListDiagonalWinPositionsTwoInThreeBottomRight(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListDiagonalWinPositionsTwoInThreeTopRight(N,K):
++!testListDiagonalWinPositionsTwoInThreeTopRight(N):
 	.println("Running test [testListDiagonalWinPositionsTwoInThreeTopRight]") &
 	listDiagonalWinPositionsTwoInThreeTopRight([],L,2) &
 	.member(pos(6,2),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsTwoInThreeTopRight] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsTwoInThreeTopRight(N,K) <-
++!testListDiagonalWinPositionsTwoInThreeTopRight(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 	
 
-+!testListDiagonalWinPositionsTwoInThreeBottomLeft(N,K):
++!testListDiagonalWinPositionsTwoInThreeBottomLeft(N):
 	.println("Running test [testListDiagonalWinPositionsTwoInThreeBottomLeft]") &
 	listDiagonalWinPositionsTwoInThreeBottomLeft([],L,2) &
 	.member(pos(2,6),L) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositionsTwoInThreeBottomLeft] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositionsTwoInThreeBottomLeft(N,K) <-
++!testListDiagonalWinPositionsTwoInThreeBottomLeft(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListVerticalWinPositions(N,K):
++!testListVerticalWinPositions(N):
 	.println("Running test [testListVerticalWinPositions]") &
 	listVerticalWinPositions(L,1) &
 	.length(L,M) &
 	M = 4 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListVerticalWinPositions] sucesfull").
+		.print("Test sucesfull").
 
-+!testListVerticalWinPositions(N,K) <-
++!testListVerticalWinPositions(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListHorizontalWinPositions(N,K):
++!testListHorizontalWinPositions(N):
 	.println("Running test [testListHorizontalWinPositions]") &
 	listHorizontalWinPositions(L,1) &
 	.length(L,M) &
 	M = 2 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListHorizontalWinPositions] sucesfull").
+		.print("Test sucesfull").
 
-+!testListHorizontalWinPositions(N,K) <-
++!testListHorizontalWinPositions(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListDiagonalWinPositions(N,K):
++!testListDiagonalWinPositions(N):
 	.println("Running test [testListDiagonalWinPositions]") &
 	listDiagonalWinPositions(L,2) &
 	.length(L,M) &
 	M = 4 <-
 		N = 1;
-		K = 1;
-		.print("Test [testListDiagonalWinPositions] sucesfull").
+		.print("Test sucesfull").
 
-+!testListDiagonalWinPositions(N,K) <-
++!testListDiagonalWinPositions(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testListWinPositions(N,K):
++!testListWinPositions(N):
 	.println("Running test [testListWinPositions]") &
 	playerNumbers &
 	listWinPositions(L) &
@@ -1855,16 +2040,14 @@ decideMovement(X,Y):-
 		.abolish(player(1));
 		.abolish(opponent(2));
 		N = 1;
-		K = 1;
-		.print("Test [testListWinPositions] sucesfull").
+		.print("Test sucesfull").
 
-+!testListWinPositions(N,K) <-
++!testListWinPositions(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testListLosePositions(N,K):
++!testListLosePositions(N):
 	.println("Running test [testListLosePositions]") &
 	playerNumbers &
 	listLosePositions(L) &
@@ -1873,61 +2056,53 @@ decideMovement(X,Y):-
 		.abolish(player(1));
 		.abolish(opponent(2));
 		N = 1;
-		K = 1;
-		.print("Test [testListLosePositions] sucesfull").
+		.print("Test sucesfull").
 
-+!testListLosePositions(N,K) <-
++!testListLosePositions(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testPairs(N,K):
++!testPairs(N):
 	.println("Running test [testPairs]") &
 	pairs(L,1) &
 	.length(L,M) &
 	M = 13 <-
 		N = 1;
-		K = 1;
-		.print("Test [testPairs] sucesfull").
+		.print("Test sucesfull").
 
-+!testPairs(N,K) <-
++!testPairs(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testTwoInThreePairs(N,K):
++!testTwoInThreePairs(N):
 	.println("Running test [testTwoInThreePairs]") &
 	twoInThreePairs(L,1) &
 	.length(L,M) &
 	M = 4 <-
 		N = 1;
-		K = 1;
-		.print("Test [testTwoInThreePairs] sucesfull").
+		.print("Test sucesfull").
 
-+!testTwoInThreePairs(N,K) <-
++!testTwoInThreePairs(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testTwoInFourPairs(N,K):
++!testTwoInFourPairs(N):
 	.println("Running test [testTwoInFourPairs]") &
 	twoInFourPairs(L,1) &
 	.length(L,M) &
 	M = 1 <-
 		N = 1;
-		K = 1;
-		.print("Test [testTwoInFourPairs] sucesfull").
+		.print("Test sucesfull").
 
-+!testTwoInFourPairs(N,K) <-
++!testTwoInFourPairs(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 
-+!testAllMyForms(N,K):
++!testAllMyForms(N):
 	.println("Running test [testAllMyForms]") &
 	playerNumbers &
 	allMyForms(LP,TTL,TFL) &
@@ -1936,16 +2111,14 @@ decideMovement(X,Y):-
 		.abolish(player(1));
 		.abolish(opponent(2));
 		N = 1;
-		K = 1;
-		.print("Test [testAllMyForms] sucesfull").
+		.print("Test sucesfull").
 
-+!testAllMyForms(N,K) <-
++!testAllMyForms(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 
 	
-+!testAllHisForms(N,K):
++!testAllHisForms(N):
 	.println("Running test [testAllHisForms]") &
 	playerNumbers &
 	allHisForms(LP,TTL,TFL) & 
@@ -1958,15 +2131,144 @@ decideMovement(X,Y):-
 		.abolish(player(1));
 		.abolish(opponent(2));
 		N = 1;
-		K = 1;
-		.print("Test [testAllHisForms] sucesfull").
+		.print("Test sucesfull").
 
-+!testAllHisForms(N,K) <-
++!testAllHisForms(N) <-
 	.print("Test failed");
-	K = 1;
 	N = 0.
 	
 
++!testListTripleVerticalTop(N):
+	.println("Running test [testlistTripleVerticalTop]") &
+	listTripleVerticalTop([],L,1) &
+	.member(pos(4,2),L) &
+	.member(pos(6,4),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleVerticalTop(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleVerticalBottom(N):
+	.println("Running test [testListTripleVerticalBottom]") &
+	listTripleVerticalBottom([],L,1) &
+	.member(pos(4,5),L) &
+	.member(pos(6,3),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleVerticalBottom(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleHorizontalLeft(N):
+	.println("Running test [testListTripleHorizontalLeft]") &
+	listTripleHorizontalLeft([],L,1) &
+	.member(pos(3,4),L) &
+	.member(pos(4,6),L) &
+	.length(L,M) &
+	M =  <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleHorizontalLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleHorizontalRight(N):
+	.println("Running test [testListTripleHorizontalRight]") &
+	listTripleHorizontalRight([],L,2) &
+	.member(pos(6,4),L) &
+	.length(L,M) &
+	M = 1 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleHorizontalRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleDiagonalTopLeft(N):
+	.println("Running test [testListTripleDiagonalTopLeft]") &
+	listTripleDiagonalTopLeft([],L,1) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M =  <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleDiagonalTopLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleDiagonalBottomRight(N):
+	.println("Running test [testListTripleDiagonalBottomRight]") &
+	listTripleDiagonalBottomRight([],L,1) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M =  <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleDiagonalBottomRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleDiagonalTopRight(N):
+	.println("Running test [testListTripleDiagonalTopRight]") &
+	listTripleDiagonalTopRight([],L,1) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M =  <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleDiagonalTopRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListTripleDiagonalBottomLeft(N):
+	.println("Running test [testListTripleDiagonalBottomLeft]") &
+	listTripleDiagonalBottomLeft([],L,1) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M =  <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleDiagonalBottomLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
+
+
+/*+!test():
+	.println("Running test []") &
+	<-
+		N = 1;
+		.print("Test sucesfull").
+
++!test() <-
+	.print("Test failed");
+	N = 0.	
+*/
 
 //ERRORS
 +!play <- .print("Error in !play").
@@ -1975,3 +2277,7 @@ decideMovement(X,Y):-
 +!playToTest <- .print("Error or finish !playToTest").
 +!checkBoard(_,_) <- .print("Error in !checkBoard").
 +!tests <- .print("Error in !tests").
++!testPackage1 <- .print("Error in testPackage1").
++!testPackage2 <- .print("Error in testPackage2").
++!testPackage3 <- .print("Error in testPackage3").
++!resetBoardTests <- .print("Error in resetBoardTests").

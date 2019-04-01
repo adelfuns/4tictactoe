@@ -60,6 +60,18 @@
 	!playToTest.
 
 
++!test3[source(player1)] <-
+	+testPut(3,1);
+	+testPut(2,2);
+	+testPut(2,3);
+	+testPut(0,4);
+	+testPut(1,4);
+	+testPut(1,5);
+	+testPut(2,5);
+	+testPut(2,6);
+	!playToTest.
+
+
 +!playToTest:
 	testPut(X,Y) &
 	turno(player2) <- 
