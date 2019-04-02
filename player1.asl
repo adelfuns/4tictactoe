@@ -852,9 +852,6 @@ decideMovement(X,Y):-
 	winnningTriple(LP,X,Y).
 
 
-
-
-
 winnningTriple(L):-
 	listTripleVertical([],L1,P) &
 	listTripleHorizontal([],L2,P) &
@@ -918,14 +915,26 @@ listTripleVerticalBottom(TL,L,_):- L = TL.
 
 
 listTripleHorizontalLeft([],L,P):-
-	
-	.concat([pos(X,YD)],[],TL) & 
+	horizontal(X1,Y,X2,Y) &
+	tablero(XD,Y,0) &
+	tablero(XD1,Y,0) &
+	tablero(XD0,Y,0) &
+	(XD = X2-2) &
+    (XD1 = X2-3) &
+    (XD0 = X2+1) &
+	.concat([pos(XD,Y)],[],TL) &
 	listTripleHorizontalLeft(TL,L,P).
 
 listTripleHorizontalLeft(TL,L,P):-
-	
-	not .member(pos(X,YD),TL) &
-	.concat([pos(X,YD)],TL,TL2) &
+	horizontal(X1,Y,X2,Y) &
+	tablero(XD,Y,0) &
+	tablero(XD1,Y,0) &
+	tablero(XD0,Y,0) &
+	(XD = X2-2) &
+    (XD1 = X2-3) &
+    (XD0 = X2+1) &
+	not .member(pos(XD,Y),TL) &
+	.concat([pos(XD,Y)],TL,TL2) &
 	listTripleHorizontalLeft(TL2,L,P).
 
 listTripleHorizontalLeft([],[],_).
@@ -933,14 +942,26 @@ listTripleHorizontalLeft(TL,L,_):- L = TL.
 
 
 listTripleHorizontalRight([],L,P):-
-	
-	.concat([pos(X,YD)],[],TL) &
+	horizontal(X1,Y,X2,Y) &
+	tablero(XD,Y,0) &
+	tablero(XD1,Y,0) &
+	tablero(XD0,Y,0) &
+	(XD = X2+1) &
+	(XD1 = X2+2) &
+	(XD0 = X2-2) &
+	.concat([pos(XD,Y)],[],TL) &
 	listTripleHorizontalRight(TL,L,P).
 
 listTripleHorizontalRight(TL,L,P):-
-	
-	not .member(pos(X,YD),TL) &
-	.concat([pos(X,YD)],TL,TL2) &
+	horizontal(X1,Y,X2,Y) &
+	tablero(XD,Y,0) &
+	tablero(XD1,Y,0) &
+	tablero(XD0,Y,0) &
+	(XD = X2+1) &
+	(XD1 = X2+2) &
+	(XD0 = X2-2) &
+	not .member(pos(XD,Y),TL) &
+	.concat([pos(XD,Y)],TL,TL2) &
 	listTripleHorizontalRight(TL2,L,P).
 
 listTripleHorizontalRight([],[],_).
@@ -948,14 +969,32 @@ listTripleHorizontalRight(TL,L,_):- L = TL.
 
 
 listTripleDiagonalTopLeft([],L,P):-
-	
-	.concat([pos(X,YD)],[],TL) & 
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(XD = X2-2) &
+	(YD= Y2-2) & 
+    (XD1 = X2-3) &
+    (YD1 = Y2-3) & 
+    (XD0 = X2+1) &
+    (YD0 = Y2+1) &
+	.concat([pos(XD,YD)],[],TL) & 
 	listTripleDiagonalTopLeft(TL,L,P).
 
 listTripleDiagonalTopLeft(TL,L,P):-
-	
-	not .member(pos(X,YD),TL) &
-	.concat([pos(X,YD)],TL,TL2) &
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(XD = X2-2) &
+	(YD = Y2-2) & 
+    (XD1 = X2-3) &
+    (YD1 = Y2-3) & 
+    (XD0 = X2+1) &
+    (YD0 = Y2+1) &
+	not .member(pos(XD,YD),TL) &
+	.concat([pos(XD,YD)],TL,TL2) &
 	listTripleDiagonalTopLeft(TL2,L,P).
 
 listTripleDiagonalTopLeft([],[],_).
@@ -963,14 +1002,36 @@ listTripleDiagonalTopLeft(TL,L,_):- L = TL.
 
 
 listTripleDiagonalBottomRight([],L,P):-
-	
-	.concat([pos(X,YD)],[],TL) &
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(X2 = X1+1) &
+	(Y2 = Y1+1) & 
+	(XD = X2+1) &
+  	(YD= Y2+1) & 
+    (XD1 = X2+2) &
+    (YD1 = Y2+2) & 
+    (XD0 = X2-2) &
+    (YD0 = Y2-2) &
+	.concat([pos(XD,YD)],[],TL) & 
 	listTripleDiagonalBottomRight(TL,L,P).
 
 listTripleDiagonalBottomRight(TL,L,P):-
-	
-	not .member(pos(X,YD),TL) &
-	.concat([pos(X,YD)],TL,TL2) &
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(X2 = X1+1) &
+	(Y2 = Y1+1) & 
+	(XD = X2+1) &
+  	(YD= Y2+1) & 
+    (XD1 = X2+2) &
+    (YD1 = Y2+2) & 
+    (XD0 = X2-2) &
+    (YD0 = Y2-2) &
+	not .member(pos(XD,YD),TL) &
+	.concat([pos(XD,YD)],TL,TL2) &
 	listTripleDiagonalBottomRight(TL2,L,P).
 
 listTripleDiagonalBottomRight([],[],_).
@@ -978,14 +1039,32 @@ listTripleDiagonalBottomRight(TL,L,_):- L = TL.
 
 
 listTripleDiagonalTopRight([],L,P):-
-	
-	.concat([pos(X,YD)],[],TL) & 
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(XD = X2+2) &
+	(YD= Y2-2) &
+	(XD1 = X2+3) &
+	(YD1 = Y2-3) &
+	(XD0 = X2-1) &
+	(YD0 = Y2+1) &
+	.concat([pos(XD,YD)],[],TL) & 
 	listTripleDiagonalTopRight(TL,L,P).
 
 listTripleDiagonalTopRight(TL,L,P):-
-	
-	not .member(pos(X,YD),TL) &
-	.concat([pos(X,YD)],TL,TL2) &
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(XD = X2+2) &
+	(YD= Y2-2) &
+	(XD1 = X2+3) &
+	(YD1 = Y2-3) &
+	(XD0 = X2-1) &
+	(YD0 = Y2+1) &
+	not .member(pos(XD,YD),TL) &
+	.concat([pos(XD,YD)],TL,TL2) &
 	listTripleDiagonalTopRight(TL2,L,P).
 
 listTripleDiagonalTopRight([],[],_).
@@ -993,79 +1072,40 @@ listTripleDiagonalTopRight(TL,L,_):- L = TL.
 
 
 listTripleDiagonalBottomLeft([],L,P):-
-	
-	.concat([pos(X,YD)],[],TL) &
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(X2 = X1-1) &
+	(Y2 = Y1-1) &
+	(XD = X2-1) &
+	(YD= Y2+1) &
+	(XD1 = X2-2) &
+	(YD1 = Y2+2) &
+	(XD0 = X2+2) &
+	(YD0 = Y2-2) &
+	.concat([pos(XD,YD)],[],TL) & 
 	listTripleDiagonalBottomLeft(TL,L,P).
 
 listTripleDiagonalBottomLeft(TL,L,P):-
-	
-	not .member(pos(X,YD),TL) &
-	.concat([pos(X,YD)],TL,TL2) &
+	diagonal(X1,Y1,X2,Y2) &
+	tablero(XD,YD,0) &
+	tablero(XD1,YD,0) &
+	tablero(XD0,YD,0) &
+	(X2 = X1-1) &
+	(Y2 = Y1-1) &
+	(XD = X2-1) &
+	(YD= Y2+1) &
+	(XD1 = X2-2) &
+	(YD1 = Y2+2) &
+	(XD0 = X2+2) &
+	(YD0 = Y2-2) &
+	not .member(pos(XD,YD),TL) &
+	.concat([pos(XD,YD)],TL,TL2) &
 	listTripleDiagonalBottomLeft(TL2,L,P).
 
 listTripleDiagonalBottomLeft([],[],_).
 listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
-
-/*winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y):-
-  triple(X1,Y1,X2,Y2,X,Y).
-
-winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y):-
-  not triple(X1,Y1,X2,Y2,X,Y) &
-  winningTrio(L, X, Y).
-
-
-triple(X1,Y1,X2,Y2,X,Y):-
-  tripleVertical(X1,Y1,X2,Y2,X,Y) |
-  tripleHorizontal(X1,Y1,X2,Y2,X,Y) |
-  tripleDiagonal(X1,Y1,X2,Y2,X,Y).
-
-tripleVertical(X,Y1, X,Y2, X,YD):-
-  vertical(X,Y1,X,Y2) &
-  tablero(X,YD,0) &
-  tablero(X,YD1,0) &
-  tablero(X,YD0,0) &
-  ( ( YD = Y2+1  &
-    YD1 = Y2+2 &
-    YD0 = Y2-2 ) |
-    ( YD = Y2-2  &
-    YD1 = Y2-3 &
-    YD0 = Y2+1 ) ).
-
-tripleHorizontal(X1,Y, X2,Y, XD,Y):-
-  vertical(X1,Y,X2,Y) &
-  tablero(XD,Y,0) &
-  tablero(XD1,Y,0) &
-  tablero(XD0,Y,0) &
-  ( ( XD = X2+1  &
-    XD1 = X2+2 &
-    XD0 = X2-2 ) |
-    ( XD = X2-2  &
-    XD1 = X2-3 &
-    XD0 = X2+1 ) ).
-
-tripleDiagonal(X1,Y1,X2,Y2,XD,YD):-
-  diagonal(X1,Y1,X2,Y2) &
-  tablero(XD,YD,0) &
-  tablero(XD1,YD,0) &
-  tablero(XD0,YD,0) &
-  (   ( (X2 = X1+1 & Y2 = Y1+1) & 
-  (   (XD = X2+1 & YD= Y2+1 & 
-    XD1 = X2+2 & YD1 = Y2+2 & 
-    XD0 = X2-2 & YD0 = Y2-2) 
-  |  (XD = X2-2 & YD= Y2-2 & 
-    XD1 = X2-3 & YD1 = Y2-3 & 
-    XD0 = X2+1 & YD0 = Y2+1)  ) )
-  
-  |  ( (X2 = X1-1 & Y2 = Y1-1) & 
-  (   (XD = X2-1 & YD= Y2+1 & 
-    XD1 = X2-2 & YD1 = Y2+2 & 
-    XD0 = X2+2 & YD0 = Y2-2) 
-  |   (XD = X2+2 & YD= Y2-2 & 
-    XD1 = X2+3 & YD1 = Y2-3 & 
-    XD0 = X2-1 & YD0 = Y2+1) ) ) ).
-*/
-
-
 
 
 /* Initial goals */
