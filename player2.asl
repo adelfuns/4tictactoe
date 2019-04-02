@@ -4,9 +4,7 @@
 
 
 
-// Gets the player number and adds to the beliefs player(playerNumber).
-// Gets the players number and adds to the beliefs player(playerNumber)
-// and opponent(playerNumber2).
+// Gets player's number and adds it to the beliefs (alongside the opponent's number) 
 playerNumber :- 
 	.my_name(N) &
 	.term2string(N,S) &
@@ -14,35 +12,60 @@ playerNumber :-
 	.substring(S,X,(M-1)) &
 	.term2string(P,X) &
 	.asserta(player(P)) &
-	enemyNumber(P,R) &
+	rivalNumber(P,R) &
 	.asserta(rival(R)).
 
-// Gets the opponent player number
-enemyNumber(X,2):-
+// Gets opponent's number
+rivalNumber(X,2):-
 	X = 1 &
 	.asserta(movement(0)).
 
-enemyNumber(X,1):-
+rivalNumber(X,1):-
 	X = 2 &
 	.asserta(movement(1)).
 
-//falta comentar
-masCercaCentro(X,Y):-
+
+
+// if player moves second, chooses the closest cell between rival's movement and the center
+
+// in case the rival puts their first chip on a corner
+closerToCenter(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR = 0 & YR = 0 &
+	X = XR+2 & Y = YR+2.
+
+closerToCenter(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR = 0 & YR = 7 &
+	X = XR+2 & Y = YR-2.
+
+closerToCenter(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR = 7 & YR = 0 &
+	X = XR-2 & Y = YR+2.
+
+closerToCenter(X,Y):-
+	jugadaActual(pos(XR,YR)) &
+	XR = 7 & YR = 7 &
+	X = XR-2 & Y = YR-2.
+
+// other cases
+closerToCenter(X,Y):-
 	jugadaActual(pos(XR,YR)) &
 	XR <= 3 & YR <= 3 &
 	X = XR+1 & Y = YR+1.
 
-masCercaCentro(X,Y):-
+closerToCenter(X,Y):-
 	jugadaActual(pos(XR,YR)) &
 	XR <= 3 & YR >= 3 &
 	X = XR+1 & Y = YR-1.
 
-masCercaCentro(X,Y):-
+closerToCenter(X,Y):-
 	jugadaActual(pos(XR,YR)) &
 	XR >= 3 & YR <= 3 &
 	X = XR-1 & Y = YR+1.
 
-masCercaCentro(X,Y):-
+closerToCenter(X,Y):-
 	jugadaActual(pos(XR,YR)) &
 	XR >= 3 & YR >= 3 &
 	X = XR-1 & Y = YR-1.
@@ -52,81 +75,88 @@ masCercaCentro(X,Y):-
 // Rules to decide next move in winning game
 
 // winning move
-siguienteMov(X, Y):-
+nextMove(X, Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	winnerTotal([pos(X,Y)|_], P).
 	
 // player in check, has to block
-siguienteMov(X, Y):-
+nextMove(X, Y):-
 	estrategia(jugarAGanar) &
 	rival(R) &
 	winnerTotal([pos(X,Y)],R).
 
 // lose is inevitable
-siguienteMov(X, Y):-
+nextMove(X, Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	rival(R) &
 	winnerTotal([pos(X,Y)|_],R).
 
 // player can win in the next move
-siguienteMov(X,Y):-
+nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	pairs(PL, P) &
 	not .empty(PL) &
-	winningTrio(PL, X, Y). //Falta implementar
+	winningTrio(PL, X, Y,P).
 
-siguienteMov(X,Y):-
+nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	twoInThreePairs(TL, P) &
 	not .empty(TL) &
-	winningTrioT(TL, X, Y). //Falta implementar
+	winningTrioTinT(TL, X, Y, P).
 
 // player forces rival to block them
-siguienteMov(X,Y):-
+nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	twoInFourPairs(FL, P) &
 	not .empty(FL) &
-	chooseTwoInFour(FL, X, Y) & //Falta implementar
+	chooseTwoInFour(FL, X, Y, P) & //Falta implementar
 	not ventaja(0).
 
-siguienteMov(X,Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	pairs(PL, P) &
-	not .empty(PL) &
-	notWinningTrio(PL) &
-	bestMove(PL, X, Y).
-
-siguienteMov(X,Y):-
+nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	twoInThreePairs(TL, P) &
 	not .empty(TL) &
-	notWinningTrio(TL, X, Y).
+	notWinningTrioTinT(TL, X, Y, P). //Falta implementar
 
-
-// no one can win in the next move
-siguienteMov(X, Y):-
+nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
-	rival(R) &
-	winnerTotal([],R) &
-	winnerTotal([],P) /*&*/.
+	pairs(PL, P) &
+	not .empty(PL) &
+	notWinningTrio(PL,L, P)
+	& elegirelpar.
 
+nextMove(X,Y):-
+	estrategia(jugarAGanar) &
+	player(P) &
+	pairs(PL, P) &
+	not .empty(PL) &
+	bestMove(PL, X, Y).
 
 
 
 // rules to determinate when a pair can become a winning trio
-winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))], X, Y):-
-	triple(X1,Y1,X2,Y2,X,Y).
+winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y,P):-
+	triple(X1,Y1,X2,Y2,X,Y,P).
 
-tripleVertical(X,Y1, X,Y2, X,YD):-
-	vertical(X,Y1,X,Y2) &
+winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y,P):-
+	not triple(X1,Y1,X2,Y2,X,Y,P) &
+	winningTrio(L, X, Y,P).
+
+// checks what type of pair form (X1,Y1) and (X2,Y2) and if it forms a winning trio
+triple(X1,Y1,X2,Y2,X,Y,P):-
+	tripleVertical(X1,Y1,X2,Y2,X,Y,P) |
+	tripleHorizontal(X1,Y1,X2,Y2,X,Y,P) |
+	tripleDiagonal(X1,Y1,X2,Y2,X,Y,P).
+
+tripleVertical(X,Y1, X,Y2, X,YD,P):-
+	vertical(X,Y1,X,Y2,P) &
 	tablero(X,YD,0) &
 	tablero(X,YD1,0) &
 	tablero(X,YD0,0) &
@@ -137,8 +167,8 @@ tripleVertical(X,Y1, X,Y2, X,YD):-
 		YD1 = Y2-3 &
 		YD0 = Y2+1 ) ).
 
-tripleHorizontal(X1,Y, X2,Y, XD,Y):-
-	vertical(X1,Y,X2,Y) &
+tripleHorizontal(X1,Y, X2,Y, XD,Y,P):-
+	vertical(X1,Y,X2,Y,P) &
 	tablero(XD,Y,0) &
 	tablero(XD1,Y,0) &
 	tablero(XD0,Y,0) &
@@ -149,8 +179,8 @@ tripleHorizontal(X1,Y, X2,Y, XD,Y):-
 		XD1 = X2-3 &
 		XD0 = X2+1 ) ).
 
-tripleDiagonal(X1,Y1,X2,Y2,XD,YD):-
-	diagonal(X1,Y1,X2,Y2) &
+tripleDiagonal(X1,Y1,X2,Y2,XD,YD,P):-
+	diagonal(X1,Y1,X2,Y2,P) &
 	tablero(XD,YD,0) &
 	tablero(XD1,YD,0) &
 	tablero(XD0,YD,0) &
@@ -171,18 +201,193 @@ tripleDiagonal(X1,Y1,X2,Y2,XD,YD):-
 		XD0 = X2-1 & YD0 = Y2+1) ) ) ).
 
 
+// rules to determinate when a two in three can become a winning trio
+winningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y, P):-
+	tripleT(X1,Y1,X2,Y2,X,Y,P).
+
+winningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y, P):-
+	not tripleTinT(X1,Y1,X2,Y2,X,Y,P) &
+	winningTrioTinT(L, X, Y,P).
+
+// checks what type of two in three form (X1,Y1) and (X2,Y2) and if it forms a winning trio
+tripleTinT(X1,Y1,X2,Y2,X,Y,P):-
+	tripleVerticalTinT(X1,Y1,X2,Y2,X,Y,P) |
+	tripleHorizontalTinT(X1,Y1,X2,Y2,X,Y,P) |
+	tripleDiagonalTinT(X1,Y1,X2,Y2,X,Y,P).
+
+tripleVerticalTinT(X,Y1, X,Y2, X,YD, P):-
+	verticalTwoInThree(X,Y1,X,Y2,P) &
+	tablero(X,YD,0) &
+	tablero(X,Y0,0) &
+	tablero(X,Y4,0) &
+	YD = Y1+1 &
+	Y0 = Y1-1 &
+	Y4 = Y1+3.
+
+tripleHorizontalTinT(X1,Y, X2,Y, XD,Y,P):-
+	horizontalTwoInThree(X1,Y,X2,Y,P) &
+	tablero(XD,Y,0) &
+	tablero(X0,Y,0) &
+	tablero(X4,Y,0) &
+	XD = X1+1 &
+	X0 = X1-1 &
+	X4 = X1+3.
+
+tripleDiagonalTinT(X1,Y1,X2,Y2,XD,YD,P):-
+	diagonalTwoInThree(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0) &
+	tablero(X0,Y0,0) &
+	tablero(X4,Y4,0) &
+	( (XD = X1+1 & YD = Y1+1 &
+	   X0 = X1-1 & Y0 = Y1-1 &
+	   X4 = X1+3 & Y4 = Y1+3) |
+	  (XD = X1-1 & YD = Y1+1 &
+	   X0 = X1+1 & Y0 = Y1-1 &
+	   X4 = X1-3 & Y4 = Y1+3) ).
+
+
+
+
+
+
+// rules to determinate when a pair can become a not winning trio (forces to block)
+notWinningTrio([], L, P).
+
+notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P):-
+	notWtriple(X1,Y1, X2,Y2, L, P) &
+	notWinningTrio(PL, L, P).
+
+notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P):-
+	notWinningTrio(PL, L, P).
+
+notWinningTrio([],[],P).
+
+// checks what type of pair form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
+notWtriple(X1,Y1,X2,Y2, L, P):-
+	notWParejaCerrada(X1,Y1,X2,Y2, L, P) |
+	notWParejaAbierta(X1,Y1,X2,Y2, L, P).
+
+notWParejaCerrada(X1,Y1, X2,Y2, [pos(X,Y)|_], P) :-
+	rival(R) &
+	//horizontal 
+	(((horizontal(X1,Y1, X2,Y2, P) &
+	tablero(XE,Y1,R) &
+	tablero(X, Y, 0) &
+	tablero(X4, Y1, 0)) &
+	//RIGHT TO LEFT
+	(X = X2+1 & Y = Y2 &
+	XE = X2-2 &
+	X4 = X2+2) |
+	//LEFT TO RIGHT
+	(X = X2-2 & Y = Y2 &
+	XE = X2+1 &
+	X4 = X2-3)) |
+	//vertical 
+	((vertical(X1,Y1, X2,Y2, P) &
+	tablero(X1,YE,R) &
+	tablero(X, Y, 0) &
+	tablero(X1, Y4, 0)) &
+	//TOP TO BOTTOM
+	(X = X2 & Y = Y2+1 &
+	YE = Y2-2 &
+	Y4 = Y2+2) |
+	//BOTTOM TO TOP
+	(X = X2 & Y = Y2-2 &
+	YE = Y2+1 &
+	Y4 = Y2-3)) |
+	//diagonal
+	((diagonal(X1,Y1, X2,Y2, P) &
+	tablero(XE,YE,R) &
+	tablero(X, Y, 0) &
+	tablero(X4, Y4, 0)) &
+	// TOP LEFT
+	((X2 = X1+1 & Y2 = Y1+1 &
+	XE = X1+2 & YE = Y1+2 &
+	X = X1-1 & Y = Y1-1 &
+	X4 = X1-2 & Y4 = Y1-2) | 
+	// BOTTOM RIGHT
+	(X2 = X1+1 & Y2 = Y1+1 &
+	XE = X1-1 & YE = Y1-1 &
+	X = X1+2 & Y = Y1+2 &
+	X4 = X1+3 & Y4 = Y1+3) |
+	// TOP RIGHT
+	(X2 = X1-1 & Y2 = Y1+1 &
+	XE = X1-2 & YE = Y1+2 &
+	X = X1+1 & Y = Y1-1 &
+	X4 = X1+2 & Y4 = Y1-2) |
+	// BOTTOM LEFT
+	(X2 = X1-1 & Y2 = Y1+1 &
+	XE = X1+1 & YE = Y1-1 &
+	X = X1-2 & Y = Y1+2 &
+	X4 = X1-3 & Y4 = Y1+3)))).
+	
+notWParejaAbierta(X1,Y1, X2,Y2, [pos(X,Y)|_], P) :-
+	rival(R) &
+	//horizontal 
+	(((horizontal(X1,Y1, X2,Y2, P) &
+	tablero(XE,Y1,R) &
+	tablero(X, Y, 0) &
+	tablero(X4, Y1, 0)) &
+	//RIGHT TO LEFT
+	(X = X2-2 & Y = Y2 &
+	XE = X2-3 &
+	X4 = X2+1) |
+	//LEFT TO RIGHT
+	(X = X2+1 & Y = Y2 &
+	XE = X2+2 &
+	X4 = X2-2)) |
+	//vertical 
+	((vertical(X1,Y1, X2,Y2, P) &
+	tablero(X1,YE,R) &
+	tablero(X, Y, 0) &
+	tablero(X1, Y4, 0)) &
+	//TOP TO BOTTOM
+	(X = X2 & Y = Y2-2 &
+	YE = Y2-3 &
+	Y4 = Y2+1) |
+	//BOTTOM TO TOP
+	(X = X2 & Y = Y2+1 &
+	YE = Y2+2 &
+	Y4 = Y2-2)) |
+	//diagonal
+	((diagonal(X1,Y1, X2,Y2, P) &
+	tablero(XE,YE,R) &
+	tablero(X, Y, 0) &
+	tablero(X4, Y4, 0)) &
+	// TOP LEFT
+	((X2 = X1+1 & Y2 = Y1+1 &
+	XE = X1-2 & YE = Y1-2 &
+	X = X1-1 & Y = Y1-1 &
+	X4 = X1+2 & Y4 = Y1+2) | 
+	// BOTTOM RIGHT
+	(X2 = X1+1 & Y2 = Y1+1 &
+	XE = X1+3 & YE = Y1+3 &
+	X = X1+2 & Y = Y1+2 &
+	X4 = X1-1 & Y4 = Y1-1) |
+	// TOP RIGHT
+	(X2 = X1-1 & Y2 = Y1+1 &
+	XE = X1+2 & YE = Y1-2 &
+	X = X1+1 & Y = Y1-1 &
+	X4 = X1-3 & Y4 = Y1+3) |
+	// BOTTOM LEFT
+	(X2 = X1-1 & Y2 = Y1+1 &
+	XE = X1-3 & YE = Y1+3 &
+	X = X1-2 & Y = Y1+2 &
+	X4 = X1+1 & Y4 = Y1-1)))).
+
+
+
+
 
 // rules to determinate best move
 bestMove(X,Y):-
 	perfectMove(M) &
 	player(P) &
-	.abolish(tablero(X,Y,0)) &
 	.asserta(tablero(X,Y,P)) &
 	allLists(L,P) &
 	.length(L,Points) &
 	.asserta(tmpMove(X,Y,Points)) &
-	.abolish(tablero(X,Y,P)) &
-	.perceive.
+	.abolish(tablero(X,Y,P)).
 
 
 // generates all lists of pairs for a player
@@ -190,6 +395,8 @@ allLists(L,P):-
 	pairs(PL, P) &
 	twoInThreePairs(TL, P) &
 	twoInFourPairs(FL, P) &
+	winnerTotal(WL, P) &
+
 	.concat(PL, TL, TempL) &
 	.concat(FL, TempL, L).
 
@@ -204,10 +411,10 @@ allLists(L,P):-
 
 
 // Rules to decide next move in losing game
-siguienteMov(X, Y):-
+nextMove(X, Y):-
 	estrategia(jugarAPerder).
 	
-siguienteMov(X, Y):-
+nextMove(X, Y):-
 	estrategia(jugarAPerder).
 
 
@@ -894,36 +1101,6 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 
 
 
-//Rules solita (cambiar nombres y añadir comentarios)
-solita(X, Y) :-
-	tablero(X1,Y1,R) & // R = rival
-	( X1 = 7 | Y1 = 7 | X1 = 0 | Y1 = 0 ) &
-	masCercaCentro(X1, Y1, X, Y).
-
-solita(X, Y) :-
-	tablero(X1, Y1, R) &
-	(X1 = 1 & Y1 = 1) &
-	(X = 2 & Y = 2).
-
-solita(X, Y) :-
-	tablero(X1, Y1, R) &
-	(X1 = 1 & Y1 = 6) &
-	(X = 2 & Y = 5).
-
-solita(X, Y) :-
-	tablero(X1, Y1, R) &
-	(X1 = 6 & Y1 = 1) &
-	(X = 5 & Y = 2).
-
-solita(X, Y) :-
-	tablero(X1, Y1, R) &
-	(X1 = 6 & Y1 = 6) &
-	(X = 5 & Y = 5).
-
-solita(X, Y) :-
-	tablero(X1, Y1, R) &
-	masCercaCentro(X1, Y1, X, Y).
-
 
 /* Initial goals */
 
@@ -939,15 +1116,15 @@ solita(X, Y) :-
 +!play: playerNumber &
 	estrategia(jugarAGanar) <-
 		.print("A ganar");
-		!playToWin.
+		!playToTest.
 
 
-/*+!playToTest <-
-	 .abolish(tablero(1,2,0)[source(percepts)]);
++!playToTest <-
+	 .asserta(tablero(1,2,1));
 	.print("Quito conocimiento");
 	.wait(5000);
-	.perceive; 
-	.print("Fuerzo percepts").*/
+	.abolish(tablero(1,2,1));
+	.print("Fuerzo percepts").
 
 // PLAY TO LOSE
 +!play:
@@ -996,7 +1173,7 @@ solita(X, Y) :-
 	tablero(X,Y,R) <-
 	+historialRival([pos(X,Y)]);
 	+jugadaActual(pos(X,Y));
-	?masCercaCentro(X1,Y1);
+	?closerToCenter(X1,Y1);
 	put(X1,Y1);
 	-+movement(N+2);
 	-jugadaActual(pos(x,y));
@@ -1012,7 +1189,7 @@ solita(X, Y) :-
 	not .member(pos(X,Y), L) <-
 	+jugadaActual(pos(X,Y));
 	-+historialRival([pos(X,Y)|L]);
-	?siguienteMov(X1,Y1);
+	?nextMove(X1,Y1);
 	put(X1,Y1);
 	-+movement(N+2);
 	-jugadaActual(pos(X,Y));
@@ -1027,7 +1204,7 @@ solita(X, Y) :-
 
 //MOVEMENT PLAN
 /*+!checkBoard(L,E):
-	siguienteMov(X, Y) <-
+	nextMove(X, Y) <-
 		.print(X, "--", Y);
 		put(X,Y).*/
 
