@@ -112,32 +112,37 @@ nextMove(X,Y):-
 nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
+	rival(R) &
 	twoInFourPairs(FL, P) &
 	not .empty(FL) &
-	chooseTwoInFour(FL, X, Y, P) & //Falta implementar
-	not ventaja(0).
+	notWinningTrioTinF(FL, L, P, R) & 
+	not ventaja(0) &
+	elegireldosencuatro. //Falta implementar
 
 nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
+	rival(R) &
 	twoInThreePairs(TL, P) &
 	not .empty(TL) &
-	notWinningTrioTinT(TL, X, Y, P). //Falta implementar
+	notWinningTrioTinT(TL, L, P, R) &
+	elegireldosentres. //Falta implementar
+
+nextMove(X,Y):-
+	estrategia(jugarAGanar) &
+	rival(R) &
+	player(P) &
+	pairs(PL, P) &
+	not .empty(PL) &
+	notWinningTrio(PL,L, P, R) &
+	elegirelpar. //Falta implementar
 
 nextMove(X,Y):-
 	estrategia(jugarAGanar) &
 	player(P) &
 	pairs(PL, P) &
 	not .empty(PL) &
-	notWinningTrio(PL,L, P)
-	& elegirelpar.
-
-nextMove(X,Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	pairs(PL, P) &
-	not .empty(PL) &
-	bestMove(PL, X, Y).
+	bestMove(PL, X, Y). //Falta implementar
 
 
 
@@ -247,28 +252,24 @@ tripleDiagonalTinT(X1,Y1,X2,Y2,XD,YD,P):-
 
 
 
-
-
-
 // rules to determinate when a pair can become a not winning trio (forces to block)
-notWinningTrio([], L, P).
+notWinningTrio([], L, P, R).
 
-notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P):-
-	notWtriple(X1,Y1, X2,Y2, L, P) &
-	notWinningTrio(PL, L, P).
+notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+	notWtriple(X1,Y1, X2,Y2, L, P, R) &
+	notWinningTrio(PL, L, P, R).
 
-notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P):-
-	notWinningTrio(PL, L, P).
+notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+	notWinningTrio(PL, L, P, R).
 
 notWinningTrio([],[],P).
 
 // checks what type of pair form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
-notWtriple(X1,Y1,X2,Y2, L, P):-
-	notWParejaCerrada(X1,Y1,X2,Y2, L, P) |
-	notWParejaAbierta(X1,Y1,X2,Y2, L, P).
+notWtriple(X1,Y1,X2,Y2, L, P, R):-
+	notWClosPair(X1,Y1,X2,Y2, L, P, R) |
+	notWOpenPair(X1,Y1,X2,Y2, L, P, R).
 
-notWParejaCerrada(X1,Y1, X2,Y2, [pos(X,Y)|_], P) :-
-	rival(R) &
+notWClosPair(X1,Y1, X2,Y2, [pos(X,Y)|_], P, R) :-
 	//horizontal 
 	(((horizontal(X1,Y1, X2,Y2, P) &
 	tablero(XE,Y1,R) &
@@ -321,15 +322,14 @@ notWParejaCerrada(X1,Y1, X2,Y2, [pos(X,Y)|_], P) :-
 	X = X1-2 & Y = Y1+2 &
 	X4 = X1-3 & Y4 = Y1+3)))).
 	
-notWParejaAbierta(X1,Y1, X2,Y2, [pos(X,Y)|_], P) :-
-	rival(R) &
+notWOpenPair(X1,Y1, X2,Y2, [pos(X,Y)|_], P, R) :-
 	//horizontal 
 	(((horizontal(X1,Y1, X2,Y2, P) &
 	tablero(XE,Y1,R) &
 	tablero(X, Y, 0) &
 	tablero(X4, Y1, 0)) &
 	//RIGHT TO LEFT
-	(X = X2-2 & Y = Y2 &
+	(X = X2-2 & Y = Y1 &
 	XE = X2-3 &
 	X4 = X2+1) |
 	//LEFT TO RIGHT
@@ -375,6 +375,127 @@ notWParejaAbierta(X1,Y1, X2,Y2, [pos(X,Y)|_], P) :-
 	X = X1-2 & Y = Y1+2 &
 	X4 = X1+1 & Y4 = Y1-1)))).
 
+
+
+// rules to determinate when a two in three can become a not winning trio (forces to block)
+notWinningTrioTinT([], L, P, R).
+
+notWinningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+	notWtripleTinT(X1,Y1, X2,Y2, L, P, R) &
+	notWinningTrioTinT(PL, L, P, R).
+
+notWinningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+	notWinningTrioTinT(PL, L, P, R).
+
+notWinningTrioTinT([],[],P, R).
+
+// checks what type of two in three form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
+notWtripleTinT(X1,Y1, X2,Y2, L, P, R):-
+	notWVerticalTinT(X1,Y1, X2,Y2, L, P, R) |
+	notWHorizontalTinT(X1,Y1, X2,Y2, L, P, R) |
+	notWDiagonalTinT(X1,Y1, X2,Y2, L, P, R).
+
+notWVerticalTinT(X,Y1, X,Y2, [pos(X,Y)|L], P, R):-
+	verticalTwoInThree(X,Y1, X,Y2, P) &
+	tablero(X, Y0, 0) &
+	tablero(X, YR, R) &
+	//TOP
+	( (YR = Y1-1 &
+	   Y0 = Y1+3 &
+	   Y = Y1+1)  |
+	//BOTTOM
+	  (YR = Y1+3 &
+	   Y0 = Y1-1 &
+	   Y = Y1+1)  ).
+
+notWHorizontalTinT(X1,Y, X2,Y, [pos(X,Y)|L], P, R):-
+	verticalTwoInThree(X1,Y, X2,Y, P) &
+	tablero(X0, Y, 0) &
+	tablero(XR, Y, R) &
+	//LEFT
+	( (XR = X1-1 &
+	   X0 = X1+3 &
+	   X = X1+1)  |
+	//RIGHT
+	  (XR = X1+3 &
+	   X0 = X1-1 &
+	   X = X1+1)  ).
+
+notWDiagonalTinT(X1,Y1, X2,Y2, [pos(X,Y)|L], P, R):-
+	verticalTwoInThree(X1,Y1, X2,Y2, P) &
+	tablero(X0, Y0, 0) &
+	tablero(XR, YR, R) &
+	//TOP LEFT
+	( (XR = X1-1 & YR = Y1-1 &
+	   X0 = X1+3 & Y0 = Y0+3 &
+	   X = X1+1  & Y = Y1+1)  |
+	//TOP RIGHT
+	  (XR = X1+1 & YR = Y1-1 &
+	   X0 = X1-3 & Y0 = Y0+3 &
+	   X = X1-1  & Y = Y1+1)  |
+	//BOTTOM LEFT
+	  (XR = X1-3 & YR = Y1+3 &
+	   X0 = X1+1 & Y0 = Y0-1 &
+	   X = X1-1  & Y = Y1+1)  |
+	//BOTTOM RIGHT
+	  (XR = X1+3 & YR = Y1+3 &
+	   X0 = X1-1 & X0 = X0-1 &
+	   X = X1+1  & Y = Y1+1)  ).
+
+
+// rules to determinate when a two in four can become a not winning trio (forces to block)
+notWinningTrioTinF([], L, P, R).
+
+notWinningTrioTinF([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+	notWtripleTinF(X1,Y1, X2,Y2, L, P, R) &
+	notWinningTrioTinF(PL, L, P, R).
+
+notWinningTrioTinF([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+	notWinningTrioTinF(PL, L, P, R).
+
+notWinningTrioTinF([],[],P, R).
+
+// checks what type of two in four form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
+notWtriple(X1,Y1, X2,Y2, L, P, R):-
+	notWVerticalTinF(X1,Y1, X2,Y2, L, P, R) |
+	notWHorizontalTinF(X1,Y1, X2,Y2, L, P, R) |
+	notWDiagonalTinF(X1,Y1, X2,Y2, L, P, R).
+
+notWVerticalTinF(X,Y1, X,Y2, [pos(X,Y)|L], P, R):-
+	verticalTwoInFour(X,Y1, X,Y2, P) &
+	tablero(X, YR, R) &
+	//TOP
+	( (YR = Y1-1 &
+	   Y = Y1+1)  |
+	//BOTTOM
+	  (YR = Y1+4 &
+	   Y = Y1+2)  ).
+
+notWHorizontalTinT(X1,Y, X2,Y, [pos(X,Y)|L], P, R):-
+	verticalTwoInFour(X1,Y, X2,Y, P) &
+	tablero(XR, Y, R) &
+	//LEFT
+	( (XR = X1-1 &
+	   X = X1+1)  |
+	//RIGHT
+	  (XR = X1+4 &
+	   X = X1+2)  ).
+
+notWDiagonalTinT(X1,Y1, X2,Y2, [pos(X,Y)|L], P, R):-
+	verticalTwoInFour(X1,Y1, X2,Y2, P) &
+	tablero(XR, YR, R) &
+	//TOP LEFT
+	( (XR = X1-1 & YR = Y1-1 &
+	   X = X1+1  & Y = Y1+1)  |
+	//TOP RIGHT
+	  (XR = X1-1 & YR = Y1-1 &
+	   X = X1-1  & Y = Y1+1)  |
+	//BOTTOM LEFT
+	  (XR = X1-4 & YR = Y1+4 &
+	   X = X1-2  & Y = Y1+2)  |
+	//BOTTOM RIGHT
+	  (XR = X1+4 & YR = Y1+4 &
+	   X = X1+2  & Y = Y1+2)  ).
 
 
 
@@ -1116,15 +1237,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 +!play: playerNumber &
 	estrategia(jugarAGanar) <-
 		.print("A ganar");
-		!playToTest.
-
-
-+!playToTest <-
-	 .asserta(tablero(1,2,1));
-	.print("Quito conocimiento");
-	.wait(5000);
-	.abolish(tablero(1,2,1));
-	.print("Fuerzo percepts").
+		!playToWin.
 
 // PLAY TO LOSE
 +!play:
@@ -1134,7 +1247,7 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 		
 //TEST AREA		
 // Plan to play a few rounds and generate a board's state to test
-/*+!playToTest:
++!playToTest:
 	testPut(X,Y) &
 	turno(player2) <- 
 		put(X,Y);
@@ -1146,13 +1259,10 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 	not testPut(X,Y) <-
 		!playToWin.
 
-+!playToTest <- !playToTest.*/
++!playToTest <- !playToTest.
 
 
 //WINNING PLAN
-/*+!playToWin <-
-	!checkBoard(L,E).*/
-
 
 +!playToWin: 
 	movement(N) &
@@ -1202,24 +1312,16 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 
 
 
-//MOVEMENT PLAN
-/*+!checkBoard(L,E):
-	nextMove(X, Y) <-
-		.print(X, "--", Y);
-		put(X,Y).*/
 
 
++!ponFicha(X,Y)[source(_)]:
+	turno(player2) <-
+		put(X,Y);
+		!playToWin.
+
++!ponFicha(_,_)[_] <- .print("Error in !ponFicha").
 
 
-
-
-
-	//!checkWinningPosition(E,WL);
-	//!checkLosingPosition(E,LL);
-	//!decide(WL,LL,X,Y)
-
-//!checkWinningPosition(E,WL):
-//	player(M) <-
 
 	
 	
