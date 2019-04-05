@@ -26,7 +26,7 @@ enemyNumber(X,1):-
 
 // Checks if the board in X-Y position is free
 checkEmpty(X,Y):-
-	tablero(X,Y,0).
+	tablero(X,Y,0)[source(percept)].
 
 
 // Gets all of the winning positions	
@@ -658,49 +658,49 @@ diagonalTwoInFourPair(TmpL,DTL,P) :- DTL = TmpL.
 
 // Rule to get a vertical pair XX
 vertical(X1,Y1,X1,Y2,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X1,Y2,P)[source(percept)] &
 	(Y2 = Y1 + 1).
 
 
 // Rule to get a horizontal pair XX
 horizontal(X1,Y1,X2,Y1,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y1,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y1,P)[source(percept)] &
 	(X2 = X1 + 1).
 
 
 // Rule to get a diagonal pair XX
 diagonal(X1,Y1,X2,Y2,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y2,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y2,P)[source(percept)] &
 	( ((X2 = X1 + 1) & (Y2 = Y1 + 1)) |
 	  ((X2 = X1 - 1) & (Y2 = Y1 + 1)) ).
 
 
 // Rule to get a vertical pair X[]X
 verticalTwoInThree(X1,Y1,X1,Y3,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,0) &
-	tablero(X1,Y3,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X1,Y2,0)[source(percept)] &
+	tablero(X1,Y3,P)[source(percept)] &
 	(Y3 = Y1 + 2) &
 	(Y2 = Y1 + 1).
 
 
 // Rule to get a horizontal pair X[]X
 horizontalTwoInThree(X1,Y1,X3,Y1,P) :- 
-	tablero(X1,Y1,P) &
-	tablero(X2,Y1,0) &
-	tablero(X3,Y1,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y1,0)[source(percept)] &
+	tablero(X3,Y1,P)[source(percept)] &
 	(X3 = X1 + 2) &
 	(X2 = X1 + 1).
 
 
 // Rule to get a diagonal pair X[]X
 diagonalTwoInThree(X1,Y1,X3,Y3,P) :- 
-	tablero(X1,Y1,P) &
-	tablero(X2,Y2,0) &
-	tablero(X3,Y3,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y2,0)[source(percept)] &
+	tablero(X3,Y3,P)[source(percept)] &
 	( ((X3 = X1 + 2) & (X2 = X1 + 1)  &
 	   (Y3 = Y1 + 2) & (Y2 = Y1 + 1)) |
 	  ((X3 = X1 - 2) & (X2 = X1 - 1)  &
@@ -709,10 +709,10 @@ diagonalTwoInThree(X1,Y1,X3,Y3,P) :-
 
 // Rule to get a vertical pair X[][]X
 verticalTwoInFour(X1,Y1,X1,Y4,P) :- 
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,0) &
-	tablero(X1,Y3,0) &
-	tablero(X1,Y4,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X1,Y2,0)[source(percept)] &
+	tablero(X1,Y3,0)[source(percept)] &
+	tablero(X1,Y4,P)[source(percept)] &
 	(Y4 = Y1 + 3) &
 	(Y3 = Y1 + 2) &
 	(Y2 = Y1 + 1).
@@ -720,10 +720,10 @@ verticalTwoInFour(X1,Y1,X1,Y4,P) :-
 
 // Rule to get a horizontal pair X[][]X
 horizontalTwoInFour(X1,Y1,X4,Y1,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y1,0) &
-	tablero(X3,Y1,0) &
-	tablero(X4,Y1,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y1,0)[source(percept)] &
+	tablero(X3,Y1,0)[source(percept)] &
+	tablero(X4,Y1,P)[source(percept)] &
 	(X4 = X1 + 3) &
 	(X3 = X1 + 2) &
 	(X2 = X1 + 1).
@@ -731,10 +731,10 @@ horizontalTwoInFour(X1,Y1,X4,Y1,P) :-
 
 // Rule to get a diagonal pair X[][]X
 diagonalTwoInFour(X1,Y1,X4,Y4,P):-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y2,0) &
-	tablero(X3,Y3,0) &
-	tablero(X4,Y4,P) &
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y2,0)[source(percept)] &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,P)[source(percept)] &
 	( ( (X4 = X1 + 3) & (X3 = X1 + 2) & (X2 = X1 + 1) &
 	    (Y4 = Y1 + 3) & (Y3 = Y1 + 2) & (Y2 = Y1 + 1) ) |
 	  ( (X4 = X1 - 3) & (X3 = X1 - 2) & (X2 = X1 - 1) &
@@ -807,17 +807,17 @@ closestCenterDiagonal(X,Y):-
 
 // If you have 1 or more winning positions 
 decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
+	estrategia(jugarAGanar)[source(percept)] &
 	listWinPositions([pos(X,Y)|_]).
 
 //If you have only one losing position
 decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
+	estrategia(jugarAGanar)[source(percept)] &
 	listLosePositions([pos(X,Y)]).
 
 //If you have one or more losing position
 //decideMovement(X,Y):-
-//	estrategia(jugarAGanar) &
+//	estrategia(jugarAGanar)[source(percept)] &
 //	listLosePositions(L) &
 //	.length(L,N) &
 //	N > 1 &
@@ -825,28 +825,28 @@ decideMovement(X,Y):-
 
 // If you win with a triple []xXXx[]
 decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
+	estrategia(jugarAGanar)[source(percept)] &
 	pairs(PL) &
 	not .empty(PL) &
 	winnningTriple(LP,X,Y).
 
 // If you win with a triple of the form []XxX[]
 decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
+	estrategia(jugarAGanar)[source(percept)] &
 	twoInThreePairs(PL) &
 	not .empty(PL) &
 	winnningTripleTwoInThree(PL,X,Y).
 
 // Make the opponent cover you
 decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
+	estrategia(jugarAGanar)[source(percept)] &
 	twoInFourPairs(LP) &
 	not .empty(LP) &
-	winnningTriple(LP,X,Y).
+	notWinnningTriple(LP,X,Y).
 
 
 decideMovement(X,Y):-
-	estrategia(jugarAGanar) &
+	estrategia(jugarAGanar)[source(percept)] &
 	pairs(LP) &
 	not .empty(LP) &
 	winnningTriple(LP,X,Y).
@@ -862,9 +862,9 @@ winnningTriple(L):-
 
 listTripleVerticalTop([],L,P):-
 	vertical(X,Y1,X,Y2,P) &
-	tablero(X,YD,0) &
-	tablero(X,YD1,0) &
-	tablero(X,YD0,0) &
+	tablero(X,YD,0)[source(percept)] &
+	tablero(X,YD1,0)[source(percept)] &
+	tablero(X,YD0,0)[source(percept)] &
 	(YD = Y2-2) &
 	(YD1 = Y2-3) &
 	(YD0 = Y2+1) &
@@ -873,9 +873,9 @@ listTripleVerticalTop([],L,P):-
 
 listTripleVerticalTop(TL,L,P):-
 	vertical(X,Y1,X,Y2,P) &
-	tablero(X,YD,0) &
-	tablero(X,YD1,0) &
-	tablero(X,YD0,0) &
+	tablero(X,YD,0)[source(percept)] &
+	tablero(X,YD1,0)[source(percept)] &
+	tablero(X,YD0,0)[source(percept)] &
 	(YD = Y2-2) &
 	(YD1 = Y2-3) &
 	(YD0 = Y2+1) &
@@ -889,9 +889,9 @@ listTripleVerticalTop(TL,L,_):- L = TL.
 
 listTripleVerticalBottom([],L,P):-
 	vertical(X,Y1,X,Y2,P) &
-	tablero(X,YD,0) &
-	tablero(X,YD1,0) &
-	tablero(X,YD0,0) &
+	tablero(X,YD,0)[source(percept)] &
+	tablero(X,YD1,0)[source(percept)] &
+	tablero(X,YD0,0)[source(percept)] &
 	(YD=Y2+1)  &
 	(YD1=Y2+2) &
 	(YD0=Y2-2) &
@@ -900,9 +900,9 @@ listTripleVerticalBottom([],L,P):-
 
 listTripleVerticalBottom(TL,L,P):-
 	vertical(X,Y1,X,Y2,P) &
-	tablero(X,YD,0) &
-	tablero(X,YD1,0) &
-	tablero(X,YD0,0) &
+	tablero(X,YD,0)[source(percept)] &
+	tablero(X,YD1,0)[source(percept)] &
+	tablero(X,YD0,0)[source(percept)] &
 	(YD=Y2+1)  &
 	(YD1=Y2+2) &
 	(YD0=Y2-2) &
@@ -915,10 +915,10 @@ listTripleVerticalBottom(TL,L,_):- L = TL.
 
 
 listTripleHorizontalLeft([],L,P):-
-	horizontal(X1,Y,X2,Y) &
-	tablero(XD,Y,0) &
-	tablero(XD1,Y,0) &
-	tablero(XD0,Y,0) &
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(XD,Y,0)[source(percept)] &
+	tablero(XD1,Y,0)[source(percept)] &
+	tablero(XD0,Y,0)[source(percept)] &
 	(XD = X2-2) &
     (XD1 = X2-3) &
     (XD0 = X2+1) &
@@ -926,10 +926,10 @@ listTripleHorizontalLeft([],L,P):-
 	listTripleHorizontalLeft(TL,L,P).
 
 listTripleHorizontalLeft(TL,L,P):-
-	horizontal(X1,Y,X2,Y) &
-	tablero(XD,Y,0) &
-	tablero(XD1,Y,0) &
-	tablero(XD0,Y,0) &
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(XD,Y,0)[source(percept)] &
+	tablero(XD1,Y,0)[source(percept)] &
+	tablero(XD0,Y,0)[source(percept)] &
 	(XD = X2-2) &
     (XD1 = X2-3) &
     (XD0 = X2+1) &
@@ -942,10 +942,10 @@ listTripleHorizontalLeft(TL,L,_):- L = TL.
 
 
 listTripleHorizontalRight([],L,P):-
-	horizontal(X1,Y,X2,Y) &
-	tablero(XD,Y,0) &
-	tablero(XD1,Y,0) &
-	tablero(XD0,Y,0) &
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(XD,Y,0)[source(percept)] &
+	tablero(XD1,Y,0)[source(percept)] &
+	tablero(XD0,Y,0)[source(percept)] &
 	(XD = X2+1) &
 	(XD1 = X2+2) &
 	(XD0 = X2-2) &
@@ -953,10 +953,10 @@ listTripleHorizontalRight([],L,P):-
 	listTripleHorizontalRight(TL,L,P).
 
 listTripleHorizontalRight(TL,L,P):-
-	horizontal(X1,Y,X2,Y) &
-	tablero(XD,Y,0) &
-	tablero(XD1,Y,0) &
-	tablero(XD0,Y,0) &
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(XD,Y,0)[source(percept)] &
+	tablero(XD1,Y,0)[source(percept)] &
+	tablero(XD0,Y,0)[source(percept)] &
 	(XD = X2+1) &
 	(XD1 = X2+2) &
 	(XD0 = X2-2) &
@@ -969,10 +969,10 @@ listTripleHorizontalRight(TL,L,_):- L = TL.
 
 
 listTripleDiagonalTopLeft([],L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(XD = X2-2) &
 	(YD= Y2-2) & 
     (XD1 = X2-3) &
@@ -983,10 +983,10 @@ listTripleDiagonalTopLeft([],L,P):-
 	listTripleDiagonalTopLeft(TL,L,P).
 
 listTripleDiagonalTopLeft(TL,L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(XD = X2-2) &
 	(YD = Y2-2) & 
     (XD1 = X2-3) &
@@ -1002,14 +1002,14 @@ listTripleDiagonalTopLeft(TL,L,_):- L = TL.
 
 
 listTripleDiagonalBottomRight([],L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(X2 = X1+1) &
 	(Y2 = Y1+1) & 
 	(XD = X2+1) &
-  	(YD= Y2+1) & 
+  	(YD = Y2+1) & 
     (XD1 = X2+2) &
     (YD1 = Y2+2) & 
     (XD0 = X2-2) &
@@ -1018,14 +1018,14 @@ listTripleDiagonalBottomRight([],L,P):-
 	listTripleDiagonalBottomRight(TL,L,P).
 
 listTripleDiagonalBottomRight(TL,L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(X2 = X1+1) &
 	(Y2 = Y1+1) & 
 	(XD = X2+1) &
-  	(YD= Y2+1) & 
+  	(YD = Y2+1) & 
     (XD1 = X2+2) &
     (YD1 = Y2+2) & 
     (XD0 = X2-2) &
@@ -1039,12 +1039,12 @@ listTripleDiagonalBottomRight(TL,L,_):- L = TL.
 
 
 listTripleDiagonalTopRight([],L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(XD = X2+2) &
-	(YD= Y2-2) &
+	(YD = Y2-2) &
 	(XD1 = X2+3) &
 	(YD1 = Y2-3) &
 	(XD0 = X2-1) &
@@ -1053,12 +1053,12 @@ listTripleDiagonalTopRight([],L,P):-
 	listTripleDiagonalTopRight(TL,L,P).
 
 listTripleDiagonalTopRight(TL,L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(XD = X2+2) &
-	(YD= Y2-2) &
+	(YD = Y2-2) &
 	(XD1 = X2+3) &
 	(YD1 = Y2-3) &
 	(XD0 = X2-1) &
@@ -1072,14 +1072,14 @@ listTripleDiagonalTopRight(TL,L,_):- L = TL.
 
 
 listTripleDiagonalBottomLeft([],L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(X2 = X1-1) &
-	(Y2 = Y1-1) &
+	(Y2 = Y1+1) &
 	(XD = X2-1) &
-	(YD= Y2+1) &
+	(YD = Y2+1) &
 	(XD1 = X2-2) &
 	(YD1 = Y2+2) &
 	(XD0 = X2+2) &
@@ -1088,14 +1088,14 @@ listTripleDiagonalBottomLeft([],L,P):-
 	listTripleDiagonalBottomLeft(TL,L,P).
 
 listTripleDiagonalBottomLeft(TL,L,P):-
-	diagonal(X1,Y1,X2,Y2) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD1,0)[source(percept)] &
+	tablero(XD0,YD0,0)[source(percept)] &
 	(X2 = X1-1) &
-	(Y2 = Y1-1) &
+	(Y2 = Y1+1) &
 	(XD = X2-1) &
-	(YD= Y2+1) &
+	(YD = Y2+1) &
 	(XD1 = X2-2) &
 	(YD1 = Y2+2) &
 	(XD0 = X2+2) &
@@ -1108,6 +1108,362 @@ listTripleDiagonalBottomLeft([],[],_).
 listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 
+
+listTripleTwoInThreeVertical([],L,P):-
+	verticalTwoInThree(X,Y1,X,Y3,P) &
+	tablero(X,YD0,0)[source(percept)] &
+	tablero(X,YD4,0)[source(percept)] &
+	(YD0 = Y3-3) &
+	(YD4 = Y3+1) &
+	(YD = Y3-1) &
+	.concat([pos(X,YD)],[],TL) &
+	listTripleTwoInThreeVertical(TL,L,P).
+
+listTripleTwoInThreeVertical(TL,L,P):-
+	verticalTwoInThree(X,Y1,X,Y3,P) &
+	tablero(X,YD0,0)[source(percept)] &
+	tablero(X,YD4,0)[source(percept)] &
+	(YD0 = Y3-3) &
+	(YD4 = Y3+1) &
+	(YD = Y3-1) &
+	not .member(pos(X,YD),TL) &
+	.concat([pos(X,YD)],TL,TL2) &
+	listTripleTwoInThreeVertical(TL2,L,P).
+
+listTripleTwoInThreeVertical([],[],_).
+listTripleTwoInThreeVertical(TL,L,_):- L = TL.
+
+
+listTripleTwoInThreeHorizontal([],L,P):-
+	horizontalTwoInThree(X1,Y,X3,Y,P) &
+	tablero(XD0,Y,0)[source(percept)] &
+	tablero(XD4,Y,0)[source(percept)] &
+	(XD0 = X3-3) &
+	(XD4 = X3+1) &
+	(XD = X3-1) &
+	.concat([pos(XD,Y)],[],TL) &
+	listTripleTwoInThreeHorizontal(TL,L,P).
+
+listTripleTwoInThreeHorizontal(TL,L,P):-
+	horizontalTwoInThree(X1,Y,X3,Y,P) &
+	tablero(XD0,Y,0)[source(percept)] &
+	tablero(XD4,Y,0)[source(percept)] &
+	(XD0 = X3-3) &
+	(XD4 = X3+1) &
+	(XD = X3-1) &
+	not .member(pos(XD,Y),TL) &
+	.concat([pos(XD,Y)],TL,TL2) &
+	listTripleTwoInThreeHorizontal(TL2,L,P).
+
+listTripleTwoInThreeHorizontal([],[],_).
+listTripleTwoInThreeHorizontal(TL,L,_):- L = TL.
+
+
+listTripleTwoInThreeDiagonalLeft([],L,P):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(XD0,YD0,0)[source(percept)] &
+	tablero(XD4,YD4,0)[source(percept)] &
+	(XD0 = X3-3) &
+	(XD4 = X3+1) &
+	(YD0 = Y3-3) &
+	(YD4 = Y3+1) &
+	(XD = X3-1) &
+	(YD = Y3-1) &
+	.concat([pos(XD,YD)],[],TL) &
+	listTripleTwoInThreeDiagonalLeft(TL,L,P).
+
+listTripleTwoInThreeDiagonalLeft(TL,L,P):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(XD0,YD0,0)[source(percept)] &
+	tablero(XD4,YD4,0)[source(percept)] &
+	(XD0 = X3-3) &
+	(XD4 = X3+1) &
+	(YD0 = Y3-3) &
+	(YD4 = Y3+1) &
+	(XD = X3-1) &
+	(YD = Y3-1) &
+	not .member(pos(XD,YD),TL) &
+	.concat([pos(XD,YD)],TL,TL2) &
+	listTripleTwoInThreeDiagonalLeft(TL2,L,P).
+
+listTripleTwoInThreeDiagonalLeft([],[],_).
+listTripleTwoInThreeDiagonalLeft(TL,L,_):- L = TL.
+
+
+listTripleTwoInThreeDiagonalRight([],L,P):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(XD0,YD0,0)[source(percept)] &
+	tablero(XD4,YD4,0)[source(percept)] &
+	(XD0 = X3+3) &
+	(XD4 = X3-1) &
+	(YD0 = Y3-3) &
+	(YD4 = Y3+1) &
+	(XD = X3+1) &
+	(YD = Y3-1) &
+	.concat([pos(XD,YD)],[],TL) &
+	listTripleTwoInThreeDiagonalRight(TL,L,P).
+
+listTripleTwoInThreeDiagonalRight(TL,L,P):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(XD0,YD0,0)[source(percept)] &
+	tablero(XD4,YD4,0)[source(percept)] &
+	(XD0 = X3+3) &
+	(XD4 = X3-1) &
+	(YD0 = Y3-3) &
+	(YD4 = Y3+1) &
+	(XD = X3+1) &
+	(YD = Y3-1) &
+	not .member(pos(XD,YD),TL) &
+	.concat([pos(XD,YD)],TL,TL2) &
+	listTripleTwoInThreeDiagonalRight(TL2,L,P).
+
+listTripleTwoInThreeDiagonalRight([],[],_).
+listTripleTwoInThreeDiagonalRight(TL,L,_):- L = TL.
+
+
+
+
+
+
+listForceBlockPositionVerticalTopBottom([],L,P,R):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,Y3,0)[source(percept)] &
+	tablero(X,Y4,0)[source(percept)] &
+	tablero(X,YR,R)[source(percept)] &
+	(Y3 = Y2 + 1) &
+	(Y4 = Y2 + 2) &
+	(YR = Y2 - 2) &
+	.concat([pos(X,Y3)],[],TL) &
+	listForceBlockPositionVerticalTopBottom(TL,L,P,R).
+
+listForceBlockPositionVerticalTopBottom(TL,L,P,R):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,Y3,0)[source(percept)] &
+	tablero(X,Y4,0)[source(percept)] &
+	tablero(X,YR,R)[source(percept)] &
+	(Y3 = Y2 + 1) &
+	(Y4 = Y2 + 2) &
+	(YR = Y2 - 2) &
+	not .member(pos(X,Y3),TL) &
+	.concat([pos(X,Y3)],TL,TL2) &
+	listForceBlockPositionVerticalTopBottom(TL2,L,P,R).
+
+listForceBlockPositionVerticalTopBottom([],[],_,_).
+listForceBlockPositionVerticalTopBottom(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionVerticalBottomTop([],L,P,R):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,Y3,0)[source(percept)] &
+	tablero(X,Y4,0)[source(percept)] &
+	tablero(X,YR,R)[source(percept)] &
+	(Y3 = Y2 - 2) &
+	(Y4 = Y2 - 3) &
+	(YR = Y2 + 1) &
+	.concat([pos(X,Y3)],[],TL) &
+	listForceBlockPositionVerticalBottomTop(TL,L,P,R).
+
+listForceBlockPositionVerticalBottomTop(TL,L,P,R):-
+	vertical(X,Y1,X,Y2,P) &
+	tablero(X,Y3,0)[source(percept)] &
+	tablero(X,Y4,0)[source(percept)] &
+	tablero(X,YR,R)[source(percept)] &
+	(Y3 = Y2 - 2) &
+	(Y4 = Y2 - 3) &
+	(YR = Y2 + 1) &
+	not .member(pos(X,Y3),TL) &
+	.concat([pos(X,Y3)],TL,TL2) &
+	listForceBlockPositionVerticalBottomTop(TL2,L,P,R).
+
+listForceBlockPositionVerticalBottomTop([],[],_,_).
+listForceBlockPositionVerticalBottomTop(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionHorizontalLeftRight([],L,P,R):-
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(X3,Y,0)[source(percept)] &
+	tablero(X4,Y,0)[source(percept)] &
+	tablero(XR,Y,R)[source(percept)] &
+	(X3 = X2 + 1) &
+	(X4 = X2 + 2) &
+	(XR = X2 - 2) &
+	.concat([pos(X3,Y)],[],TL) &
+	listForceBlockPositionHorizontalLeftRight(TL,L,P,R).
+
+listForceBlockPositionHorizontalLeftRight(TL,L,P,R):-
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(X3,Y,0)[source(percept)] &
+	tablero(X4,Y,0)[source(percept)] &
+	tablero(XR,Y,R)[source(percept)] &
+	(X3 = X2 + 1) &
+	(X4 = X2 + 2) &
+	(XR = X2 - 2) &
+	not .member(pos(X3,Y),TL) &
+	.concat([pos(X3,Y)],TL,TL2) &
+	listForceBlockPositionHorizontalLeftRight(TL2,L,P,R).
+
+listForceBlockPositionHorizontalLeftRight([],[],_,_).
+listForceBlockPositionHorizontalLeftRight(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionHorizontalRightLeft([],L,P,R):-
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(X3,Y,0)[source(percept)] &
+	tablero(X4,Y,0)[source(percept)] &
+	tablero(XR,Y,R)[source(percept)] &
+	(X3 = X2 - 2) &
+	(X4 = X2 - 3) &
+	(XR = X2 + 1) &
+	.concat([pos(X3,Y)],[],TL) &
+	listForceBlockPositionHorizontalRightLeft(TL,L,P,R).
+
+listForceBlockPositionHorizontalRightLeft(TL,L,P,R):-
+	horizontal(X1,Y,X2,Y,P) &
+	tablero(X3,Y,0)[source(percept)] &
+	tablero(X4,Y,0)[source(percept)] &
+	tablero(XR,Y,R)[source(percept)] &
+	(X3 = X2 - 2) &
+	(X4 = X2 - 3) &
+	(XR = X2 + 1) &
+	not .member(pos(X3,Y),TL) &
+	.concat([pos(X3,Y)],TL,TL2) &
+	listForceBlockPositionHorizontalRightLeft(TL2,L,P,R).
+
+listForceBlockPositionHorizontalRightLeft([],[],_,_).
+listForceBlockPositionHorizontalRightLeft(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionDiagonalTopLeftBottomRight([],L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 + 1) &
+	(X4 = X2 + 2) &
+	(XR = X2 - 2) &
+	(Y3 = Y2 + 1) &
+	(Y4 = Y2 + 2) &
+	(YR = Y2 - 2) &
+	.concat([pos(X3,Y3)],[],TL) &
+	listForceBlockPositionDiagonalTopLeftBottomRight(TL,L,P,R).
+
+listForceBlockPositionDiagonalTopLeftBottomRight(TL,L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 + 1) &
+	(X4 = X2 + 2) &
+	(XR = X2 - 2) &
+	(Y3 = Y2 + 1) &
+	(Y4 = Y2 + 2) &
+	(YR = Y2 - 2) &
+	not .member(pos(X3,Y3),TL) &
+	.concat([pos(X3,Y3)],TL,TL2) &
+	listForceBlockPositionDiagonalTopLeftBottomRight(TL2,L,P,R).
+
+listForceBlockPositionDiagonalTopLeftBottomRight([],[],_,_).
+listForceBlockPositionDiagonalTopLeftBottomRight(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionDiagonalBottomRightTopLeft([],L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 - 2) &
+	(X4 = X2 - 3) &
+	(XR = X2 + 1) &
+	(Y3 = Y2 - 2) &
+	(Y4 = Y2 - 3) &
+	(YR = Y2 + 1) &
+	.concat([pos(X3,Y3)],[],TL) &
+	listForceBlockPositionDiagonalBottomRightTopLeft(TL,L,P,R).
+
+listForceBlockPositionDiagonalBottomRightTopLeft(TL,L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 - 2) &
+	(X4 = X2 - 3) &
+	(XR = X2 + 1) &
+	(Y3 = Y2 - 2) &
+	(Y4 = Y2 - 3) &
+	(YR = Y2 + 1) &
+	not .member(pos(X3,Y3),TL) &
+	.concat([pos(X3,Y3)],TL,TL2) &
+	listForceBlockPositionDiagonalBottomRightTopLeft(TL2,L,P,R).
+
+listForceBlockPositionDiagonalBottomRightTopLeft([],[],_,_).
+listForceBlockPositionDiagonalBottomRightTopLeft(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionDiagonalTopRightBottomLeft([],L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 - 1) &
+	(X4 = X2 - 2) &
+	(XR = X2 + 2) &
+	(Y3 = Y2 + 1) &
+	(Y4 = Y2 + 2) &
+	(YR = Y2 - 2) &
+	.concat([pos(X3,Y3)],[],TL) &
+	listForceBlockPositionDiagonalTopRightBottomLeft(TL,L,P,R).
+
+listForceBlockPositionDiagonalTopRightBottomLeft(TL,L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 - 1) &
+	(X4 = X2 - 2) &
+	(XR = X2 + 2) &
+	(Y3 = Y2 + 1) &
+	(Y4 = Y2 + 2) &
+	(YR = Y2 - 2) &
+	not .member(pos(X3,Y3),TL) &
+	.concat([pos(X3,Y3)],TL,TL2) &
+	listForceBlockPositionDiagonalTopRightBottomLeft(TL2,L,P,R).
+
+listForceBlockPositionDiagonalTopRightBottomLeft([],[],_,_).
+listForceBlockPositionDiagonalTopRightBottomLeft(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionDiagonalBottomLeftTopRight([],L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 + 2) &
+	(X4 = X2 + 3) &
+	(XR = X2 - 1) &
+	(Y3 = Y2 - 2) &
+	(Y4 = Y2 - 3) &
+	(YR = Y2 + 1) &
+	.concat([pos(X3,Y3)],[],TL) &
+	listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,P,R).
+
+listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,P,R):-
+	diagonal(X1,Y1,X2,Y2,P) &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(X3 = X2 + 2) &
+	(X4 = X2 + 3) &
+	(XR = X2 - 1) &
+	(Y3 = Y2 - 2) &
+	(Y4 = Y2 - 3) &
+	(YR = Y2 + 1) &
+	not .member(pos(X3,Y3),TL) &
+	.concat([pos(X3,Y3)],TL,TL2) &
+	listForceBlockPositionDiagonalBottomLeftTopRight(TL2,L,P,R).
+
+listForceBlockPositionDiagonalBottomLeftTopRight([],[],_,_).
+listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
+
 /* Initial goals */
 
 
@@ -1117,14 +1473,14 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 // PLAY TO WIN
 +!play: playerNumbers &
-	estrategia(jugarAGanar) <-
+	estrategia(jugarAGanar)[source(percept)] <-
 		.print("A ganar");
 		!tests.
 		//!playToTest.
 
 // PLAY TO LOSE
 +!play:
-	estrategia(jugarAPerder) <-
+	estrategia(jugarAPerder)[source(percept)] <-
 		.print("A perder");
 		!playToLose.
 
@@ -1132,7 +1488,7 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 +!playToWin:
 	movement(N) &
 	(N = 0) &
-	turno(.my_name(X)) <-
+	turno(.my_name(X))[source(percept)] <-
 	put(3,3);
 	-+movement(N+2);
 	+advantage(0);
@@ -1141,9 +1497,9 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 +!playToWin:
 	movement(N) &
 	(N = 1) &
-	turno(.my_name(X)) &
+	turno(.my_name(X))[source(percept)] &
 	opponent(R) &
-	tablero(X0,Y0,R) <-
+	tablero(X0,Y0,R)[source(percept)] <-
 		advantage(1);
 		+movementRecord([pos(X0,Y0)]);
 		+actualMovement(pos(X0,Y0));
@@ -1155,9 +1511,9 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 +!playToWin:
 	movement(N) &
-	turno(.my_name(X)) &
+	turno(.my_name(X))[source(percept)] &
 	opponent(R) &
-	tablero(X0,Y0,R) &
+	tablero(X0,Y0,R)[source(percept)] &
 	movementRecord(L) &
 	not .member(pos(X0,X0),L) <-
 		-+movementRecord([pos(X0,Y0)|_]);
@@ -1214,14 +1570,25 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 	//.println("");
 
 	//!testPackage2(S2,T2);
-	//.println("First package done: ",S2,"/",T2);
+	//.println("Second package done: ",S2,"/",T2);
 	//!resetBoardTests;
 	//.println("");
 
-	!testPackage3(S3,T3);
-	.println("First package done: ",S3,"/",T3);
+	//!testPackage3(S3,T3);
+	//.println("Third package done: ",S3,"/",T3);
+	//!resetBoardTests;
+	//.println("");
+
+	//!testPackage4(S4,T4);
+	//.println("Fourth package done: ",S4,"/",T4);
+	//!resetBoardTests;
+	//.println("");
+
+	!testPackage5(S5,T5);
+	.println("Fourth package done: ",S5,"/",T5);
 	//!resetBoardTests;
 	.println("");
+
 
 	.println("All tests done...");
 	!resetBoardTests;
@@ -1345,19 +1712,98 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 // Tests package 3
 +!testPackage3(Sucesfull,Total) <-
 	.println("Running testPackage3...");
-	Total = 2;
+	Total = 8;
 	!generateTestBoard3;
 	.println("");
-	!testListTripleVerticalTop(N1);
+	!testListTripleVerticalTop(N1); //DONE
 	.println("");
-	!testListTripleVerticalBottom(N2);
+	!testListTripleVerticalBottom(N2); //DONE
 	.println("");
-	Sucesfull = N1+N2.
+	!testListTripleHorizontalLeft(N3); //DONE
+	.println("");
+	!testListTripleHorizontalRight(N4); //DONE
+	.println("");
+	!testListTripleDiagonalTopLeft(N5); //DONE
+	.println("");
+	!testListTripleDiagonalBottomRight(N6); //DONE
+	.println("");
+	!testListTripleDiagonalTopRight(N7); //DONE
+	.println("");
+	!testListTripleDiagonalBottomLeft(N8); //DONE
+	.println("");
+	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8.
+
+
+// Tests package 4
++!testPackage4(Sucesfull,Total) <-
+	.println("Running testPackage4...");
+	Total = 4;
+	!generateTestBoard4;
+	.println("");
+	!testListTripleTwoInThreeVertical(N1);
+	.println("");
+	!testListTripleTwoInThreeHorizontal(N2);
+	.println("");
+	!testListTripleTwoInThreeDiagonalLeft(N3);
+	.println("");
+	!testListTripleTwoInThreeDiagonalRight(N4);
+	.println("");
+	Sucesfull = N1+N2+N3+N4.
+
+
+// Tests package 5
++!testPackage5(Sucesfull,Total) <-
+	.println("Running testPackage5...");
+	Total = 8;
+	!generateTestBoard5;
+	.println("");
+	!testListForceBlockPositionVerticalTopBottom(N1);
+	.println("");
+	!testListForceBlockPositionVerticalBottomTop(N2);
+	.println("");
+	!testListForceBlockPositionHorizontalLeftRight(N3);
+	.println("");
+	!testListForceBlockPositionHorizontalRightLeft(N4);
+	.println("");
+	!testListForceBlockPositionDiagonalTopLeftBottomRight(N5);
+	.println("");
+	!testListForceBlockPositionDiagonalBottomRightTopLeft(N6);
+	.println("");
+	!testListForceBlockPositionDiagonalTopRightBottomLeft(N7);
+	.println("");
+	!testListForceBlockPositionDiagonalBottomLeftTopRight(N8);
+	.println("");
+	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8.
+
+
+// Tests package 6
++!testPackage6(Sucesfull,Total) <-
+	.println("Running testPackage5...");
+	Total = ;
+	!generateTestBoard6;
+	.println("");
+	!testListForceBlockPositionVerticalTopBottom(N1);
+	.println("");
+	!testListForceBlockPositionVerticalBottomTop(N2);
+	.println("");
+	!testListForceBlockPositionHorizontalLeftRight(N3);
+	.println("");
+	!testListForceBlockPositionHorizontalRightLeft(N4);
+	.println("");
+	!testListForceBlockPositionDiagonalTopLeftBottomRight(N5);
+	.println("");
+	!testListForceBlockPositionDiagonalBottomRightTopLeft(N6);
+	.println("");
+	!testListForceBlockPositionDiagonalTopRightBottomLeft(N7);
+	.println("");
+	!testListForceBlockPositionDiagonalBottomLeftTopRight(N8);
+	.println("");
+	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8.
 
 
 // Resets the board
 +!resetBoardTests:
-	tablero(X,Y,1) <-
+	tablero(X,Y,1)[source(percept)] <-
 	.println("Board reseting...");
 	.wait(2000);
 	put(X,Y);
@@ -1390,6 +1836,7 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 	.send(player2,achieve,test);
 	!playToTest.
 	
+
 +!generateTestBoard2 <-
 	//Adds the test board beliefs
 	+testPut(0,1);
@@ -1406,25 +1853,86 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 	.send(player2,achieve,test2);
 	!playToTest.
 
+
 +!generateTestBoard3 <-
-  //Adds the test board beliefs
-  +testPut(6,1);
-  +testPut(6,2);
-  +testPut(4,3);
-  +testPut(5,4);
-  +testPut(4,4);
-  +testPut(6,5);
-  +testPut(6,6);
-  +testPut(5,6);
-  .send(player2,achieve,test3);
-  !playToTest.
+	//Adds the test board beliefs
+	+testPut(6,1);
+	+testPut(6,2);
+	+testPut(4,3);
+	+testPut(5,4);
+	+testPut(4,4);
+	+testPut(6,5);
+	+testPut(6,6);
+	+testPut(5,6);
+	.send(player2,achieve,test3);
+	!playToTest.
+
+
++!generateTestBoard4 <-
+	//Adds the test board beliefs
+	+testPut(2,2);
+	+testPut(2,4);
+	+testPut(4,2);
+	+testPut(4,4);
+	.send(player2,achieve,test4);
+	!playToTest.
+
++!generateTestBoard5 <-
+	//Adds the test board beliefs
+	+testPut(1,1);
+	+testPut(2,1);
+	+testPut(1,2);
+	+testPut(2,2);
+	+testPut(2,3);
+	+testPut(1,6);
+	+testPut(2,6);
+	+testPut(1,5);
+	+testPut(2,5);
+	+testPut(3,5);
+	+testPut(6,6);
+	+testPut(5,6);
+	+testPut(6,5);
+	+testPut(5,5);
+	+testPut(5,4);
+	+testPut(5,1);
+	+testPut(6,1);
+	+testPut(5,2);
+	+testPut(6,2);
+	+testPut(4,2);
+	.send(player2,achieve,test5);
+	!playToTest.
+
+
++!generateTestBoard6 <-
+	//Adds the test board beliefs
+	+testPut(0,2);
+	+testPut(0,4);
+	+testPut(0,6);
+	+testPut(1,1);
+	+testPut(2,1);
+	+testPut(3,3);
+	+testPut(3,4);
+	+testPut(4,0);
+	+testPut(5,1);
+	+testPut(5,2);
+	+testPut(5,5);
+	+testPut(5,6);
+	+testPut(6,2);
+	+testPut(6,3);
+	+testPut(6,7);
+	+testPut(7,0);
+	+testPut(7,2);
+	+testPut(7,4);
+	+testPut(7,6);
+	.send(player2,achieve,test6);
+	!playToTest.
 
 
 
 // Plan to play a few rounds and generate a board's state to test
 +!playToTest:
 	testPut(X,Y) &
-	turno(player1) <- 
+	turno(player1)[source(percept)] <- 
 		put(X,Y);
 		-testPut(X,Y);
 		-+movement(N+1);
@@ -2211,10 +2719,9 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 +!testListTripleHorizontalLeft(N):
 	.println("Running test [testListTripleHorizontalLeft]") &
 	listTripleHorizontalLeft([],L,1) &
-	.member(pos(3,4),L) &
 	.member(pos(4,6),L) &
 	.length(L,M) &
-	M =  <-
+	M = 1 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2225,7 +2732,7 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 +!testListTripleHorizontalRight(N):
 	.println("Running test [testListTripleHorizontalRight]") &
-	listTripleHorizontalRight([],L,2) &
+	listTripleHorizontalRight([],L,1) &
 	.member(pos(6,4),L) &
 	.length(L,M) &
 	M = 1 <-
@@ -2239,11 +2746,10 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 +!testListTripleDiagonalTopLeft(N):
 	.println("Running test [testListTripleDiagonalTopLeft]") &
-	listTripleDiagonalTopLeft([],L,1) &
-	.member(pos(,),L) &
-	.member(pos(,),L) &
+	listTripleDiagonalTopLeft([],L,2) &
+	.member(pos(1,3),L) &
 	.length(L,M) &
-	M =  <-
+	M = 1 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2254,11 +2760,10 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 +!testListTripleDiagonalBottomRight(N):
 	.println("Running test [testListTripleDiagonalBottomRight]") &
-	listTripleDiagonalBottomRight([],L,1) &
-	.member(pos(,),L) &
-	.member(pos(,),L) &
+	listTripleDiagonalBottomRight([],L,2) &
+	.member(pos(4,6),L) &
 	.length(L,M) &
-	M =  <-
+	M = 1 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2269,11 +2774,11 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 +!testListTripleDiagonalTopRight(N):
 	.println("Running test [testListTripleDiagonalTopRight]") &
-	listTripleDiagonalTopRight([],L,1) &
-	.member(pos(,),L) &
-	.member(pos(,),L) &
+	listTripleDiagonalTopRight([],L,2) &
+	.member(pos(4,1),L) &
+	.member(pos(3,3),L) &
 	.length(L,M) &
-	M =  <-
+	M = 2 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2284,11 +2789,10 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 
 +!testListTripleDiagonalBottomLeft(N):
 	.println("Running test [testListTripleDiagonalBottomLeft]") &
-	listTripleDiagonalBottomLeft([],L,1) &
-	.member(pos(,),L) &
-	.member(pos(,),L) &
+	listTripleDiagonalBottomLeft([],L,2) &
+	.member(pos(1,4),L) &
 	.length(L,M) &
-	M =  <-
+	M = 1 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2297,15 +2801,193 @@ listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
 	N = 0.
 
 
++!testListTripleTwoInThreeVertical(N):
+	.println("Running test [testListTripleTwoInThreeVertical]") &
+	listTripleTwoInThreeVertical([],L,1) &
+	.member(pos(2,3),L) &
+	.member(pos(4,3),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleTwoInThreeVertical(N) <-
+	.print("Test failed");
+	N = 0.
 
 
-/*+!test():
++!testListTripleTwoInThreeHorizontal(N):
+	.println("Running test [testListTripleTwoInThreeHorizontal]") &
+	listTripleTwoInThreeHorizontal([],L,1) &
+	.member(pos(3,2),L) &
+	.length(L,M) &
+	M = 1 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleTwoInThreeHorizontal(N) <-
+	.print("Test failed");
+	N = 0.	
+
+
++!testListTripleTwoInThreeDiagonalLeft(N):
+	.println("Running test [testListTripleTwoInThreeDiagonalLeft]") &
+	listTripleTwoInThreeDiagonalLeft([],L,1) &
+	.member(pos(3,3),L) &
+	.length(L,M) &
+	M = 1 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleTwoInThreeDiagonalLeft(N) <-
+	.print("Test failed");
+	N = 0.	
+
+
++!testListTripleTwoInThreeDiagonalRight(N):
+	.println("Running test [testListTripleTwoInThreeDiagonalRight]") &
+	listTripleTwoInThreeDiagonalRight([],L,1) &
+	.member(pos(3,3),L) &
+	.length(L,M) &
+	M = 1 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListTripleTwoInThreeDiagonalRight(N) <-
+	.print("Test failed");
+	N = 0.	
+
+
++!testListForceBlockPositionVerticalTopBottom(N):
+	.println("Running test [testListForceBlockPositionVerticalTopBottom]") &
+	listForceBlockPositionVerticalTopBottom([],L,1,2) &
+	.member(pos(1,3),L) &
+	.member(pos(6,3),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionVerticalTopBottom(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionVerticalBottomTop(N):
+	.println("Running test [testListForceBlockPositionVerticalBottomTop]") &
+	listForceBlockPositionVerticalBottomTop([],L,1,2) &
+	.member(pos(1,4),L) &
+	.member(pos(6,4),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionVerticalBottomTop(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionHorizontalLeftRight(N):
+	.println("Running test [testListForceBlockPositionHorizontalLeftRight]") &
+	listForceBlockPositionHorizontalLeftRight([],L,1,2) &
+	.member(pos(3,6),L) &
+	.member(pos(3,1),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionHorizontalLeftRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionHorizontalRightLeft(N):
+	.println("Running test [testListForceBlockPositionHorizontalRightLeft]") &
+	listForceBlockPositionHorizontalRightLeft([],L,1,2) &
+	.member(pos(4,6),L) &
+	.member(pos(4,1),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionHorizontalRightLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalTopLeftBottomRight(N):
+	.println("Running test [testListForceBlockPositionDiagonalTopLeftBottomRight]") &
+	listForceBlockPositionDiagonalTopLeftBottomRight([],L,1,2) &
+	.member(pos(3,3),L) &
+	.member(pos(3,4),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalTopLeftBottomRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalBottomRightTopLeft(N):
+	.println("Running test [testListForceBlockPositionDiagonalBottomRightTopLeft]") &
+	listForceBlockPositionDiagonalBottomRightTopLeft([],L,1,2) &
+	.member(pos(4,3),L) &
+	.member(pos(4,4),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalBottomRightTopLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalTopRightBottomLeft(N):
+	.println("Running test [testListForceBlockPositionDiagonalTopRightBottomLeft]") &
+	listForceBlockPositionDiagonalTopRightBottomLeft([],L,1,2) &
+	.member(pos(4,3),L) &
+	.member(pos(3,3),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalTopRightBottomLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalBottomLeftTopRight(N):
+	.println("Running test [testListForceBlockPositionDiagonalBottomLeftTopRight]") &
+	listForceBlockPositionDiagonalBottomLeftTopRight([],L,1,2) &
+	.member(pos(3,4),L) &
+	.member(pos(4,4),L) &
+	.length(L,M) &
+	M = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalBottomLeftTopRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
+
+
+
+/*+!test(N):
 	.println("Running test []") &
 	<-
 		N = 1;
 		.print("Test sucesfull").
 
-+!test() <-
++!test(N) <-
 	.print("Test failed");
 	N = 0.	
 */

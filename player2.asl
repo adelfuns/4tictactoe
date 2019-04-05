@@ -61,14 +61,70 @@
 
 
 +!test3[source(player1)] <-
-	+testPut(3,1);
-	+testPut(2,2);
+	+testPut(0,0);
+	+testPut(1,0);
+	+testPut(3,2);
 	+testPut(2,3);
-	+testPut(0,4);
-	+testPut(1,4);
-	+testPut(1,5);
-	+testPut(2,5);
+	+testPut(2,4);
+	+testPut(3,5);
 	+testPut(2,6);
+	+testPut(1,5);
+	!playToTest.
+
+
++!test4[source(player1)] <-
+	+testPut(3,4);
+	+testPut(5,4);
+	+testPut(3,6);
+	+testPut(5,6);
+	!playToTest.
+
+
++!test5[source(player1)] <-
+	+testPut(0,0);
+	+testPut(1,0);
+	+testPut(0,1);
+	+testPut(0,3);
+	+testPut(0,4);
+	+testPut(0,6);
+	+testPut(0,7);
+	+testPut(1,7);
+	+testPut(3,7);
+	+testPut(4,7);
+	+testPut(3,0);
+	+testPut(4,0);
+	+testPut(6,0);
+	+testPut(7,0);
+	+testPut(7,1);
+	+testPut(7,3);
+	+testPut(7,4);
+	+testPut(7,6);
+	+testPut(7,7);
+	+testPut(6,7);
+	!playToTest.
+
+
++!test6[source(player1)] <-
+	+testPut(0,1);
+	+testPut(0,7);
+	+testPut(1,0);
+	+testPut(1,2);
+	+testPut(1,6);
+	+testPut(2,4);
+	+testPut(2,5);
+	+testPut(3,0);
+	+testPut(3,1);
+	+testPut(3,2);
+	+testPut(3,5);
+	+testPut(3,6);
+	+testPut(3,7);
+	+testPut(5,0);
+	+testPut(5,3);
+	+testPut(5,4);
+	+testPut(5,7);
+	+testPut(6,6);
+	+testPut(7,1);
+	+testPut(7,7);
 	!playToTest.
 
 
