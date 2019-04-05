@@ -849,7 +849,103 @@ decideMovement(X,Y):-
 	estrategia(jugarAGanar)[source(percept)] &
 	pairs(LP) &
 	not .empty(LP) &
-	winnningTriple(LP,X,Y).
+	winnningTwoInThreeTriple(LP,X,Y).
+
+
+
+
+
+
+
+
+//FALTA TESTEAR
+checkRepeatedElements([pos(X,Y),pos(X,Y)],X,Y).
+checkRepeatedElements([pos(X,Y),pos(X2,Y2)],-1,-1):-
+	not (X = X2) &
+	not (Y = Y2).
+
+checkRepeatedElements([pos(X,Y)|Tail],X,Y):-
+	.member(pos(X,Y),Tail).
+
+checkRepeatedElements([pos(X,Y)|Tail],X2,Y2):-
+	not .member(pos(X,Y),Tail) &
+	checkRepeatedElements(Tail,X2,Y2).
+
+
+//FALTA TESTEAR
+listForcePositions(L):-
+	listMyForceBlockPositionTrioVertical(L1) &
+	listMyForceBlockPositionTrioHorizontal(L2) &
+	listMyForceBlockPositionTrioDiagonal(L3) &
+	listMyForceBlockPositionTwoInThree(L4) &
+	listMyForceBlockPositionTwoInFour(L5) &
+	.concat(L1,L2,LT) &
+	.concat(L3,L4,LT2) &
+	.concat(L5,LT,LT3) &
+	.concat(LT2,LT3,L).
+
+
+//FALTA TESTEAR
+listMyForceBlockPositionTrioVertical(L):-
+	player(P) &
+	opponent(O) &
+	listForceBlockPositionVerticalTopBottom([],L1,P,O) &
+	listForceBlockPositionVerticalBottomTop([],L2,P,O) &
+	.concat(L1,L2,L).
+
+
+//FALTA TESTEAR
+listMyForceBlockPositionTrioHorizontal(L):-
+	player(P) &
+	opponent(O) &
+	listForceBlockPositionHorizontalLeftRight([],L1,P,O) &
+	listForceBlockPositionHorizontalRightLeft([],L2,P,O) &
+	.concat(L1,L2,L).
+
+
+//FALTA TESTEAR
+listMyForceBlockPositionTrioDiagonal(L):-
+	player(P) &
+	opponent(O) &
+	listForceBlockPositionDiagonalTopLeftBottomRight([],L1,P,O) &
+	listForceBlockPositionDiagonalBottomRightTopLeft([],L2,P,O) &
+	listForceBlockPositionDiagonalTopRightBottomLeft([],L3,P,O) &
+	listForceBlockPositionDiagonalBottomLeftTopRight([],L4,P,O) &
+	.concat(L1,L2,LT) &
+	.concat(L3,L4,LT2) &
+	.concat(LT,LT2,L).
+
+
+//FALTA TESTEAR
+listMyForceBlockPositionTwoInThree(L):-
+	player(P) &
+	opponent(O) &
+	listForceBlockPositionVerticalTwoInThree([],L1,P,O) &
+	listForceBlockPositionHorizontalTwoInThree([],L2,P,O) &
+	listForceBlockPositionDiagonalTwoInThreeLeft([],L3,P,O) &
+	listForceBlockPositionDiagonalTwoInThreeRight([],L4,P,O) &
+	.concat(L1,L2,LT) &
+	.concat(L3,L4,LT2) &
+	.concat(LT,LT2,L).
+
+
+//FALTA TESTEAR
+listMyForceBlockPositionTwoInFour(L):-
+	player(P) &
+	opponent(O) &
+	listForceBlockPositionVerticalTwoInFour([],L1,P,O) &
+	listForceBlockPositionHorizontalTwoInFour([],L2,P,O) &
+	listForceBlockPositionDiagonalTwoInFourLeft([],L3,P,O) &
+	listForceBlockPositionDiagonalTwoInFourRight([],L4,P,O) &
+	.concat(L1,L2,LT) &
+	.concat(L3,L4,LT2) &
+	.concat(LT,LT2,L).
+
+
+
+
+
+
 
 
 winnningTriple(L):-
@@ -860,6 +956,14 @@ winnningTriple(L):-
 	.concat(LT,L3,L).
 
 
+winnningTripleTwoInThree(L):-
+	listTripleVertical([],L1,P) &
+	listTripleHorizontal([],L2,P) &
+	listTripleDiagonal([],L3,P) &
+	.union(L1,L2,LT) &
+	.union(LT,L3,L).
+
+// List all possible winning triples in vertical top
 listTripleVerticalTop([],L,P):-
 	vertical(X,Y1,X,Y2,P) &
 	tablero(X,YD,0)[source(percept)] &
@@ -886,7 +990,7 @@ listTripleVerticalTop(TL,L,P):-
 listTripleVerticalTop([],[],_).
 listTripleVerticalTop(TL,L,_):- L = TL.
 
-
+// List all possible losing triples in vertical bottom
 listTripleVerticalBottom([],L,P):-
 	vertical(X,Y1,X,Y2,P) &
 	tablero(X,YD,0)[source(percept)] &
@@ -914,6 +1018,7 @@ listTripleVerticalBottom([],[],_).
 listTripleVerticalBottom(TL,L,_):- L = TL.
 
 
+// List all possible triples in horizontal left
 listTripleHorizontalLeft([],L,P):-
 	horizontal(X1,Y,X2,Y,P) &
 	tablero(XD,Y,0)[source(percept)] &
@@ -941,6 +1046,7 @@ listTripleHorizontalLeft([],[],_).
 listTripleHorizontalLeft(TL,L,_):- L = TL.
 
 
+// List all possible triples in horizontal right
 listTripleHorizontalRight([],L,P):-
 	horizontal(X1,Y,X2,Y,P) &
 	tablero(XD,Y,0)[source(percept)] &
@@ -968,6 +1074,7 @@ listTripleHorizontalRight([],[],_).
 listTripleHorizontalRight(TL,L,_):- L = TL.
 
 
+// List all possible losing triples in diagonal top left
 listTripleDiagonalTopLeft([],L,P):-
 	diagonal(X1,Y1,X2,Y2,P) &
 	tablero(XD,YD,0)[source(percept)] &
@@ -1001,6 +1108,7 @@ listTripleDiagonalTopLeft([],[],_).
 listTripleDiagonalTopLeft(TL,L,_):- L = TL.
 
 
+// List all possible losing triples in diagonal bottom right
 listTripleDiagonalBottomRight([],L,P):-
 	diagonal(X1,Y1,X2,Y2,P) &
 	tablero(XD,YD,0)[source(percept)] &
@@ -1038,6 +1146,7 @@ listTripleDiagonalBottomRight([],[],_).
 listTripleDiagonalBottomRight(TL,L,_):- L = TL.
 
 
+// List all possible losing triples in diagonal top right
 listTripleDiagonalTopRight([],L,P):-
 	diagonal(X1,Y1,X2,Y2,P) &
 	tablero(XD,YD,0)[source(percept)] &
@@ -1071,6 +1180,7 @@ listTripleDiagonalTopRight([],[],_).
 listTripleDiagonalTopRight(TL,L,_):- L = TL.
 
 
+// List all possible losing triples in diagonal bottom left
 listTripleDiagonalBottomLeft([],L,P):-
 	diagonal(X1,Y1,X2,Y2,P) &
 	tablero(XD,YD,0)[source(percept)] &
@@ -1106,7 +1216,6 @@ listTripleDiagonalBottomLeft(TL,L,P):-
 
 listTripleDiagonalBottomLeft([],[],_).
 listTripleDiagonalBottomLeft(TL,L,_):- L = TL.
-
 
 
 listTripleTwoInThreeVertical([],L,P):-
@@ -1221,10 +1330,6 @@ listTripleTwoInThreeDiagonalRight([],[],_).
 listTripleTwoInThreeDiagonalRight(TL,L,_):- L = TL.
 
 
-
-
-
-
 listForceBlockPositionVerticalTopBottom([],L,P,R):-
 	vertical(X,Y1,X,Y2,P) &
 	tablero(X,Y3,0)[source(percept)] &
@@ -1233,7 +1338,7 @@ listForceBlockPositionVerticalTopBottom([],L,P,R):-
 	(Y3 = Y2 + 1) &
 	(Y4 = Y2 + 2) &
 	(YR = Y2 - 2) &
-	.concat([pos(X,Y3)],[],TL) &
+	.concat([pos(X,Y3),pos(X,Y4)],[],TL) &
 	listForceBlockPositionVerticalTopBottom(TL,L,P,R).
 
 listForceBlockPositionVerticalTopBottom(TL,L,P,R):-
@@ -1245,7 +1350,8 @@ listForceBlockPositionVerticalTopBottom(TL,L,P,R):-
 	(Y4 = Y2 + 2) &
 	(YR = Y2 - 2) &
 	not .member(pos(X,Y3),TL) &
-	.concat([pos(X,Y3)],TL,TL2) &
+	not .member(pos(X,Y4),TL) &
+	.concat([pos(X,Y3),pos(X,Y4)],TL,TL2) &
 	listForceBlockPositionVerticalTopBottom(TL2,L,P,R).
 
 listForceBlockPositionVerticalTopBottom([],[],_,_).
@@ -1260,7 +1366,7 @@ listForceBlockPositionVerticalBottomTop([],L,P,R):-
 	(Y3 = Y2 - 2) &
 	(Y4 = Y2 - 3) &
 	(YR = Y2 + 1) &
-	.concat([pos(X,Y3)],[],TL) &
+	.concat([pos(X,Y3),pos(X,Y4)],[],TL) &
 	listForceBlockPositionVerticalBottomTop(TL,L,P,R).
 
 listForceBlockPositionVerticalBottomTop(TL,L,P,R):-
@@ -1272,7 +1378,8 @@ listForceBlockPositionVerticalBottomTop(TL,L,P,R):-
 	(Y4 = Y2 - 3) &
 	(YR = Y2 + 1) &
 	not .member(pos(X,Y3),TL) &
-	.concat([pos(X,Y3)],TL,TL2) &
+	not .member(pos(X,Y4),TL) &
+	.concat([pos(X,Y3),pos(X,Y4)],TL,TL2) &
 	listForceBlockPositionVerticalBottomTop(TL2,L,P,R).
 
 listForceBlockPositionVerticalBottomTop([],[],_,_).
@@ -1287,7 +1394,7 @@ listForceBlockPositionHorizontalLeftRight([],L,P,R):-
 	(X3 = X2 + 1) &
 	(X4 = X2 + 2) &
 	(XR = X2 - 2) &
-	.concat([pos(X3,Y)],[],TL) &
+	.concat([pos(X3,Y),pos(X4,Y)],[],TL) &
 	listForceBlockPositionHorizontalLeftRight(TL,L,P,R).
 
 listForceBlockPositionHorizontalLeftRight(TL,L,P,R):-
@@ -1299,7 +1406,8 @@ listForceBlockPositionHorizontalLeftRight(TL,L,P,R):-
 	(X4 = X2 + 2) &
 	(XR = X2 - 2) &
 	not .member(pos(X3,Y),TL) &
-	.concat([pos(X3,Y)],TL,TL2) &
+	not .member(pos(X4,Y),TL) &
+	.concat([pos(X3,Y),pos(X4,Y)],TL,TL2) &
 	listForceBlockPositionHorizontalLeftRight(TL2,L,P,R).
 
 listForceBlockPositionHorizontalLeftRight([],[],_,_).
@@ -1314,7 +1422,7 @@ listForceBlockPositionHorizontalRightLeft([],L,P,R):-
 	(X3 = X2 - 2) &
 	(X4 = X2 - 3) &
 	(XR = X2 + 1) &
-	.concat([pos(X3,Y)],[],TL) &
+	.concat([pos(X3,Y),pos(X4,Y)],[],TL) &
 	listForceBlockPositionHorizontalRightLeft(TL,L,P,R).
 
 listForceBlockPositionHorizontalRightLeft(TL,L,P,R):-
@@ -1326,7 +1434,8 @@ listForceBlockPositionHorizontalRightLeft(TL,L,P,R):-
 	(X4 = X2 - 3) &
 	(XR = X2 + 1) &
 	not .member(pos(X3,Y),TL) &
-	.concat([pos(X3,Y)],TL,TL2) &
+	not .member(pos(X4,Y),TL) &
+	.concat([pos(X3,Y),pos(X4,Y)],TL,TL2) &
 	listForceBlockPositionHorizontalRightLeft(TL2,L,P,R).
 
 listForceBlockPositionHorizontalRightLeft([],[],_,_).
@@ -1344,7 +1453,7 @@ listForceBlockPositionDiagonalTopLeftBottomRight([],L,P,R):-
 	(Y3 = Y2 + 1) &
 	(Y4 = Y2 + 2) &
 	(YR = Y2 - 2) &
-	.concat([pos(X3,Y3)],[],TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],[],TL) &
 	listForceBlockPositionDiagonalTopLeftBottomRight(TL,L,P,R).
 
 listForceBlockPositionDiagonalTopLeftBottomRight(TL,L,P,R):-
@@ -1359,7 +1468,8 @@ listForceBlockPositionDiagonalTopLeftBottomRight(TL,L,P,R):-
 	(Y4 = Y2 + 2) &
 	(YR = Y2 - 2) &
 	not .member(pos(X3,Y3),TL) &
-	.concat([pos(X3,Y3)],TL,TL2) &
+	not .member(pos(X4,Y4),TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],TL,TL2) &
 	listForceBlockPositionDiagonalTopLeftBottomRight(TL2,L,P,R).
 
 listForceBlockPositionDiagonalTopLeftBottomRight([],[],_,_).
@@ -1377,7 +1487,7 @@ listForceBlockPositionDiagonalBottomRightTopLeft([],L,P,R):-
 	(Y3 = Y2 - 2) &
 	(Y4 = Y2 - 3) &
 	(YR = Y2 + 1) &
-	.concat([pos(X3,Y3)],[],TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],[],TL) &
 	listForceBlockPositionDiagonalBottomRightTopLeft(TL,L,P,R).
 
 listForceBlockPositionDiagonalBottomRightTopLeft(TL,L,P,R):-
@@ -1392,7 +1502,8 @@ listForceBlockPositionDiagonalBottomRightTopLeft(TL,L,P,R):-
 	(Y4 = Y2 - 3) &
 	(YR = Y2 + 1) &
 	not .member(pos(X3,Y3),TL) &
-	.concat([pos(X3,Y3)],TL,TL2) &
+	not .member(pos(X4,Y4),TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],TL,TL2) &
 	listForceBlockPositionDiagonalBottomRightTopLeft(TL2,L,P,R).
 
 listForceBlockPositionDiagonalBottomRightTopLeft([],[],_,_).
@@ -1410,7 +1521,7 @@ listForceBlockPositionDiagonalTopRightBottomLeft([],L,P,R):-
 	(Y3 = Y2 + 1) &
 	(Y4 = Y2 + 2) &
 	(YR = Y2 - 2) &
-	.concat([pos(X3,Y3)],[],TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],[],TL) &
 	listForceBlockPositionDiagonalTopRightBottomLeft(TL,L,P,R).
 
 listForceBlockPositionDiagonalTopRightBottomLeft(TL,L,P,R):-
@@ -1425,7 +1536,8 @@ listForceBlockPositionDiagonalTopRightBottomLeft(TL,L,P,R):-
 	(Y4 = Y2 + 2) &
 	(YR = Y2 - 2) &
 	not .member(pos(X3,Y3),TL) &
-	.concat([pos(X3,Y3)],TL,TL2) &
+	çnot .member(pos(X4,Y4),TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],TL,TL2) &
 	listForceBlockPositionDiagonalTopRightBottomLeft(TL2,L,P,R).
 
 listForceBlockPositionDiagonalTopRightBottomLeft([],[],_,_).
@@ -1443,7 +1555,7 @@ listForceBlockPositionDiagonalBottomLeftTopRight([],L,P,R):-
 	(Y3 = Y2 - 2) &
 	(Y4 = Y2 - 3) &
 	(YR = Y2 + 1) &
-	.concat([pos(X3,Y3)],[],TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],[],TL) &
 	listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,P,R).
 
 listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,P,R):-
@@ -1458,11 +1570,296 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,P,R):-
 	(Y4 = Y2 - 3) &
 	(YR = Y2 + 1) &
 	not .member(pos(X3,Y3),TL) &
-	.concat([pos(X3,Y3)],TL,TL2) &
+	not .member(pos(X4,Y4),TL) &
+	.concat([pos(X3,Y3),pos(X4,Y4)],TL,TL2) &
 	listForceBlockPositionDiagonalBottomLeftTopRight(TL2,L,P,R).
 
 listForceBlockPositionDiagonalBottomLeftTopRight([],[],_,_).
 listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionVerticalTwoInThree([],L,P,R):-
+	verticalTwoInThree(X,Y1,X,Y3,P) &
+	tablero(X,Y0,0)[source(percept)] &
+	tablero(X,YR,R)[source(percept)] &
+	(((Y0 = Y3 + 1) &
+	  (YR = Y3 - 3)) |
+	 ((Y0 = Y3 - 3) &
+	  (YR = Y3 + 1))) &
+	(YD = Y3 - 1) &
+	.concat([pos(X,YD),pos(X,Y0)],[],LT) &
+	listForceBlockPositionVerticalTwoInThree(LT,L,P,R).
+
+listForceBlockPositionVerticalTwoInThree(LT,L,P,R):-
+	verticalTwoInThree(X,Y1,X,Y3,P) &
+	tablero(X,Y0,0)[source(percept)] &
+	tablero(X,YR,R)[source(percept)] &
+	(((Y0 = Y3 + 1) &
+	  (YR = Y3 - 3)) |
+	 ((Y0 = Y3 - 3) &
+	  (YR = Y3 + 1))) &
+	(YD = Y3 - 1) &
+	not .member(pos(X,YD),LT) &
+	not .member(pos(X,Y0),LT) &
+	.concat([pos(X,YD),pos(X,Y0)],LT,LT2) &
+	listForceBlockPositionVerticalTwoInThree(LT2,L,P,R).
+
+listForceBlockPositionVerticalTwoInThree([],[],_,_).
+listForceBlockPositionVerticalTwoInThree(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionHorizontalTwoInThree([],L,P,R):-
+	horizontalTwoInThree(X1,Y,X3,Y,P) &
+	tablero(X0,Y,0)[source(percept)] &
+	tablero(XR,Y,R)[source(percept)] &
+	(((X0 = X3 + 1) &
+	  (XR = X3 - 3)) |
+	 ((X0 = X3 - 3) &
+	  (XR = X3 + 1))) &
+	(XD = X3 - 1) &
+	.concat([pos(XD,Y),pos(X0,Y)],[],LT) &
+	listForceBlockPositionHorizontalTwoInThree(LT,L,P,R).
+
+listForceBlockPositionHorizontalTwoInThree(LT,L,P,R):-
+	horizontalTwoInThree(X1,Y,X3,Y,P) &
+	tablero(X0,Y,0)[source(percept)] &
+	tablero(XR,Y,R)[source(percept)] &
+	(((X0 = X3 + 1) &
+	  (XR = X3 - 3)) |
+	 ((X0 = X3 - 3) &
+	  (XR = X3 + 1))) &
+	(XD = X3 - 1) &
+	not .member(pos(XD,Y),LT) &
+	not .member(pos(X0,Y),LT) &
+	.concat([pos(XD,Y),pos(X0,Y)],LT,LT2) &
+	listForceBlockPositionHorizontalTwoInThree(LT2,L,P,R).
+
+listForceBlockPositionHorizontalTwoInThree([],[],_,_).
+listForceBlockPositionHorizontalTwoInThree(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionDiagonalTwoInThreeLeft([],L,P,R):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(X0,Y0,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(((X0 = X3 + 1) &
+	  (XR = X3 - 3) &
+	  (Y0 = Y3 + 1) &
+	  (YR = Y3 - 3)) |
+	 ((X0 = X3 - 3) &
+	  (XR = X3 + 1) &
+	  (Y0 = Y3 - 3) &
+	  (YR = Y3 + 1))) &
+	(XD = X3 - 1) &
+	(YD = Y3 - 1) &
+	.concat([pos(XD,YD),pos(X0,Y0)],[],LT) &
+	listForceBlockPositionDiagonalTwoInThreeLeft(LT,L,P,R).
+
+listForceBlockPositionDiagonalTwoInThreeLeft(LT,L,P,R):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(X0,Y0,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(((X0 = X3 + 1) &
+	  (XR = X3 - 3) &
+	  (Y0 = Y3 + 1) &
+	  (YR = Y3 - 3)) |
+	 ((X0 = X3 - 3) &
+	  (XR = X3 + 1) &
+	  (Y0 = Y3 - 3) &
+	  (YR = Y3 + 1))) &
+	(XD = X3 - 1) &
+	(YD = Y3 - 1) &
+	not .member(pos(XD,YD),LT) &
+	not .member(pos(X0,Y0),LT) &
+	.concat([pos(XD,YD),pos(X0,Y0)],LT,LT2) &
+	listForceBlockPositionDiagonalTwoInThreeLeft(LT2,L,P,R).
+
+listForceBlockPositionDiagonalTwoInThreeLeft([],[],_,_).
+listForceBlockPositionDiagonalTwoInThreeLeft(TL,L,_,_):- L = TL.
+
+
+listForceBlockPositionDiagonalTwoInThreeRight([],L,P,R):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(X0,Y0,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(((X0 = X3 - 1) &
+	  (XR = X3 + 3) &
+	  (Y0 = Y3 + 1) &
+	  (YR = Y3 - 3)) |
+	 ((X0 = X3 + 3) &
+	  (XR = X3 - 1) &
+	  (Y0 = Y3 - 3) &
+	  (YR = Y3 + 1))) &
+	(XD = X3 + 1) &
+	(YD = Y3 - 1) &
+	.concat([pos(XD,YD),pos(X0,Y0)],[],LT) &
+	listForceBlockPositionDiagonalTwoInThreeRight(LT,L,P,R).
+
+listForceBlockPositionDiagonalTwoInThreeRight(LT,L,P,R):-
+	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
+	tablero(X0,Y0,0)[source(percept)] &
+	tablero(XR,YR,R)[source(percept)] &
+	(((X0 = X3 - 1) &
+	  (XR = X3 + 3) &
+	  (Y0 = Y3 + 1) &
+	  (YR = Y3 - 3)) |
+	 ((X0 = X3 + 3) &
+	  (XR = X3 - 1) &
+	  (Y0 = Y3 - 3) &
+	  (YR = Y3 + 1))) &
+	(XD = X3 + 1) &
+	(YD = Y3 - 1) &
+	not .member(pos(XD,YD),LT) &
+	not .member(pos(X0,Y0),LT) &
+	.concat([pos(XD,YD),pos(X0,Y0)],LT,LT2) &
+	listForceBlockPositionDiagonalTwoInThreeRight(LT2,L,P,R).
+
+listForceBlockPositionDiagonalTwoInThreeRight([],[],_,_).
+listForceBlockPositionDiagonalTwoInThreeRight(TL,L,_,_):- L = TL.
+
+
+
+listForceBlockPositionVerticalTwoInFour([],L,P,R):-
+	verticalTwoInFour(X,Y0,X,Y3,P) &
+	tablero(X,YR,R)[source(percept)] &
+	(((YR = Y0 - 1) &
+	  (YD = Y0 + 1) &
+	  (YD1 = Y0 + 2) |
+	 ((YR = Y3 + 1) &
+	  (YD = Y3 - 1) &
+	  (YD1 = Y3 - 2))) &
+	.concat([pos(X,YD),pos(X,YD1)],[],LT) &
+	listForceBlockPositionVerticalTwoInFour(LT,L,P,R).
+
+listForceBlockPositionVerticalTwoInFour(LT,L,P,R):-
+	verticalTwoInFour(X,Y0,X,Y3,P) &
+	tablero(X,YR,R)[source(percept)] &
+	(((YR = Y0 - 1) &
+	  (YD = Y0 + 1) &
+	  (YD1 = Y0 + 2) |
+	 ((YR = Y3 + 1) &
+	  (YD = Y3 - 1) &
+	  (YD1 = Y3 - 2))) &
+	not .member(pos(X,YD),LT) &
+	not .member(pos(X,YD1),LT) &
+	.concat([pos(X,YD),pos(X,YD1)],LT,LT2) &
+	listForceBlockPositionVerticalTwoInFour(LT2,L,P,R).
+
+listForceBlockPositionVerticalTwoInFour([],[],_,_).
+listForceBlockPositionVerticalTwoInFour(LT,L,_,_):- L = LT.
+
+
+listForceBlockPositionHorizontalTwoInFour([],L,P,R):-
+	horizontalTwoInFour(X0,Y,X3,Y,P) &
+	tablero(XR,Y,R)[source(percept)] &
+	(((XR = X0 - 1) &
+	  (XD = X0 + 1) &
+	  (XD1 = X0 + 2)) |
+	 ((XR = X3 + 1) &
+	  (XD = X3 - 1) &
+	  (XD1 = X3 - 2))) &
+	.concat([pos(XD,Y),pos(XD1,Y)],[],LT) &
+	listForceBlockPositionHorizontalTwoInFour(LT,L,P,R).
+
+listForceBlockPositionHorizontalTwoInFour(LT,L,P,R):-
+	horizontalTwoInFour(X0,Y,X3,Y,P) &
+	tablero(XR,Y,R)[source(percept)] &
+	(((XR = X0 - 1) &
+	  (XD = X0 + 1) &
+	  (XD1 = X0 + 2)) |
+	 ((XR = X3 + 1) &
+	  (XD = X3 - 1) &
+	  (XD1 = X3 - 2))) &
+	not .member(pos(XD,Y),LT) &
+	.concat([pos(XD,Y),pos(XD1,Y)],LT,LT2) &
+	listForceBlockPositionHorizontalTwoInFour(LT2,L,P,R).
+
+listForceBlockPositionHorizontalTwoInFour([],[],_,_).
+listForceBlockPositionHorizontalTwoInFour(LT,L,_,_):- L = LT.
+
+
+listForceBlockPositionDiagonalTwoInFourLeft([],L,P,R):-
+	diagonalTwoInFour(X0,Y0,X3,Y3,P) &
+	tablero(XR,YR,R)[source(percept)] &
+	(((XR = X0 - 1) &
+	  (XD = X0 + 1) &
+	  (XD1 = X0 + 2) &
+	  (YR = Y0 - 1) &
+	  (YD = Y0 + 1) &
+	  (YD1 = Y0 + 2)) |
+	 ((XR = X3 + 1) &
+	  (XD = X3 - 1) &
+	  (XD1 = X3 - 2) &
+	  (YR = Y3 + 1) &
+	  (YD = Y3 - 1) &
+	  (YD1 = Y3 - 2))) &
+	.concat([pos(XD,YD),pos(XD1,YD1)],[],LT) &
+	listForceBlockPositionDiagonalTwoInFourLeft(LT,L,P,R).
+
+listForceBlockPositionDiagonalTwoInFourLeft(LT,L,P,R):-
+	diagonalTwoInFour(X0,Y0,X3,Y3,P) &
+	tablero(XR,YR,R)[source(percept)] &
+	(((XR = X0 - 1) &
+	  (XD = X0 + 1) &
+	  (XD1 = X0 + 2) &
+	  (YR = Y0 - 1) &
+	  (YD = Y0 + 1) &
+	  (YD1 = Y0 + 2)) |
+	 ((XR = X3 + 1) &
+	  (XD = X3 - 1) &
+	  (XD1 = X3 - 2) &
+	  (YR = Y3 + 1) &
+	  (YD = Y3 - 1) &
+	  (YD1 = Y3 - 2))) &
+	not .member(pos(XD,YD),LT) &
+	not .member(pos(XD1,YD1),LT) &
+	.concat([pos(XD,YD),pos(XD1,YD1)],LT,LT2) &
+	listForceBlockPositionDiagonalTwoInFourLeft(LT2,L,P,R).
+
+listForceBlockPositionDiagonalTwoInFourLeft([],[],_,_).
+listForceBlockPositionDiagonalTwoInFourLeft(LT,L,_,_):- L = LT.
+
+
+listForceBlockPositionDiagonalTwoInFourRight([],L,P,R):-
+	diagonalTwoInFour(X0,Y0,X3,Y3,P) &
+	tablero(XR,YR,R)[source(percept)] &
+	(((XR = X0 + 1) &
+	  (XD = X0 - 1) &
+	  (XD1 = X0 - 2) &
+	  (YR = Y0 - 1) &
+	  (YD = Y0 + 1) &
+	  (YD1 = Y0 + 2)) |
+	 ((XR = X3 - 1) &
+	  (XD = X3 + 1) &
+	  (XD1 = X3 + 2) &
+	  (YR = Y3 + 1) &
+	  (YD = Y3 - 1) &
+	  (YD1 = Y3 - 2))) &
+	.concat([pos(XD,YD),pos(XD1,YD1)],[],LT) &
+	listForceBlockPositionDiagonalTwoInFourRight(LT,L,P,R).
+
+listForceBlockPositionDiagonalTwoInFourRight(LT,L,P,R):-
+	diagonalTwoInFour(X0,Y0,X3,Y3,P) &
+	tablero(XR,YR,R)[source(percept)] &
+	(((XR = X0 + 1) &
+	  (XD = X0 - 1) &
+	  (XD1 = X0 - 2) &
+	  (YR = Y0 - 1) &
+	  (YD = Y0 + 1) &
+	  (YD1 = Y0 + 2)) |
+	 ((XR = X3 - 1) &
+	  (XD = X3 + 1) &
+	  (XD1 = X3 + 2) &
+	  (YR = Y3 + 1) &
+	  (YD = Y3 - 1) &
+	  (YD1 = Y3 - 2))) &
+	not .member(pos(XD,YD),LT) &
+	not .member(pos(XD1,YD1),LT) &
+	.concat([pos(XD,YD),pos(XD1,YD1)],LT,LT2) &
+	listForceBlockPositionDiagonalTwoInFourRight(LT2,L,P,R).
+
+listForceBlockPositionDiagonalTwoInFourRight([],[],_,_).
+listForceBlockPositionDiagonalTwoInFourRight(LT,L,_,_):- L = LT.
 
 /* Initial goals */
 
@@ -1539,20 +1936,6 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 // MOVEMENT PLAN
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /////////////////////////////////////////
 ////////////////TEST PLANS///////////////
 /////////////////////////////////////////
@@ -1565,29 +1948,41 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	.println("");
 
 	//!testPackage1(S1,T1);
-	//.println("First package done: ",S1,"/",T1);
 	//!resetBoardTests;
 	//.println("");
 
 	//!testPackage2(S2,T2);
-	//.println("Second package done: ",S2,"/",T2);
 	//!resetBoardTests;
 	//.println("");
 
 	//!testPackage3(S3,T3);
-	//.println("Third package done: ",S3,"/",T3);
 	//!resetBoardTests;
 	//.println("");
 
 	//!testPackage4(S4,T4);
-	//.println("Fourth package done: ",S4,"/",T4);
 	//!resetBoardTests;
 	//.println("");
 
-	!testPackage5(S5,T5);
-	.println("Fourth package done: ",S5,"/",T5);
+	//!testPackage5(S5,T5);
 	//!resetBoardTests;
-	.println("");
+	//.println("");
+
+	//!testPackage6(S6,T6);
+	//!resetBoardTests;
+	//.println("");
+
+	//!testPackage7(S7,T7);
+	//!resetBoardTests;
+	//.println("");
+
+
+	//.println("First package done: ",S1,"/",T1);
+	//.println("Second package done: ",S2,"/",T2);
+	//.println("Third package done: ",S3,"/",T3);
+	//.println("Fourth package done: ",S4,"/",T4);
+	//.println("Fifth package done: ",S5,"/",T5);
+	//.println("Sixth package done: ",S6,"/",T6);
+	//.println("Seventh package done: ",S7,"/",T7);
 
 
 	.println("All tests done...");
@@ -1595,6 +1990,7 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	.println("DONE.");
 	.println("");
 	.println("").
+
 
 // Tests package 1
 +!testPackage1(Sucesfull,Total) <-
@@ -1660,7 +2056,7 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 // Tests package 2
 +!testPackage2(Sucesfull,Total) <-
 	.println("Running testPackage2...");
-	Total = 20;
+	Total = 20;//22 
 	!generateTestBoard2;
 	!testListHorizontalWinPositionsLeft(N1); //DONE
 	.println("");
@@ -1675,7 +2071,7 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	!testListDiagonalWinPositionsBottomRight(N6); //DONE
 	.println("");
 	!testListDiagonalWinPositionsTopRight(N7); //DONE
-	.println("");
+	.println("")
 	!testListDiagonalWinPositionsBottomLeft(N8); //DONE
 	.println("");
 	!testListDiagonalWinPositionsTwoInThreeTopLeft(N9); //DONE
@@ -1684,7 +2080,7 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	.println("");
 	!testListDiagonalWinPositionsTwoInThreeTopRight(N11); //DONE
 	.println("");
-	!testListDiagonalWinPostionsTwoInThreeBottomRight(N12); //DONE
+	!testListDiagonalWinPositionsTwoInThreeBottomRight(N12); //DONE
 	.println("");
 	!testListVerticalWinPositions(N13); //DONE
 	.println("");
@@ -1702,11 +2098,11 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	.println("");
 	!testTwoInFourPairs(N20); //DONE
 	.println("");
-	!testAllMyForms(N21); //NOT WORKING
-	.println("");
-	!testAllHisForms(N22); //NOT WORKING
+	//!testAllMyForms(N21); //NOT WORKING <- NEEDS CHECKING 
+	//.println("");
+	//!testAllHisForms(N22); //NOT WORKING <- NEEDS CHECKING
 	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8+N9+N10+N11+N12+N13+N14+N15+
-	N16+N17+N18+N19+N20+N21+N22.
+	N16+N17+N18+N19+N20.//+N21+N22.
 
 
 // Tests package 3
@@ -1740,13 +2136,13 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	Total = 4;
 	!generateTestBoard4;
 	.println("");
-	!testListTripleTwoInThreeVertical(N1);
+	!testListTripleTwoInThreeVertical(N1); //DONE
 	.println("");
-	!testListTripleTwoInThreeHorizontal(N2);
+	!testListTripleTwoInThreeHorizontal(N2); //DONE
 	.println("");
-	!testListTripleTwoInThreeDiagonalLeft(N3);
+	!testListTripleTwoInThreeDiagonalLeft(N3); //DONE
 	.println("");
-	!testListTripleTwoInThreeDiagonalRight(N4);
+	!testListTripleTwoInThreeDiagonalRight(N4); //DONE
 	.println("");
 	Sucesfull = N1+N2+N3+N4.
 
@@ -1757,48 +2153,55 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	Total = 8;
 	!generateTestBoard5;
 	.println("");
-	!testListForceBlockPositionVerticalTopBottom(N1);
+	!testListForceBlockPositionVerticalTopBottom(N1); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionVerticalBottomTop(N2);
+	!testListForceBlockPositionVerticalBottomTop(N2);//REHACER TESTS
 	.println("");
-	!testListForceBlockPositionHorizontalLeftRight(N3);
+	!testListForceBlockPositionHorizontalLeftRight(N3);//REHACER TESTS
 	.println("");
-	!testListForceBlockPositionHorizontalRightLeft(N4);
+	!testListForceBlockPositionHorizontalRightLeft(N4);//REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalTopLeftBottomRight(N5);
+	!testListForceBlockPositionDiagonalTopLeftBottomRight(N5);//REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalBottomRightTopLeft(N6);
+	!testListForceBlockPositionDiagonalBottomRightTopLeft(N6);//REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalTopRightBottomLeft(N7);
+	!testListForceBlockPositionDiagonalTopRightBottomLeft(N7);//REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalBottomLeftTopRight(N8);
+	!testListForceBlockPositionDiagonalBottomLeftTopRight(N8);//REHACER TESTS
 	.println("");
 	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8.
 
 
 // Tests package 6
 +!testPackage6(Sucesfull,Total) <-
-	.println("Running testPackage5...");
-	Total = ;
 	!generateTestBoard6;
+	.println("Running testPackage6...");
+	Total = 4;
+	!testListForceBlockPositionVerticalTwoInThree(N1); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionVerticalTopBottom(N1);
+	!testListForceBlockPositionHorizontalTwoInThree(N2); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionVerticalBottomTop(N2);
+	!testListForceBlockPositionDiagonalTwoInThreeLeft(N3); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionHorizontalLeftRight(N3);
+	!testListForceBlockPositionDiagonalTwoInThreeRight(N4); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionHorizontalRightLeft(N4);
+	Sucesfull = N1+N2+N3+N4.
+
+
+// Tests package 7
++!testPackage7(Sucesfull,Total) <-
+	!generateTestBoard7;
+	.println("Running testPackage7...");
+	Total = 4;
+	!testListForceBlockPositionVerticalTwoInFour(N1); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalTopLeftBottomRight(N5);
+	!testListForceBlockPositionHorizontalTwoInFour(N2); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalBottomRightTopLeft(N6);
+	!testListForceBlockPositionDiagonalTwoInFourLeft(N3); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalTopRightBottomLeft(N7);
+	!testListForceBlockPositionDiagonalTwoInFourRight(N4); //REHACER TESTS
 	.println("");
-	!testListForceBlockPositionDiagonalBottomLeftTopRight(N8);
-	.println("");
-	Sucesfull = N1+N2+N3+N4+N5+N6+N7+N8.
+	Sucesfull = N1+N2+N3+N4.
 
 
 // Resets the board
@@ -1904,7 +2307,8 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 
 
 +!generateTestBoard6 <-
-	//Adds the test board beliefs
+	// Adds the test board beliefs
+	+testPut(1,3);
 	+testPut(0,2);
 	+testPut(0,4);
 	+testPut(0,6);
@@ -1926,7 +2330,28 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	+testPut(7,6);
 	.send(player2,achieve,test6);
 	!playToTest.
+	
 
++!generateTestBoard7 <-
+	// Adds the test board beliefs
+	+testPut(0,1);
+	+testPut(0,4);
+	+testPut(1,0);
+	+testPut(2,6);
+	+testPut(3,2);
+	+testPut(3,3);
+	+testPut(3,4);
+	+testPut(4,0);
+	+testPut(5,3);
+	+testPut(6,1);
+	+testPut(6,5);
+	+testPut(6,6);
+	+testPut(6,7);
+	+testPut(7,6);
+	+testPut(7,3);
+	+testPut(3,7);
+	.send(player2,achieve,test7);
+	!playToTest.
 
 
 // Plan to play a few rounds and generate a board's state to test
@@ -2858,13 +3283,17 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	N = 0.	
 
 
+
+//HAY QUE REHACERLAS
 +!testListForceBlockPositionVerticalTopBottom(N):
 	.println("Running test [testListForceBlockPositionVerticalTopBottom]") &
 	listForceBlockPositionVerticalTopBottom([],L,1,2) &
 	.member(pos(1,3),L) &
 	.member(pos(6,3),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2878,8 +3307,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionVerticalBottomTop([],L,1,2) &
 	.member(pos(1,4),L) &
 	.member(pos(6,4),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2893,8 +3324,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionHorizontalLeftRight([],L,1,2) &
 	.member(pos(3,6),L) &
 	.member(pos(3,1),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2908,8 +3341,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionHorizontalRightLeft([],L,1,2) &
 	.member(pos(4,6),L) &
 	.member(pos(4,1),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2923,8 +3358,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionDiagonalTopLeftBottomRight([],L,1,2) &
 	.member(pos(3,3),L) &
 	.member(pos(3,4),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2938,8 +3375,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionDiagonalBottomRightTopLeft([],L,1,2) &
 	.member(pos(4,3),L) &
 	.member(pos(4,4),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2953,8 +3392,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionDiagonalTopRightBottomLeft([],L,1,2) &
 	.member(pos(4,3),L) &
 	.member(pos(3,3),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2968,8 +3409,10 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	listForceBlockPositionDiagonalBottomLeftTopRight([],L,1,2) &
 	.member(pos(3,4),L) &
 	.member(pos(4,4),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
 	.length(L,M) &
-	M = 2 <-
+	M = 4 <-
 		N = 1;
 		.print("Test sucesfull").
 
@@ -2978,6 +3421,165 @@ listForceBlockPositionDiagonalBottomLeftTopRight(TL,L,_,_):- L = TL.
 	N = 0.
 
 
++!testListForceBlockPositionVerticalTwoInThree(N):
+	.println("Running test [ListForceBlockPositionVerticalTwoInThree]") &
+	listForceBlockPositionVerticalTwoInThree([],L,1,2) &
+	.member(pos(0,3),L) &
+	.member(pos(0,5),L) &
+	.member(pos(7,3),L) &
+	.member(pos(7,5),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M = 8 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionVerticalTwoInThree(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionHorizontalTwoInThree(N):
+	.println("Running test [ListForceBlockPositionHorizontalTwoInThree]") &
+	listForceBlockPositionHorizontalTwoInThree([],L,2,1) &
+	.print(L) &
+	.member(pos(2,2),L) &
+	.member(pos(2,0),L) &
+	.member(pos(2,6),L) &
+	.member(pos(4,7),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M = 8 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionHorizontalTwoInThree(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalTwoInThreeLeft(N):
+	.println("Running test [ListForceBlockPositionDiagonalTwoInThreeLeft]") &
+	listForceBlockPositionDiagonalTwoInThreeLeft([],L,1,2) &
+	listForceBlockPositionDiagonalTwoInThreeLeft([],L2,2,1) &
+	.member(pos(4,4),L) &
+	.member(pos(4,3),L2) &
+	.member(pos(,),L) &
+	.member(pos(,),L2) &
+	.length(L,M) &
+	.length(L2,M2) &
+	M = 2 &
+	M2 = 2 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalTwoInThreeLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalTwoInThreeRight(N):
+	.println("Running test [ListForceBlockPositionDiagonalTwoInThreeRight]") &
+	listForceBlockPositionDiagonalTwoInThreeRight([],L,2,1) &
+	listForceBlockPositionDiagonalTwoInThreeRight([],L2,1,2) &
+	.print("L1: ",L) &
+	.print("L2: ",L2) &
+	.member(pos(4,4),L) &
+	.member(pos(4,5),L) &
+	.member(pos(),L) &
+	.member(pos(),L) &
+	.member(pos(4,2),L2) &
+	.member(pos(4,3),L2) &
+	.member(pos(,),L2) &
+	.member(pos(,),L2) &
+	.length(L,M) &
+	.length(L2,M2) &
+	M = 4 &
+	M2 = 4 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalTwoInThreeRight(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionVerticalTwoInFour(N):
+	.println("Running test [testListForceBlockPositionVerticalTwoInFour]") &
+	listForceBlockPositionVerticalTwoInFour([],L,1,2) &
+	.member(pos(0,2),L) & 
+	.member(pos(7,5),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M = 4 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionVerticalTwoInFour(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionHorizontalTwoInFour(N):
+	.println("Running test [testListForceBlockPositionHorizontalTwoInFour]") &
+	listForceBlockPositionHorizontalTwoInFour([],L,1,2) &
+	.member(pos(2,0),L) & 
+	.member(pos(3,0),L) &
+	.member(pos(5,7),L) &
+	.member(pos(4,7),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M = 8 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionHorizontalTwoInFour(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalTwoInFourLeft(N):
+	.println("Running test [testListForceBlockPositionDiagonalTwoInFourLeft]") &
+	listForceBlockPositionDiagonalTwoInFourLeft([],L,1,2) &
+	.member(pos(4,3),L) & 
+	.member(pos(2,3),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M = 4 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalTwoInFourLeft(N) <-
+	.print("Test failed");
+	N = 0.
+
+
++!testListForceBlockPositionDiagonalTwoInFourRight(N):
+	.println("Running test [testListForceBlockPositionDiagonalTwoInFourRight]") &
+	listForceBlockPositionDiagonalTwoInFourRight([],L,1,2) &
+	.member(pos(5,2),L) & 
+	.member(pos(3,5),L) &
+	.member(pos(,),L) &
+	.member(pos(,),L) &
+	.length(L,M) &
+	M = 4 <-
+		N = 1;
+		.print("Test sucesfull").
+
++!testListForceBlockPositionDiagonalTwoInFourRight(N) <-
+	.print("Test failed");
+	N = 0.
 
 
 

@@ -8,7 +8,6 @@
 /* Initial goals */
 
 
-
 /* Plans */
 
 
@@ -125,6 +124,25 @@
 	+testPut(6,6);
 	+testPut(7,1);
 	+testPut(7,7);
+	!playToTest.
+
+
++!test7[source(player1)] <-
+	+testPut(0,0);
+	+testPut(1,7);
+	+testPut(2,1);
+	+testPut(4,5);
+	+testPut(7,0);
+	+testPut(7,7);
+	+testPut(5,0);
+	+testPut(6,0);
+	+testPut(1,6);
+	+testPut(7,1);
+	+testPut(7,2);
+	+testPut(0,7);
+	+testPut(0,6);
+	+testPut(2,7);
+	+testPut(0,5);
 	!playToTest.
 
 
