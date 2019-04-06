@@ -35,9 +35,9 @@ MAS cuatroenraya {
     agents:
 
 	
-        player1;
+        player1 player.asl;
 
-        player2;
+        player2 player.asl;
 
 }
 

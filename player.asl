@@ -238,7 +238,7 @@ tripleDiagonal(X1,Y1,X2,Y2,XD,YD,P):-
 winningTrioTinT([],[],_).
 
 winningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|L], [pos(X,Y)|TL], P):-
-	tripleT(X1,Y1,X2,Y2,X,Y,P).
+	tripleTinT(X1,Y1,X2,Y2,X,Y,P).
 
 winningTrioTinT([_|L], TL, P):-
 	winningTrioTinT(L, TL ,P).
@@ -1563,43 +1563,3 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 //ERRORS
 +!play <- .print("Error in !play").
 +!playToLose <- .print("Error in !playToLose").
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
------ESTRATEGIA-----
-nextMove(X,Y):-
-	nextMoveWin(X,Y) |
-	nextMoveLose(X,Y) |
-	nextMoveCheck(X,Y) |
-	nextMoveNextMoveWin(X,Y) |
-	nextMoveForceBlock(X,Y) |
-	nextMoveNadaMas().
-
-*/
