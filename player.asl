@@ -74,101 +74,79 @@ closerToCenter(X,Y):-
 // Rules to decide next move in winning game
 // NEXT MOVE WIN
 nextMove(X, Y):-
-	.print("winning move IN") &
 	player(P) &
-	winnerPlayer([pos(X,Y)|_]) &
-	.print("winning move OUT").
+	winnerPlayer([pos(X,Y)|_]).
 
 // NEXT MOVE LOSE
 nextMove(X, Y):-
-	.print("lose is inevitable IN") &
 	player(P) &
 	rival(R) &
-	winnerRival([pos(X,Y)|_]) &
-	.print("lose is inevitable OUT").
+	winnerRival([pos(X,Y)|_]).
 
 	
 // NEXT MOVE CHECK
 nextMove(X, Y):-
-	.print("player in check, has to block IN") &
 	rival(R) &
-	winnerRival([pos(X,Y)]) &
-	.print("player in check, has to block OUT").
+	winnerRival([pos(X,Y)]).
 
 
 // NEXT MOVE NEXT MOVE WIN
 nextMove(X,Y):-
-	.print("player can win in the next move IN") &
-	winningTrioPlayer([pos(X,Y)|_]) &
-	.print("player can win in the next move OUT").
+	winningTrioPlayer([pos(X,Y)|_]).
 
 
 nextMove(X,Y):-
-	.print("player can win in the next move TinT IN") &
-	winningTrioTPlayer([pos(X,Y)|_]) &
-	.print("player can win in the next move TinT OUT").
+	winningTrioTPlayer([pos(X,Y)|_]).
 
 
 
 // NEXT MOVE RIVAL NEXT MOVE WIN
 nextMove(X,Y):-
-	.print("RIVAL can win in the next move IN") &
 	rival(R) &
 	player(P) &
 	blockForcePlayer(BFLP) &
 	.length(BFLP, 0) &
-	winningTrioRival([pos(X,Y)|_]) &
-	.print("RIVAL can win in the next move OUT").
+	winningTrioRival([pos(X,Y)|_]).
 
 
 nextMove(X,Y):-
-	.print("RIVAL can win in the next move TinT IN") &
 	rival(R) &
 	player(P) &
 	blockForcePlayer(BFLP) &
 	.length(BFLP, 0) &
-	winningTrioTRival([pos(X,Y)|_]) &
-	.print("RIVAL can win in the next move TinT OUT").
+	winningTrioTRival([pos(X,Y)|_]).
 
 
 // NEXT MOVE FORCE BLOCK
 
 // FORCE BLOCK NEXT MOVE WIN
 nextMove(X,Y):-
-	.print("player can win in the next move BLOCK IN") &
 	player(P) &
 	blockForcePlayer(BFLP) &
 	not .length(BFLP, 0) &
 	.sort(BFLP, L) &
-	checkRepeat(L, X, Y) &
-	.print("player can win in the next move BLOCK OUT").
+	checkRepeat(L, X, Y).
 
 
 
 // FORCE BLOCK RIVAL NEXT MOVE WIN
 nextMove(X,Y):-
-	.print("player forces to block IN") &
 	player(P) &
 	blockForcePlayer([pos(X,Y)|_]) &
-	.print("player forces to block OUT").
 
 
 nextMove(X,Y):-
-	.print("player can win in the two/three next moves IN") &
 	player(P) &
 	blockForcePlayer(BFLP) &
 	not .length(BFLP, 0) &
-	bestMoveBlock(BFLP, X, Y, P) &
-	.print("player can win in the two/three next moves OUT").
+	bestMoveBlock(BFLP, X, Y, P).
 
 
 // NEXT MOVE NADA M�?S
 nextMove(X,Y):-
-	.print("no se puede hacer nada más IN") &
 	player(P) &
 	tablero(X,Y,0)[source(percept)] &
-	utilPos(X, Y, P) &
-	.print("no se puede hacer nada más OUT").
+	utilPos(X, Y, P).
 
 	
 // rules to determinate when a pair can become a winning trio
