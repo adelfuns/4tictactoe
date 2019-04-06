@@ -27,7 +27,6 @@ rivalNumber(X,1):-
 
 
 // if player moves second, chooses the closest cell between rival's movement and the center
-
 // in case the rival puts their first chip on a corner
 closerToCenter(X,Y):-
 	jugadaActual(pos(XR,YR)) &
@@ -73,86 +72,116 @@ closerToCenter(X,Y):-
 
 
 // Rules to decide next move in winning game
-
-// winning move
+// NEXT MOVE WIN
 nextMove(X, Y):-
-	estrategia(jugarAGanar) &
+	.print("winning move IN") &
 	player(P) &
-	winnerTotal([pos(X,Y)|_], P).
+	winnerPlayer([pos(X,Y)|_]) &
+	.print("winning move OUT").
+
+// NEXT MOVE LOSE
+nextMove(X, Y):-
+	.print("lose is inevitable IN") &
+	player(P) &
+	rival(R) &
+	winnerRival([pos(X,Y)|_]) &
+	.print("lose is inevitable OUT").
+
 	
-// player in check, has to block
+// NEXT MOVE CHECK
 nextMove(X, Y):-
-	estrategia(jugarAGanar) &
+	.print("player in check, has to block IN") &
 	rival(R) &
-	winnerTotal([pos(X,Y)],R).
+	winnerRival([pos(X,Y)]) &
+	.print("player in check, has to block OUT").
 
-// lose is inevitable
-nextMove(X, Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	rival(R) &
-	winnerTotal([pos(X,Y)|_],R).
 
-// player can win in the next move
+// NEXT MOVE NEXT MOVE WIN
 nextMove(X,Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	pairs(PL, P) &
-	not .empty(PL) &
-	winningTrio(PL, X, Y,P).
+	.print("player can win in the next move IN") &
+	winningTrioPlayer([pos(X,Y)|_]) &
+	.print("player can win in the next move OUT").
+
 
 nextMove(X,Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	twoInThreePairs(TL, P) &
-	not .empty(TL) &
-	winningTrioTinT(TL, X, Y, P).
+	.print("player can win in the next move TinT IN") &
+	winningTrioTPlayer([pos(X,Y)|_]) &
+	.print("player can win in the next move TinT OUT").
 
-// player forces rival to block them
-nextMove(X,Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	rival(R) &
-	twoInFourPairs(FL, P) &
-	not .empty(FL) &
-	notWinningTrioTinF(FL, L, P, R) & 
-	not ventaja(0) &
-	elegireldosencuatro. //Falta implementar
 
-nextMove(X,Y):-
-	estrategia(jugarAGanar) &
-	player(P) &
-	rival(R) &
-	twoInThreePairs(TL, P) &
-	not .empty(TL) &
-	notWinningTrioTinT(TL, L, P, R) &
-	elegireldosentres. //Falta implementar
 
+// NEXT MOVE RIVAL NEXT MOVE WIN
 nextMove(X,Y):-
-	estrategia(jugarAGanar) &
+	.print("RIVAL can win in the next move IN") &
 	rival(R) &
 	player(P) &
-	pairs(PL, P) &
-	not .empty(PL) &
-	notWinningTrio(PL,L, P, R) &
-	elegirelpar. //Falta implementar
+	blockForcePlayer(BFLP) &
+	.length(BFLP, 0) &
+	winningTrioRival([pos(X,Y)|_]) &
+	.print("RIVAL can win in the next move OUT").
+
 
 nextMove(X,Y):-
-	estrategia(jugarAGanar) &
+	.print("RIVAL can win in the next move TinT IN") &
+	rival(R) &
 	player(P) &
-	pairs(PL, P) &
-	not .empty(PL) &
-	bestMove(PL, X, Y). //Falta implementar
+	blockForcePlayer(BFLP) &
+	.length(BFLP, 0) &
+	winningTrioTRival([pos(X,Y)|_]) &
+	.print("RIVAL can win in the next move TinT OUT").
+
+
+// NEXT MOVE FORCE BLOCK
+
+// FORCE BLOCK NEXT MOVE WIN
+nextMove(X,Y):-
+	.print("player can win in the next move BLOCK IN") &
+	player(P) &
+	blockForcePlayer(BFLP) &
+	not .length(BFLP, 0) &
+	.sort(BFLP, L) &
+	checkRepeat(L, X, Y) &
+	.print("player can win in the next move BLOCK OUT").
 
 
 
+// FORCE BLOCK RIVAL NEXT MOVE WIN
+nextMove(X,Y):-
+	.print("player forces to block IN") &
+	player(P) &
+	blockForcePlayer([pos(X,Y)|_]) &
+	.print("player forces to block OUT").
+
+
+nextMove(X,Y):-
+	.print("player can win in the two/three next moves IN") &
+	player(P) &
+	blockForcePlayer(BFLP) &
+	not .length(BFLP, 0) &
+	bestMoveBlock(BFLP, X, Y, P) &
+	.print("player can win in the two/three next moves OUT").
+
+
+// NEXT MOVE NADA M�?S
+nextMove(X,Y):-
+	.print("no se puede hacer nada más IN") &
+	player(P) &
+	tablero(X,Y,0)[source(percept)] &
+	utilPos(X, Y, P) &
+	.print("no se puede hacer nada más OUT").
+
+	
 // rules to determinate when a pair can become a winning trio
-winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y,P):-
-	triple(X1,Y1,X2,Y2,X,Y,P).
+winningTrio([],[],_).
 
-winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y,P):-
-	not triple(X1,Y1,X2,Y2,X,Y,P) &
-	winningTrio(L, X, Y,P).
+winningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|L], [pos(X,Y)|TL],P):-
+	triple(X1,Y1,X2,Y2,X,Y,P) &
+	winningTrio(L,TL,P).
+
+winningTrio([_|L], TL,P):-
+	winningTrio(L,TL,P).
+
+winningTrio([], L, _).
 
 // checks what type of pair form (X1,Y1) and (X2,Y2) and if it forms a winning trio
 triple(X1,Y1,X2,Y2,X,Y,P):-
@@ -162,57 +191,59 @@ triple(X1,Y1,X2,Y2,X,Y,P):-
 
 tripleVertical(X,Y1, X,Y2, X,YD,P):-
 	vertical(X,Y1,X,Y2,P) &
-	tablero(X,YD,0) &
-	tablero(X,YD1,0) &
-	tablero(X,YD0,0) &
-	( ( YD = Y2+1  &
-		YD1 = Y2+2 &
-		YD0 = Y2-2 ) |
-	  ( YD = Y2-2  &
-		YD1 = Y2-3 &
-		YD0 = Y2+1 ) ).
+	tablero(X,YD,0)[source(percept)] &
+	tablero(X,YD1,0)[source(percept)] &
+	tablero(X,YD0,0)[source(percept)] &
+	((YD = Y2+1 &
+	YD1 = Y2+2 &
+	YD0 = Y2-2) |
+	(YD = Y2-2 &
+	YD1 = Y2-3 &
+	YD0 = Y2+1)).
 
 tripleHorizontal(X1,Y, X2,Y, XD,Y,P):-
 	vertical(X1,Y,X2,Y,P) &
-	tablero(XD,Y,0) &
-	tablero(XD1,Y,0) &
-	tablero(XD0,Y,0) &
-	( ( XD = X2+1  &
-		XD1 = X2+2 &
-		XD0 = X2-2 ) |
-	  ( XD = X2-2  &
-		XD1 = X2-3 &
-		XD0 = X2+1 ) ).
+	tablero(XD,Y,0)[source(percept)] &
+	tablero(XD1,Y,0)[source(percept)] &
+	tablero(XD0,Y,0)[source(percept)] &
+	((XD = X2+1  &
+	XD1 = X2+2 &
+	XD0 = X2-2) |
+	(XD = X2-2  &
+	XD1 = X2-3 &
+	XD0 = X2+1)).
 
 tripleDiagonal(X1,Y1,X2,Y2,XD,YD,P):-
 	diagonal(X1,Y1,X2,Y2,P) &
-	tablero(XD,YD,0) &
-	tablero(XD1,YD,0) &
-	tablero(XD0,YD,0) &
-	( 	( (X2 = X1+1 & Y2 = Y1+1) & 
-	( 	(XD = X2+1 & YD= Y2+1 & 
-		XD1 = X2+2 & YD1 = Y2+2 & 
-		XD0 = X2-2 & YD0 = Y2-2) 
-	|  (XD = X2-2 & YD= Y2-2 & 
-		XD1 = X2-3 & YD1 = Y2-3 & 
-		XD0 = X2+1 & YD0 = Y2+1)	) )
-	
-	|  ( (X2 = X1-1 & Y2 = Y1-1) & 
-	( 	(XD = X2-1 & YD= Y2+1 & 
-		XD1 = X2-2 & YD1 = Y2+2 & 
-		XD0 = X2+2 & YD0 = Y2-2) 
-	| 	(XD = X2+2 & YD= Y2-2 & 
-		XD1 = X2+3 & YD1 = Y2-3 & 
-		XD0 = X2-1 & YD0 = Y2+1) ) ) ).
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(XD1,YD,0)[source(percept)] &
+	tablero(XD0,YD,0)[source(percept)] &
+	(((X2 = X1+1 & Y2 = Y1+1) & 
+	((XD = X2+1 & YD= Y2+1 & 
+	XD1 = X2+2 & YD1 = Y2+2 & 
+	XD0 = X2-2 & YD0 = Y2-2) |  
+	(XD = X2-2 & YD= Y2-2 & 
+	XD1 = X2-3 & YD1 = Y2-3 & 
+	XD0 = X2+1 & YD0 = Y2+1))) |
+	((X2 = X1-1 & Y2 = Y1-1) & 
+	((XD = X2-1 & YD= Y2+1 & 
+	XD1 = X2-2 & YD1 = Y2+2 & 
+	XD0 = X2+2 & YD0 = Y2-2) |
+	(XD = X2+2 & YD= Y2-2 & 
+	XD1 = X2+3 & YD1 = Y2-3 & 
+	XD0 = X2-1 & YD0 = Y2+1)))).
 
 
 // rules to determinate when a two in three can become a winning trio
-winningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y, P):-
+winningTrioTinT([],[],_).
+
+winningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|L], [pos(X,Y)|TL], P):-
 	tripleT(X1,Y1,X2,Y2,X,Y,P).
 
-winningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|L], X, Y, P):-
-	not tripleTinT(X1,Y1,X2,Y2,X,Y,P) &
-	winningTrioTinT(L, X, Y,P).
+winningTrioTinT([_|L], TL, P):-
+	winningTrioTinT(L, TL ,P).
+
+winningTrioTinT([], L, _).
 
 // checks what type of two in three form (X1,Y1) and (X2,Y2) and if it forms a winning trio
 tripleTinT(X1,Y1,X2,Y2,X,Y,P):-
@@ -222,85 +253,98 @@ tripleTinT(X1,Y1,X2,Y2,X,Y,P):-
 
 tripleVerticalTinT(X,Y1, X,Y2, X,YD, P):-
 	verticalTwoInThree(X,Y1,X,Y2,P) &
-	tablero(X,YD,0) &
-	tablero(X,Y0,0) &
-	tablero(X,Y4,0) &
+	tablero(X,YD,0)[source(percept)] &
+	tablero(X,Y0,0)[source(percept)] &
+	tablero(X,Y4,0)[source(percept)] &
 	YD = Y1+1 &
 	Y0 = Y1-1 &
 	Y4 = Y1+3.
 
 tripleHorizontalTinT(X1,Y, X2,Y, XD,Y,P):-
 	horizontalTwoInThree(X1,Y,X2,Y,P) &
-	tablero(XD,Y,0) &
-	tablero(X0,Y,0) &
-	tablero(X4,Y,0) &
+	tablero(XD,Y,0)[source(percept)] &
+	tablero(X0,Y,0)[source(percept)] &
+	tablero(X4,Y,0)[source(percept)] &
 	XD = X1+1 &
 	X0 = X1-1 &
 	X4 = X1+3.
 
 tripleDiagonalTinT(X1,Y1,X2,Y2,XD,YD,P):-
 	diagonalTwoInThree(X1,Y1,X2,Y2,P) &
-	tablero(XD,YD,0) &
-	tablero(X0,Y0,0) &
-	tablero(X4,Y4,0) &
-	( (XD = X1+1 & YD = Y1+1 &
-	   X0 = X1-1 & Y0 = Y1-1 &
-	   X4 = X1+3 & Y4 = Y1+3) |
-	  (XD = X1-1 & YD = Y1+1 &
-	   X0 = X1+1 & Y0 = Y1-1 &
-	   X4 = X1-3 & Y4 = Y1+3) ).
+	tablero(XD,YD,0)[source(percept)] &
+	tablero(X0,Y0,0)[source(percept)] &
+	tablero(X4,Y4,0)[source(percept)] &
+	((XD = X1+1 & YD = Y1+1 &
+	X0 = X1-1 & Y0 = Y1-1 &
+	X4 = X1+3 & Y4 = Y1+3) |
+	(XD = X1-1 & YD = Y1+1 &
+	X0 = X1+1 & Y0 = Y1-1 &
+	X4 = X1-3 & Y4 = Y1+3)).
 
 
+
+// lists all not winning trios (forces to block)
+allNotWinningTrio(P,R, L):-
+	pairs(PL, P) &
+	notWinningTrio(PL, PBL, P, R) &
+	twoInThreePairs(TL, P) &
+	notWinningTrioTinT(TL, TBL, P, R) &
+	twoInFourPairs(FL, P) &
+	notWinningTrioTinF(FL, FBL, P, R) &
+	.concat(PBL, TBL, TempL) &
+	.concat(TempL, FBL, L).
+	
 
 // rules to determinate when a pair can become a not winning trio (forces to block)
-notWinningTrio([], L, P, R).
+notWinningTrio([],[],_,_).
 
-notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
-	notWtriple(X1,Y1, X2,Y2, L, P, R) &
+notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], [pos(X,Y),pos(X0,Y0)|L], P, R):-
+	notWtriple(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) &
 	notWinningTrio(PL, L, P, R).
 
-notWinningTrio([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+notWinningTrio([_|PL], L, P, R):-
 	notWinningTrio(PL, L, P, R).
 
-notWinningTrio([],[],P).
+notWinningTrio([], L, _, _).
 
 // checks what type of pair form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
-notWtriple(X1,Y1,X2,Y2, L, P, R):-
-	notWClosPair(X1,Y1,X2,Y2, L, P, R) |
-	notWOpenPair(X1,Y1,X2,Y2, L, P, R).
+notWtriple(X1,Y1,X2,Y2, X,Y, X0,Y0, P, R):-
+	notWClosePair(X1,Y1,X2,Y2, X,Y, X0,Y0, P, R) |
+	notWOpenPair(X1,Y1,X2,Y2, X,Y, X0,Y0, P, R).
 
-notWClosPair(X1,Y1, X2,Y2, [pos(X,Y)|_], P, R) :-
-	//horizontal 
-	(((horizontal(X1,Y1, X2,Y2, P) &
-	tablero(XE,Y1,R) &
-	tablero(X, Y, 0) &
-	tablero(X4, Y1, 0)) &
+notWClosePair(X1,Y, X2,Y, X,Y, X4,Y, P, R) :-
+	horizontal(X1,Y, X2,Y, P) &
+	tablero(XE,Y1,R)[source(percept)] &
+	tablero(X, Y, 0)[source(percept)] &
+	tablero(X4, Y, 0)[source(percept)] &
 	//RIGHT TO LEFT
-	(X = X2+1 & Y = Y2 &
+	((X = X2+1 &
 	XE = X2-2 &
 	X4 = X2+2) |
 	//LEFT TO RIGHT
-	(X = X2-2 & Y = Y2 &
+	(X = X2-2 &
 	XE = X2+1 &
-	X4 = X2-3)) |
-	//vertical 
-	((vertical(X1,Y1, X2,Y2, P) &
-	tablero(X1,YE,R) &
-	tablero(X, Y, 0) &
-	tablero(X1, Y4, 0)) &
+	X4 = X2-3)).
+
+notWClosePair(X,Y1, X,Y2, X,Y, X,Y4, P, R) :-
+	vertical(X,Y1, X,Y2, P) &
+	tablero(X,YE,R)[source(percept)] &
+	tablero(X, Y, 0)[source(percept)] &
+	tablero(X, Y4, 0)[source(percept)] &
 	//TOP TO BOTTOM
-	(X = X2 & Y = Y2+1 &
+	((Y = Y2+1 &
 	YE = Y2-2 &
 	Y4 = Y2+2) |
 	//BOTTOM TO TOP
-	(X = X2 & Y = Y2-2 &
+	(Y = Y2-2 &
 	YE = Y2+1 &
-	Y4 = Y2-3)) |
-	//diagonal
-	((diagonal(X1,Y1, X2,Y2, P) &
-	tablero(XE,YE,R) &
-	tablero(X, Y, 0) &
-	tablero(X4, Y4, 0)) &
+	Y4 = Y2-3)).
+
+notWClosePair(X1,Y1, X2,Y2, X,Y, X4,Y4, P, R) :-
+	diagonal(X1,Y1, X2,Y2, P) &
+	tablero(XE,YE,R)[source(percept)] &
+	tablero(X, Y, 0)[source(percept)] &
+	tablero(X4, Y4, 0)[source(percept)] &
 	// TOP LEFT
 	((X2 = X1+1 & Y2 = Y1+1 &
 	XE = X1+2 & YE = Y1+2 &
@@ -320,40 +364,42 @@ notWClosPair(X1,Y1, X2,Y2, [pos(X,Y)|_], P, R) :-
 	(X2 = X1-1 & Y2 = Y1+1 &
 	XE = X1+1 & YE = Y1-1 &
 	X = X1-2 & Y = Y1+2 &
-	X4 = X1-3 & Y4 = Y1+3)))).
+	X4 = X1-3 & Y4 = Y1+3)).
 	
-notWOpenPair(X1,Y1, X2,Y2, [pos(X,Y)|_], P, R) :-
-	//horizontal 
-	(((horizontal(X1,Y1, X2,Y2, P) &
-	tablero(XE,Y1,R) &
-	tablero(X, Y, 0) &
-	tablero(X4, Y1, 0)) &
+
+notWOpenPair(X1,Y, X2,Y, X,Y, X4,Y, P, R) :-
+	horizontal(X1,Y, X2,Y, P) &
+	tablero(XE,Y,R)[source(percept)] &
+	tablero(X, Y, 0)[source(percept)] &
+	tablero(X4, Y, 0)[source(percept)] &
 	//RIGHT TO LEFT
-	(X = X2-2 & Y = Y1 &
+	((X = X2-2 &
 	XE = X2-3 &
 	X4 = X2+1) |
 	//LEFT TO RIGHT
-	(X = X2+1 & Y = Y2 &
+	(X = X2+1 &
 	XE = X2+2 &
-	X4 = X2-2)) |
-	//vertical 
-	((vertical(X1,Y1, X2,Y2, P) &
-	tablero(X1,YE,R) &
-	tablero(X, Y, 0) &
-	tablero(X1, Y4, 0)) &
+	X4 = X2-2)).
+
+notWOpenPair(X,Y1, X,Y2, X,Y, X,Y4, P, R) :- 
+	vertical(X,Y1, X,Y2, P) &
+	tablero(X,YE,R)[source(percept)] &
+	tablero(X, Y, 0)[source(percept)] &
+	tablero(X, Y4, 0)[source(percept)] &
 	//TOP TO BOTTOM
-	(X = X2 & Y = Y2-2 &
+	((Y = Y2-2 &
 	YE = Y2-3 &
 	Y4 = Y2+1) |
 	//BOTTOM TO TOP
-	(X = X2 & Y = Y2+1 &
+	(Y = Y2+1 &
 	YE = Y2+2 &
-	Y4 = Y2-2)) |
-	//diagonal
-	((diagonal(X1,Y1, X2,Y2, P) &
-	tablero(XE,YE,R) &
-	tablero(X, Y, 0) &
-	tablero(X4, Y4, 0)) &
+	Y4 = Y2-2)).
+
+notWOpenPair(X1,Y1, X2,Y2, X,Y, X4,Y4, P, R) :-
+	diagonal(X1,Y1, X2,Y2, P) &
+	tablero(XE,YE,R)[source(percept)] &
+	tablero(X, Y, 0)[source(percept)] &
+	tablero(X4, Y4, 0)[source(percept)] &
 	// TOP LEFT
 	((X2 = X1+1 & Y2 = Y1+1 &
 	XE = X1-2 & YE = Y1-2 &
@@ -373,142 +419,320 @@ notWOpenPair(X1,Y1, X2,Y2, [pos(X,Y)|_], P, R) :-
 	(X2 = X1-1 & Y2 = Y1+1 &
 	XE = X1-3 & YE = Y1+3 &
 	X = X1-2 & Y = Y1+2 &
-	X4 = X1+1 & Y4 = Y1-1)))).
-
+	X4 = X1+1 & Y4 = Y1-1)).
 
 
 // rules to determinate when a two in three can become a not winning trio (forces to block)
-notWinningTrioTinT([], L, P, R).
+notWinningTrioTinT([],[],_, _).
 
-notWinningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
-	notWtripleTinT(X1,Y1, X2,Y2, L, P, R) &
+notWinningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], [pos(X,Y),pos(X0,Y0)|L], P, R):-
+	notWtripleTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) &
 	notWinningTrioTinT(PL, L, P, R).
 
-notWinningTrioTinT([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+notWinningTrioTinT([_|PL], L, P, R):-
 	notWinningTrioTinT(PL, L, P, R).
 
-notWinningTrioTinT([],[],P, R).
+notWinningTrioTinT([], L, _, _).
 
 // checks what type of two in three form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
-notWtripleTinT(X1,Y1, X2,Y2, L, P, R):-
-	notWVerticalTinT(X1,Y1, X2,Y2, L, P, R) |
-	notWHorizontalTinT(X1,Y1, X2,Y2, L, P, R) |
-	notWDiagonalTinT(X1,Y1, X2,Y2, L, P, R).
+notWtripleTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R):-
+	notWVerticalTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) |
+	notWHorizontalTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) |
+	notWDiagonalTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R).
 
-notWVerticalTinT(X,Y1, X,Y2, [pos(X,Y)|L], P, R):-
+notWVerticalTinT(X,Y1, X,Y2, X,Y, X,Y0, P, R):-
 	verticalTwoInThree(X,Y1, X,Y2, P) &
-	tablero(X, Y0, 0) &
-	tablero(X, YR, R) &
+	tablero(X, Y0, 0)[source(percept)] &
+	tablero(X, YR, R)[source(percept)] &
 	//TOP
-	( (YR = Y1-1 &
-	   Y0 = Y1+3 &
-	   Y = Y1+1)  |
+	((YR = Y1-1 &
+	Y0 = Y1+3 &
+	Y = Y1+1) |
 	//BOTTOM
-	  (YR = Y1+3 &
-	   Y0 = Y1-1 &
-	   Y = Y1+1)  ).
+	(YR = Y1+3 &
+	Y0 = Y1-1 &
+	Y = Y1+1)).
 
-notWHorizontalTinT(X1,Y, X2,Y, [pos(X,Y)|L], P, R):-
-	verticalTwoInThree(X1,Y, X2,Y, P) &
-	tablero(X0, Y, 0) &
-	tablero(XR, Y, R) &
+notWHorizontalTinT(X1,Y, X2,Y, X,Y, X0,Y, P, R):-
+	horizontalTwoInThree(X1,Y, X2,Y, P) &
+	tablero(X0, Y, 0)[source(percept)] &
+	tablero(XR, Y, R)[source(percept)] &
 	//LEFT
-	( (XR = X1-1 &
-	   X0 = X1+3 &
-	   X = X1+1)  |
+	((XR = X1-1 &
+	X0 = X1+3 &
+	X = X1+1) |
 	//RIGHT
-	  (XR = X1+3 &
-	   X0 = X1-1 &
-	   X = X1+1)  ).
+	(XR = X1+3 &
+	X0 = X1-1 &
+	X = X1+1)).
 
-notWDiagonalTinT(X1,Y1, X2,Y2, [pos(X,Y)|L], P, R):-
-	verticalTwoInThree(X1,Y1, X2,Y2, P) &
-	tablero(X0, Y0, 0) &
-	tablero(XR, YR, R) &
+notWDiagonalTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R):-
+	diagonalTwoInThree(X1,Y1, X2,Y2, P) &
+	tablero(X0, Y0, 0)[source(percept)] &
+	tablero(XR, YR, R)[source(percept)] &
 	//TOP LEFT
-	( (XR = X1-1 & YR = Y1-1 &
-	   X0 = X1+3 & Y0 = Y0+3 &
-	   X = X1+1  & Y = Y1+1)  |
+	((XR = X1-1 & YR = Y1-1 &
+	X0 = X1+3 & Y0 = Y0+3 &
+	X = X1+1  & Y = Y1+1) |
 	//TOP RIGHT
-	  (XR = X1+1 & YR = Y1-1 &
-	   X0 = X1-3 & Y0 = Y0+3 &
-	   X = X1-1  & Y = Y1+1)  |
+	(XR = X1+1 & YR = Y1-1 &
+	X0 = X1-3 & Y0 = Y0+3 &
+	X = X1-1  & Y = Y1+1) |
 	//BOTTOM LEFT
-	  (XR = X1-3 & YR = Y1+3 &
-	   X0 = X1+1 & Y0 = Y0-1 &
-	   X = X1-1  & Y = Y1+1)  |
+	(XR = X1-3 & YR = Y1+3 &
+	X0 = X1+1 & Y0 = Y0-1 &
+	X = X1-1  & Y = Y1+1) |
 	//BOTTOM RIGHT
-	  (XR = X1+3 & YR = Y1+3 &
-	   X0 = X1-1 & X0 = X0-1 &
-	   X = X1+1  & Y = Y1+1)  ).
+	(XR = X1+3 & YR = Y1+3 &
+	X0 = X1-1 & X0 = X0-1 &
+	X = X1+1  & Y = Y1+1)).
 
 
 // rules to determinate when a two in four can become a not winning trio (forces to block)
-notWinningTrioTinF([], L, P, R).
+notWinningTrioTinF([],[],_, _).
 
-notWinningTrioTinF([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
-	notWtripleTinF(X1,Y1, X2,Y2, L, P, R) &
+notWinningTrioTinF([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], [pos(X1,Y1),pos(X2,Y2)|L], P, R):-
+	notWtripleTinF(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) &
 	notWinningTrioTinF(PL, L, P, R).
 
-notWinningTrioTinF([pairPos(pos(X1,Y1),pos(X2,Y2))|PL], L, P, R):-
+notWinningTrioTinF([_|PL], L, P, R):-
 	notWinningTrioTinF(PL, L, P, R).
 
-notWinningTrioTinF([],[],P, R).
+notWinningTrioTinF([], L, _, _).
 
 // checks what type of two in four form (X1,Y1) and (X2,Y2) and if it forms a not winning trio
-notWtriple(X1,Y1, X2,Y2, L, P, R):-
-	notWVerticalTinF(X1,Y1, X2,Y2, L, P, R) |
-	notWHorizontalTinF(X1,Y1, X2,Y2, L, P, R) |
-	notWDiagonalTinF(X1,Y1, X2,Y2, L, P, R).
+notWtriple(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R):-
+	notWVerticalTinF(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) |
+	notWHorizontalTinF(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R) |
+	notWDiagonalTinF(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R).
 
-notWVerticalTinF(X,Y1, X,Y2, [pos(X,Y)|L], P, R):-
+notWVerticalTinF(X,Y1, X,Y2, X,Y, X,Y0, P, R):-
 	verticalTwoInFour(X,Y1, X,Y2, P) &
-	tablero(X, YR, R) &
+	tablero(X, YR, R)[source(percept)] &
+	Y = Y1+1 &
+	Y0 = Y1+2 &
 	//TOP
-	( (YR = Y1-1 &
-	   Y = Y1+1)  |
+	((YR = Y1-1) |
 	//BOTTOM
-	  (YR = Y1+4 &
-	   Y = Y1+2)  ).
+	(YR = Y1+4)).
 
-notWHorizontalTinT(X1,Y, X2,Y, [pos(X,Y)|L], P, R):-
-	verticalTwoInFour(X1,Y, X2,Y, P) &
-	tablero(XR, Y, R) &
+notWHorizontalTinT(X1,Y, X2,Y, X,Y, X0,Y, P, R):-
+	horizontalTwoInFour(X1,Y, X2,Y, P) &
+	tablero(XR, Y, R)[source(percept)] &
+	X = X1+1 &
+	X0 = X1+2 &
 	//LEFT
-	( (XR = X1-1 &
-	   X = X1+1)  |
+	((XR = X1-1) |
 	//RIGHT
-	  (XR = X1+4 &
-	   X = X1+2)  ).
+	(XR = X1+4)).
 
-notWDiagonalTinT(X1,Y1, X2,Y2, [pos(X,Y)|L], P, R):-
-	verticalTwoInFour(X1,Y1, X2,Y2, P) &
-	tablero(XR, YR, R) &
+notWDiagonalTinT(X1,Y1, X2,Y2, X,Y, X0,Y0, P, R):-
+	diagonalTwoInFour(X1,Y1, X2,Y2, P) &
+	tablero(XR, YR, R)[source(percept)] &
 	//TOP LEFT
-	( (XR = X1-1 & YR = Y1-1 &
-	   X = X1+1  & Y = Y1+1)  |
+	((XR = X1-1 & YR = Y1-1 &
+	X = X1+1  & Y = Y1+1 &
+	X0 = X1+2 & Y0 = Y1+2) |
 	//TOP RIGHT
-	  (XR = X1-1 & YR = Y1-1 &
-	   X = X1-1  & Y = Y1+1)  |
+	(XR = X1+1 & YR = Y1-1 &
+	X = X1-1  & Y = Y1+1 &
+	X0 = X1-2 & Y0 = Y1+2) |
 	//BOTTOM LEFT
-	  (XR = X1-4 & YR = Y1+4 &
-	   X = X1-2  & Y = Y1+2)  |
+	(XR = X1-4 & YR = Y1+4 &
+	X = X1-2  & Y = Y1+2 &
+	X0 = X1-3 & Y0 = Y1+3) |
 	//BOTTOM RIGHT
-	  (XR = X1+4 & YR = Y1+4 &
-	   X = X1+2  & Y = Y1+2)  ).
-
-
+	(XR = X1+4 & YR = Y1+4 &
+	X = X1+2  & Y = Y1+2 &
+	X0 = X1+3 & Y0 = Y1+3)).
 
 
 // rules to determinate best move
-bestMove(X,Y):-
-	perfectMove(M) &
-	player(P) &
-	.asserta(tablero(X,Y,P)) &
-	allLists(L,P) &
-	.length(L,Points) &
-	.asserta(tmpMove(X,Y,Points)) &
-	.abolish(tablero(X,Y,P)).
+checkRepeat([pos(X,Y),pos(X,Y)], X, Y).
+
+checkRepeat([pos(X,Y),pos(X2,Y2)], 8, 8):-
+	not X = X2 & not Y = Y2.
+
+checkRepeat([pos(X,Y)|TL], X, Y):-
+	.member(pos(X,Y), TL).
+
+checkRepeat([pos(X,Y)|TL], XD, YD):-
+	not .member(pos(X,Y), TL) &
+	checkRepeat(TL, XD,YD).
+
+
+bestMoveBlock(L, X, Y, P):-
+	.member(pos(X,Y), L) &
+	utilpos(X,Y,P).
+
+
+bestMoveBlock(L, X, Y, P). //FALTA HACER
+
+
+bestMove(L, X, Y). //FALTA HACER
+
+
+
+
+// checks if a position can create an util pair/two in three (winning move in the next two turns)
+utilPos(X,Y,P):-
+	utilPair(X,Y,P) |
+	utilTinT(X,Y,P).
+
+
+utilPair(X,Y,P):-
+	utilPairTop(X,Y,P) |
+	utilPairBottom(X,Y,P).
+
+
+utilPairTop(X,Y,P):-
+	utilPairVT(X,Y,P) |
+	utilPairHT(X,Y,P) |
+	utilPairDT(X,Y,P).
+
+utilPairVT(X,Y,P):-
+	tablero(X,Y-1,P)[source(percept)] &
+	tablero(X,Y+1,0)[source(percept)] &
+	tablero(X,Y-2,0)[source(percept)] &
+	(tablero(X,Y+2,0)[source(percept)] |
+	tablero(X,Y-3,0)[source(percept)]).
+
+utilPairHT(X,Y,P):-
+	tablero(X-1,Y,P)[source(percept)] &
+	tablero(X+1,Y,0)[source(percept)] &
+	tablero(X-2,Y,0)[source(percept)] &
+	(tablero(X+2,Y,0)[source(percept)] |
+	tablero(X-3,Y,0)[source(percept)]).
+
+utilPairDT(X,Y,P):-
+	utilPairDTLeft(X,Y,P) |
+	utilPairDTRight(X,Y,P).
+
+utilPairDTLeft(X,Y,P):-
+	tablero(X-1,Y-1,P)[source(percept)] &
+	tablero(X+1,Y+1,0)[source(percept)] &
+	tablero(X-2,Y-2,0)[source(percept)] &
+	(tablero(X+2,Y+2,0)[source(percept)] |
+	tablero(X-3,Y-3,0)[source(percept)]).
+
+utilPairDTRight(X,Y,P):-
+	tablero(X+1,Y-1,P)[source(percept)] &
+	tablero(X-1,Y+1,0)[source(percept)] &
+	tablero(X+2,Y-2,0)[source(percept)] &
+	(tablero(X-2,Y+2,0)[source(percept)] |
+	tablero(X+3,Y-3,0)[source(percept)]).
+
+
+utilPairBottom(X,Y,P):-
+	utilPairVB(X,Y,P) |
+	utilPairHB(X,Y,P) |
+	utilPairDB(X,Y,P).
+
+utilPairVB(X,Y,P):-
+	tablero(X,Y+1,P)[source(percept)] &
+	tablero(X,Y-1,0)[source(percept)] &
+	tablero(X,Y+2,0)[source(percept)] &
+	(tablero(X,Y+3,0)[source(percept)] |
+	tablero(X,Y-2,0)[source(percept)]).
+
+utilPairHB(X,Y,P):-
+	tablero(X+1,Y,P)[source(percept)] &
+	tablero(X-1,Y,0)[source(percept)] &
+	tablero(X+2,Y,0)[source(percept)] &
+	(tablero(X-2,Y,0)[source(percept)] |
+	tablero(X+3,Y,0)[source(percept)]).
+
+utilPairDB(X,Y,P):-
+	utilPairDBLeft(X,Y,P) |
+	utilPairDBRight(X,Y,P).
+
+utilPairDBLeft(X,Y,P):-
+	tablero(X+1,Y+1,P)[source(percept)] &
+	tablero(X-1,Y-1,0)[source(percept)] &
+	tablero(X+2,Y+2,0)[source(percept)] &
+	(tablero(X-2,Y-2,0)[source(percept)] |
+	tablero(X+3,Y+3,0)[source(percept)]).
+
+utilPairDBRight(X,Y,P):-
+	tablero(X-1,Y+1,P)[source(percept)] &
+	tablero(X+1,Y-1,0)[source(percept)] &
+	tablero(X-2,Y+2,0)[source(percept)] &
+	(tablero(X+2,Y-2,0)[source(percept)] |
+	tablero(X-3,Y+3,0)[source(percept)]).
+
+
+utilTinT(X,Y,P):-
+	utilTinTTop(X,Y,P) |
+	utilTinTBottom(X,Y,P).
+
+
+utilTinTTop(X,Y,P):-
+	utilTinTVT(X,Y,P) |
+	utilTinTHT(X,Y,P) |
+	utilTinTDT(X,Y,P).
+
+utilTinTVT(X,Y,P):-
+	tablero(X,Y+2,P)[source(percept)] &
+	tablero(X,Y+1,0)[source(percept)] &
+	tablero(X,Y+3,0)[source(percept)] &
+	tablero(X,Y-1,0)[source(percept)].
+
+utilTinTHT(X,Y,P):-
+	tablero(X+2,Y,P)[source(percept)] &
+	tablero(X+1,Y,0)[source(percept)] &
+	tablero(X+3,Y,0)[source(percept)] &
+	tablero(X-1,Y,0)[source(percept)].
+
+utilTinTDT(X,Y,P):-
+	utilTinTDTLeft(X,Y,P) |
+	utilTinTDTRight(X,Y,P).
+
+utilTinTDTLeft(X,Y,P):-
+	tablero(X+2,Y+2,P)[source(percept)] &
+	tablero(X+1,Y+1,0)[source(percept)] &
+	tablero(X+3,Y+3,0)[source(percept)] &
+	tablero(X-1,Y-1,0)[source(percept)].
+
+utilTinTDTRight(X,Y,P):-
+	tablero(X-2,Y+2,P)[source(percept)] &
+	tablero(X-1,Y+1,0)[source(percept)] &
+	tablero(X-3,Y+3,0)[source(percept)] &
+	tablero(X+1,Y-1,0)[source(percept)].
+
+
+utilTinTBottom(X,Y,P):-
+	utilPairVB(X,Y,P) |
+	utilPairHB(X,Y,P) |
+	utilPairDB(X,Y,P).
+
+utilTinTVB(X,Y,P):-
+	tablero(X,Y-2,P)[source(percept)] &
+	tablero(X,Y-1,0)[source(percept)] &
+	tablero(X,Y-3,0)[source(percept)] &
+	tablero(X,Y+1,0)[source(percept)].
+
+utilTinTHB(X,Y,P):-
+	tablero(X-2,Y,P)[source(percept)] &
+	tablero(X-1,Y,0)[source(percept)] &
+	tablero(X-3,Y,0)[source(percept)] &
+	tablero(X+1,Y,0)[source(percept)].
+
+utilTinTDB(X,Y,P):-
+	utilTinTDBLeft(X,Y,P) |
+	utilTinTDBRight(X,Y,P).
+
+utilTinTDBLeft(X,Y,P):-
+	tablero(X-2,Y-2,P)[source(percept)] &
+	tablero(X-1,Y-1,0)[source(percept)] &
+	tablero(X-3,Y-3,0)[source(percept)] &
+	tablero(X+1,Y+1,0)[source(percept)].
+
+utilTinTDBRight(X,Y,P):-
+	tablero(X+2,Y-2,P)[source(percept)] &
+	tablero(X+1,Y-1,0)[source(percept)] &
+	tablero(X+3,Y-3,0)[source(percept)] &
+	tablero(X-1,Y+1,0)[source(percept)].
+
 
 
 // generates all lists of pairs for a player
@@ -517,33 +741,33 @@ allLists(L,P):-
 	twoInThreePairs(TL, P) &
 	twoInFourPairs(FL, P) &
 	winnerTotal(WL, P) &
-
 	.concat(PL, TL, TempL) &
 	.concat(FL, TempL, L).
 
-	
-
-
-
-
-
-
-
-
-
 // Rules to decide next move in losing game
 nextMove(X, Y):-
-	estrategia(jugarAPerder).
+	estrategia(jugarAPerder)[source(percept)].
 	
 nextMove(X, Y):-
-	estrategia(jugarAPerder).
+	estrategia(jugarAPerder)[source(percept)].
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 // auto explanatory
 checkEmpty(X,Y):-
-	tablero(X,Y,0).
+	tablero(X,Y,0)[source(percept)].
 
 // Forms a list of all winning positions in the board              
 winnerTotal(L,P):-
@@ -575,7 +799,7 @@ winnerVerticalPairTop(X1,Y1,[pos(X1,Y0)|WVL],P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y0) & 
-	(Y0 = Y1 - 1) &
+	(Y0 = Y1-1) &
 	winnerVerticalPairTop(X1,Y1+1,WVL,P).
 
 winnerVerticalPairTop(X1,Y1,WVL,P) :-
@@ -595,7 +819,7 @@ winnerVerticalPairBottom(X1,Y1,[pos(X1,Y4)|WVL],P) :-
 	vertical(X1,Y1,X1,Y2,P) &
 	vertical(X1,Y2,X1,Y3,P) &
 	checkEmpty(X1,Y4) &
-	(Y4 = Y3 + 1) &
+	(Y4 = Y3+1) &
 	winnerVerticalPairBottom(X1,Y1+1,WVL,P).
 
 winnerVerticalPairBottom(X1,Y1,WVL,P) :-
@@ -622,7 +846,7 @@ winnerHorizontalPairLeft(X1,Y1,[pos(X0,Y1)|WHL],P) :-
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontal(X2,Y1,X3,Y1,P) &
 	checkEmpty(X0,Y1) & 
-	(X0 = X1 - 1) &
+	(X0 = X1-1) &
 	winnerHorizontalPairLeft(X1+1,Y1,WHL,P).
 
 winnerHorizontalPairLeft(X1,Y1,WHL,P) :-
@@ -642,7 +866,7 @@ winnerHorizontalPairRight(X1,Y1,[pos(X4,Y1)|WHL],P) :-
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontal(X2,Y1,X3,Y1,P) &
 	checkEmpty(X4,Y1) & 
-	(X4 = X3 + 1) &
+	(X4 = X3+1) &
 	winnerHorizontalPairRight(X1+1,Y1,WHL,P).
 
 winnerHorizontalPairRight(X1,Y1,WHL,P) :-
@@ -672,11 +896,11 @@ winnerDiagonalPairTopLeft(X1,Y1,[pos(X0,Y0)|DHL],P) :-
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonal(X2,Y2,X3,Y3,P) &
-	(X3 = X2 + 1) &
-	(Y3 = Y2 + 1) &
+	(X3 = X2+1) &
+	(Y3 = Y2+1) &
 	checkEmpty(X0,Y0) & 
-	(Y0 = Y1 - 1) &
-	(X0 = X1 - 1) &
+	(Y0 = Y1-1) &
+	(X0 = X1-1) &
 	winnerDiagonalPairTopLeft(X1,Y1+1,DHL,P).
 
 winnerDiagonalPairTopLeft(X1,Y1,DHL,P) :-
@@ -695,11 +919,11 @@ winnerDiagonalPairBottomRight(X1,Y1,[pos(X4,Y4)|DHL],P) :-
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonal(X2,Y2,X3,Y3,P) &
-	(X3 = X2 - 1) &
-	(Y3 = Y2 + 1) &
+	(X3 = X2-1) &
+	(Y3 = Y2+1) &
 	checkEmpty(X0,Y0) & 
-	(Y4 = Y3 + 1) &
-	(X4 = X3 - 1) &
+	(Y4 = Y3+1) &
+	(X4 = X3-1) &
 	winnerDiagonalPairBottomRight(X1,Y1+1,DHL,P).
 
 winnerDiagonalPairBottomRight(X1,Y1,DHL,P) :-
@@ -718,11 +942,11 @@ winnerDiagonalPairTopRight(X1,Y1,[pos(X0,Y0)|DHL],P) :-
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonal(X2,Y2,X3,Y3,P) &
-	(X3 = X2 - 1) &
-	(Y3 = Y2 + 1) &
+	(X3 = X2-1) &
+	(Y3 = Y2+1) &
 	checkEmpty(X0,Y0) & 
-	(Y0 = Y1 - 1) &
-	(X0 = X1 + 1) &
+	(Y0 = Y1-1) &
+	(X0 = X1+1) &
 	winnerDiagonalPairTopRight(X1,Y1+1,DHL,P).
 
 winnerDiagonalPairTopRight(X1,Y1,DHL,P) :-
@@ -741,11 +965,11 @@ winnerDiagonalPairBottomLeft(X1,Y1,[pos(X4,Y4)|DHL],P) :-
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonal(X2,Y2,X3,Y3,P) &
-	(X3 = X2 - 1) &
-	(Y3 = Y2 + 1) &
+	(X3 = X2-1) &
+	(Y3 = Y2+1) &
 	checkEmpty(X0,Y0) & 
-	(Y4 = Y3 - 1) &
-	(X4 = X3 + 1) &
+	(Y4 = Y3-1) &
+	(X4 = X3+1) &
 	winnerDiagonalPairBottomLeft(X1,Y1+1,DHL,P).
 
 winnerDiagonalPairBottomLeft(X1,Y1,DHL,P) :-
@@ -771,7 +995,7 @@ winnerVerticalThreeInFourTop(X1,Y1,[pos(X1,Y2)|WTVL],P) :-
 	X1 < 8 &
 	vertical(X1,Y3,X1,Y4,P) &
 	verticalTwoInThree(X1,Y1,X1,Y3,P) &
-	(Y2 = Y1 + 1) &
+	(Y2 = Y1+1) &
 	winnerVerticalThreeInFourTop(X1,Y1+1,WTVL,P).
 
 winnerVerticalThreeInFourTop(X1,Y1,WTVL,P) :-
@@ -790,7 +1014,7 @@ winnerVerticalThreeInFourBottom(X1,Y1,[pos(X1,Y3)|WTVL],P) :-
 	X1 < 8 &
 	vertical(X1,Y1,X1,Y2,P) &
 	verticalTwoInThree(X1,Y2,X1,Y4,P) &
-	(Y3 = Y2 + 1) &
+	(Y3 = Y2+1) &
 	winnerVerticalThreeInFourBottom(X1,Y1+1,WTVL,P).
 
 winnerVerticalThreeInFourBottom(X1,Y1,WTVL,P) :-
@@ -816,7 +1040,7 @@ winnerHorizontalThreeInFourLeft(X1,Y1,[pos(X2,Y1)|WTHL],P) :-
 	Y1 < 8 &
 	horizontal(X3,Y1,X4,Y1,P) &
 	horizontalTwoInThree(X1,Y1,X3,Y1,P) &
-	(X2 = X1 + 1) &
+	(X2 = X1+1) &
 	winnerHorizontalThreeInFourLeft(X1+1,Y1,WTHL,P).
 
 winnerHorizontalThreeInFourLeft(X1,Y1,WTHL,P) :-
@@ -835,7 +1059,7 @@ winnerHorizontalThreeInFourRight(X1,Y1,[pos(X3,Y1)|WTHL],P) :-
 	Y1 < 8 &
 	horizontal(X1,Y1,X2,Y1,P) &
 	horizontalTwoInThree(X2,Y1,X4,Y1,P) &
-	(X3 = X2 + 1) &
+	(X3 = X2+1) &
 	winnerHorizontalThreeInFourRight(X1+1,Y1,WTHL,P).
 
 winnerHorizontalThreeInFourRight(X1,Y1,WTHL,P) :-
@@ -865,10 +1089,10 @@ winnerDiagonalThreeInFourTopLeft(X1,Y1,[pos(X2,Y2)|WTDL],P) :-
 	X1 < 8 &
 	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
 	diagonal(X3,Y3,X4,Y4,P) &
-	(X4 = X3 + 1) & 
-	(Y4 = Y3 + 1) &
-	(X2 = X1 + 1) &
-	(Y2 = Y1 + 1) &
+	(X4 = X3+1) & 
+	(Y4 = Y3+1) &
+	(X2 = X1+1) &
+	(Y2 = Y1+1) &
 	winnerDiagonalThreeInFourTopLeft(X1,Y1+1,WTDL,P).
 
 winnerDiagonalThreeInFourTopLeft(X1,Y1,WTDL,P) :-
@@ -887,10 +1111,10 @@ winnerDiagonalThreeInFourBottomRight(X1,Y1,[pos(X3,Y3)|WTDL],P) :-
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonalTwoInThree(X2,Y2,X4,Y4,P) &
-	(X4 = X1 + 3) & 
-	(Y4 = Y1 + 3) &
-	(X3 = X2 + 1) &
-	(Y3 = Y2 + 1) &
+	(X4 = X1+3) & 
+	(Y4 = Y1+3) &
+	(X3 = X2+1) &
+	(Y3 = Y2+1) &
 	winnerDiagonalThreeInFourBottomRight(X1,Y1+1,WTDL,P).
 
 winnerDiagonalThreeInFourBottomRight(X1,Y1,WTDL,P) :-
@@ -909,10 +1133,10 @@ winnerDiagonalThreeInFourTopRight(X1,Y1,[pos(X2,Y2)|WTDL],P) :-
 	X1 < 8 &
 	diagonalTwoInThree(X1,Y1,X3,Y3,P) &
 	diagonal(X3,Y3,X4,Y4,P) &
-	(X4 = X3 - 1) & 
-	(Y4 = Y3 + 1) &
-	(X2 = X1 - 1) &
-	(Y2 = Y1 + 1) &
+	(X4 = X3-1) & 
+	(Y4 = Y3+1) &
+	(X2 = X1-1) &
+	(Y2 = Y1+1) &
 	winnerDiagonalThreeInFourTopRight(X1,Y1+1,WTDL,P).
 
 winnerDiagonalThreeInFourTopRight(X1,Y1,WTDL,P) :-
@@ -931,10 +1155,10 @@ winnerDiagonalThreeInFourBottomLeft(X1,Y1,[pos(X3,Y3)|WTDL],P) :-
 	X1 < 8 &
 	diagonal(X1,Y1,X2,Y2,P) &
 	diagonalTwoInThree(X2,Y2,X4,Y4,P) &
-	(X4 = X1 - 3) & 
-	(Y4 = Y1 + 3) &
-	(X3 = X2 - 1) &
-	(Y3 = Y2 + 1) &
+	(X4 = X1-3) & 
+	(Y4 = Y1+3) &
+	(X3 = X2-1) &
+	(Y3 = Y2+1) &
 	winnerDiagonalThreeInFourBottomLeft(X1,Y1+1,WTDL,P).
 
 winnerDiagonalThreeInFourBottomLeft(X1,Y1,WTDL,P) :-
@@ -1140,84 +1364,84 @@ diagonalTwoInFourPair(X1, Y1, VFL, P) :-
 diagonalTwoInFourPair(X1, 7, VFL, P) :-
 	diagonalTwoInFourPair(X1+1, 0, VFL, P).
 
-
+// rules to get pairs
 // Rule to get a vertical pair XX
 vertical(X1,Y1,X1,Y2,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,P) &
-	(Y2 = Y1 + 1).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X1,Y2,P)[source(percept)] &
+	(Y2 = Y1+1).
 
 // Rule to get a horizontal pair XX
 horizontal(X1,Y1,X2,Y1,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y1,P) &
-	(X2 = X1 + 1).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y1,P)[source(percept)] &
+	(X2 = X1+1).
 
 // Rule to get a diagonal pair XX
 diagonal(X1,Y1,X2,Y2,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y2,P) &
-	( ((X2 = X1 + 1) & (Y2 = Y1 + 1)) |
-	  ((X2 = X1 - 1) & (Y2 = Y1 + 1)) ).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y2,P)[source(percept)] &
+	(((X2 = X1+1) & (Y2 = Y1+1)) |
+	((X2 = X1-1) & (Y2 = Y1+1))).
 
-
+// rules to get two in three
 // Rule to get a vertical pair X[]X
 verticalTwoInThree(X1,Y1,X1,Y3,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,0) &
-	tablero(X1,Y3,P) &
-	(Y3 = Y1 + 2) &
-	(Y2 = Y1 + 1).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X1,Y2,0)[source(percept)] &
+	tablero(X1,Y3,P)[source(percept)] &
+	(Y3 = Y1+2) &
+	(Y2 = Y1+1).
 
 // Rule to get a horizontal pair X[]X
 horizontalTwoInThree(X1,Y1,X3,Y1,P) :- 
-	tablero(X1,Y1,P) &
-	tablero(X2,Y1,0) &
-	tablero(X3,Y1,P) &
-	(X3 = X1 + 2) &
-	(X2 = X1 + 1).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y1,0)[source(percept)] &
+	tablero(X3,Y1,P)[source(percept)] &
+	(X3 = X1+2) &
+	(X2 = X1+1).
 
 // Rule to get a diagonal pair X[]X
 diagonalTwoInThree(X1,Y1,X3,Y3,P) :- 
-	tablero(X1,Y1,P) &
-	tablero(X2,Y2,0) &
-	tablero(X3,Y3,P) &
-	( ((X3 = X1 + 2) & (X2 = X1 + 1)  &
-	   (Y3 = Y1 + 2) & (Y2 = Y1 + 1)) |
-	  ((X3 = X1 - 2) & (X2 = X1 - 1)  &
-	   (Y3 = Y1 + 2) & (Y2 = Y1 + 1)) ).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y2,0)[source(percept)] &
+	tablero(X3,Y3,P)[source(percept)] &
+	(((X3 = X1+2) & (X2 = X1+1)  &
+	(Y3 = Y1+2) & (Y2 = Y1+1)) |
+	((X3 = X1-2) & (X2 = X1-1)  &
+	(Y3 = Y1+2) & (Y2 = Y1+1))).
 
-
+// rules to get two in four
 // Rule to get a vertical pair X[][]X
 verticalTwoInFour(X1,Y1,X1,Y4,P) :- 
-	tablero(X1,Y1,P) &
-	tablero(X1,Y2,0) &
-	tablero(X1,Y3,0) &
-	tablero(X1,Y4,P) &
-	(Y4 = Y1 + 3) &
-	(Y3 = Y1 + 2) &
-	(Y2 = Y1 + 1).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X1,Y2,0)[source(percept)] &
+	tablero(X1,Y3,0)[source(percept)] &
+	tablero(X1,Y4,P)[source(percept)] &
+	(Y4 = Y1+3) &
+	(Y3 = Y1+2) &
+	(Y2 = Y1+1).
 
 // Rule to get a horizontal pair X[][]X
 horizontalTwoInFour(X1,Y1,X4,Y1,P) :-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y1,0) &
-	tablero(X3,Y1,0) &
-	tablero(X4,Y1,P) &
-	(X4 = X1 + 3) &
-	(X3 = X1 + 2) &
-	(X2 = X1 + 1).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y1,0)[source(percept)] &
+	tablero(X3,Y1,0)[source(percept)] &
+	tablero(X4,Y1,P)[source(percept)] &
+	(X4 = X1+3) &
+	(X3 = X1+2) &
+	(X2 = X1+1).
 
 // Rule to get a diagonal pair X[][]X
 diagonalTwoInFour(X1,Y1,X4,Y4,P):-
-	tablero(X1,Y1,P) &
-	tablero(X2,Y2,0) &
-	tablero(X3,Y3,0) &
-	tablero(X4,Y4,P) &
-	( ( (X4 = X1 + 3) & (X3 = X1 + 2) & (X2 = X1 + 1) &
-	    (Y4 = Y1 + 3) & (Y3 = Y1 + 2) & (Y2 = Y1 + 1) ) |
-	  ( (X4 = X1 - 3) & (X3 = X1 - 2) & (X2 = X1 - 1) &
-	    (Y4 = Y1 + 3) & (Y3 = Y1 + 2) & (Y2 = Y1 + 1) ) ).
+	tablero(X1,Y1,P)[source(percept)] &
+	tablero(X2,Y2,0)[source(percept)] &
+	tablero(X3,Y3,0)[source(percept)] &
+	tablero(X4,Y4,P)[source(percept)] &
+	(((X4 = X1+3) & (X3 = X1+2) & (X2 = X1+1) &
+	(Y4 = Y1+3) & (Y3 = Y1+2) & (Y2 = Y1+1)) |
+	((X4 = X1-3) & (X3 = X1-2) & (X2 = X1-1) &
+	(Y4 = Y1+3) & (Y3 = Y1+2) & (Y2 = Y1+1))).
 
 
 
@@ -1235,53 +1459,42 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 
 // PLAY TO WIN
 +!play: playerNumber &
-	estrategia(jugarAGanar) <-
+	estrategia(jugarAGanar)[source(percept)] <-
 		.print("A ganar");
 		!playToWin.
 
 // PLAY TO LOSE
 +!play:
-	estrategia(jugarAPerder) <-
+	estrategia(jugarAPerder)[source(percept)] <-
 		.print("A perder");
 		!playToLose.
 		
 //TEST AREA		
-// Plan to play a few rounds and generate a board's state to test
-+!playToTest:
-	testPut(X,Y) &
-	turno(player2) <- 
-		put(X,Y);
-		-testPut(X,Y);
-		-+movement(N+1);
-		!playToTest.
-		
-+!playToTest:
-	not testPut(X,Y) <-
-		!playToWin.
-
-+!playToTest <- !playToTest.
 
 
 //WINNING PLAN
 
+
+
 +!playToWin: 
+	estrategia(jugarAGanar)[source(percept)] &
 	movement(N) &
 	N = 0 &
 	.my_name(Player) &
-	turno(Player) <-
+	turno(Player)[source(percept)] <-
 	put(3,3);
 	-+movement(N+2);
 	+ventaja(0);
 	!playToWin.
 
 +!playToWin:
+	estrategia(jugarAGanar)[source(percept)] &
 	movement(N) &
 	N = 1 &
 	.my_name(Player) &
-	turno(Player) &
+	turno(Player)[source(percept)] &
 	rival(R) &
-	tablero(X,Y,R) <-
-	+historialRival([pos(X,Y)]);
+	tablero(X,Y,R)[source(percept)] <-
 	+jugadaActual(pos(X,Y));
 	?closerToCenter(X1,Y1);
 	put(X1,Y1);
@@ -1289,37 +1502,59 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 	-jugadaActual(pos(x,y));
 	!playToWin.
 
+
 +!playToWin:
+	estrategia(jugarAGanar)[source(percept)] &
 	movement(N) &
-	my_name(Player) &
-	turno(Player) &
+	.my_name(Player) &
+	turno(Player)[source(percept)] &
+	player(P) &
 	rival(R) &
-	tablero(X,Y,R) &
-	historialRival(L) &
-	not .member(pos(X,Y), L) <-
-	+jugadaActual(pos(X,Y));
-	-+historialRival([pos(X,Y)|L]);
+	winnerTotal(WPL, P) &
+	winnerTotal(WRL, R) &
+	pairs(PLP, P) &
+	twoInThreePairs(TLP, P) &
+	pairs(PLR, R) &
+	twoInThreePairs(TLR, R) &
+	allNotWinningTrio(P, R, BFLP) &
+	winningTrio(PLP, WTLP, P) &
+	winningTrioTinT(TLP, WTTLP, P) &
+	winningTrio(PLR, WTLR, R) &
+	winningTrioTinT(TLR, WTTLR, R)<-
+	 
+	.asserta(winnerPlayer(WPL));
+	.asserta(winnerRival(WRL));
+	.asserta(pairsPlayer(PLP));
+	.asserta(twoInThreePlayer(TLP));
+	.asserta(pairsRival(PLR));
+	.asserta(twoInThreeRival(TLR));
+	.asserta(blockForcePlayer(BFLP));
+	.asserta(winningTrioPlayer(WTLP));
+	.asserta(winningTrioTPlayer(WTTLP));
+	.asserta(winningTrioRival(WTLR));
+	.asserta(winningTrioTRival(WTTLR));
 	?nextMove(X1,Y1);
 	put(X1,Y1);
 	-+movement(N+2);
-	-jugadaActual(pos(X,Y));
+	.abolish(winnerPlayer(WPL));
+	.abolish(winnerRival(WRL));
+	.abolish(pairsPlayer(PLP));
+	.abolish(twoInThreePlayer(TLP));
+	.abolish(pairsRival(PLR));
+	.abolish(twoInThreeRival(TLR));
+	.abolish(blockForcePlayer(BFLP));
+	.abolish(winningTrioPlayer(WTLP));
+	.abolish(winningTrioTPlayer(WTTLP));
+	.abolish(winningTrioRival(WTLR));
+	.abolish(winningTrioTRival(WTTLR));
 	!playToWin.
 
 
-+!playToWin<- !playToWin.
+
+
++!playToWin <- !playToWin.
 
 //LOSING PLAN
-
-
-
-
-
-+!ponFicha(X,Y)[source(_)]:
-	turno(player2) <-
-		put(X,Y);
-		!playToWin.
-
-+!ponFicha(_,_)[_] <- .print("Error in !ponFicha").
 
 
 
@@ -1327,7 +1562,44 @@ diagonalTwoInFour(X1,Y1,X4,Y4,P):-
 	
 //ERRORS
 +!play <- .print("Error in !play").
-+!playToWin <- .print("Error in !playToWin").
 +!playToLose <- .print("Error in !playToLose").
-+!playToTest <- .print("Error or finish !playToTest").
-+!checkBoard(_,_) <- .print("Error in !checkBoard").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+-----ESTRATEGIA-----
+nextMove(X,Y):-
+	nextMoveWin(X,Y) |
+	nextMoveLose(X,Y) |
+	nextMoveCheck(X,Y) |
+	nextMoveNextMoveWin(X,Y) |
+	nextMoveForceBlock(X,Y) |
+	nextMoveNadaMas().
+
+*/
